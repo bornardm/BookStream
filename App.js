@@ -1,20 +1,55 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "./app/constants/colors";
+import { Button } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import HomeScreen from "./app/screens/HomeScreen";
+import BookScreen from "./app/screens/BookScreen";
+import MenuScreen from "./app/screens/MenuScreen";
+import { colors } from "./app/constants/Colors";
+import Icon from "react-native-vector-icons/SimpleLineIcons";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up your App.js to start working on your app!</Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTintColor: colors.black, //color of the title
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      >
+        <Stack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <Icon.Button
+                name="menu"
+                color={colors.black}
+                backgroundColor="transparent"
+                onPress={() => navigation.navigate("MenuScreen")}
+              />
+            ),
+            headerTitle: "My Books",
+          })}
+        />
+        <Stack.Screen
+          name="BookScreen"
+          component={BookScreen}
+          options={{ headerTitle: "Book" }}
+        />
+        <Stack.Screen
+          name="MenuScreen"
+          component={MenuScreen}
+          options={{ headerTitle: "Menu" }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
