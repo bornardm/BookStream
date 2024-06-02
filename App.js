@@ -1,19 +1,42 @@
+import "react-native-gesture-handler";
 import React from "react";
 import { Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+
 import HomeScreen from "./app/screens/HomeScreen";
 import BookScreen from "./app/screens/BookScreen";
 import MenuScreen from "./app/screens/MenuScreen";
 import { colors } from "./app/constants/Colors";
-import Icon from "react-native-vector-icons/SimpleLineIcons";
 
-const Stack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+
+const HomeStackScreen = () => (
+  <HomeStack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <HomeStack.Screen
+      name="HomeScreen"
+      component={HomeScreen}
+      options={{ headerTitle: "My Books" }}
+    />
+    <HomeStack.Screen
+      name="BookScreen"
+      component={BookScreen}
+      options={{ headerTitle: "Book" }}
+    />
+  </HomeStack.Navigator>
+);
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
+      <Drawer.Navigator
+        initialRouteName="=HomeScreen"
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.white,
@@ -24,32 +47,13 @@ export default function App() {
           },
         }}
       >
-        <Stack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-          options={({ navigation }) => ({
-            headerLeft: () => (
-              <Icon.Button
-                name="menu"
-                color={colors.black}
-                backgroundColor="transparent"
-                onPress={() => navigation.navigate("MenuScreen")}
-              />
-            ),
-            headerTitle: "My Books",
-          })}
-        />
-        <Stack.Screen
-          name="BookScreen"
-          component={BookScreen}
-          options={{ headerTitle: "Book" }}
-        />
-        <Stack.Screen
+        <Drawer.Screen name="Home" component={HomeStackScreen} />
+        <Drawer.Screen
           name="MenuScreen"
           component={MenuScreen}
           options={{ headerTitle: "Menu" }}
         />
-      </Stack.Navigator>
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 }
