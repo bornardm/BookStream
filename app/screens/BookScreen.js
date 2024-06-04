@@ -8,6 +8,8 @@ import {
   Image,
 } from "react-native";
 import { colors } from "../constants/Colors";
+import { TenStarsTouchable } from "../components/Stars";
+import { BookStatusSelector } from "../components/BookStatusSelector";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -56,6 +58,10 @@ export default function BookScreen({ navigation }) {
         </View>
         <Text>Title</Text>
         <Text>Author</Text>
+        <View style={{ alignSelf: "center" }}>
+          <TenStarsTouchable rating={5} size={30} />
+        </View>
+        <BookStatusSelector status="Read" borrowed={true} />
       </ScrollView>
       <BackArrow />
     </View>

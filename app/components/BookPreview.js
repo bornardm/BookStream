@@ -8,6 +8,7 @@ import {
   Button,
 } from "react-native";
 import { colors } from "../constants/Colors";
+import { FiveStarsDisplay } from "./Stars";
 import { useNavigation } from "@react-navigation/native";
 
 export default function BookPreview() {
@@ -24,6 +25,9 @@ export default function BookPreview() {
         <View style={styles.info}>
           <Text style={styles.title}>Title</Text>
           <Text style={styles.author}>Author</Text>
+          <View style={styles.stars}>
+            <FiveStarsDisplay rating={5} size={20} />
+          </View>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -44,9 +48,15 @@ const styles = StyleSheet.create({
   },
   info: {
     marginLeft: 10,
+    backgroundColor: "transparent",
+    flex: 1,
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  stars: {
+    position: "absolute",
+    bottom: 0,
   },
 });
