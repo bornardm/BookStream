@@ -10,6 +10,20 @@ import {
 import { colors } from "../constants/Colors";
 import { FiveStarsDisplay } from "./Stars";
 import { useNavigation } from "@react-navigation/native";
+import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+
+function BadgeStatus({ status }) {
+  const statusProps = BOOK_STATUS_PROPS[status];
+  const IconComponent = statusProps.iconLibrary;
+  return (
+    <View style={[styles.badge, { backgroundColor: statusProps.color }]}>
+      <IconComponent name={statusProps.iconName} style={styles.badgeIcon} />
+      <Text style={[styles.badgeText, { backgroundColor: statusProps.color }]}>
+        {statusProps.text}
+      </Text>
+    </View>
+  );
+}
 
 export default function BookPreview() {
   const navigation = useNavigation();
@@ -29,15 +43,18 @@ export default function BookPreview() {
             <FiveStarsDisplay rating={5} size={20} />
           </View>
         </View>
+        <BadgeStatus status={BOOK_STATUS.READING} />
       </View>
     </TouchableWithoutFeedback>
   );
 }
+
+const badgeHeight = 30;
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     padding: 10,
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     borderRadius: 10,
     margin: 5,
   },
@@ -58,5 +75,25 @@ const styles = StyleSheet.create({
   stars: {
     position: "absolute",
     bottom: 0,
+  },
+  badge: {
+    padding: 5,
+    paddingHorizontal: 7,
+
+    alignSelf: "flex-end",
+    height: badgeHeight,
+    borderRadius: badgeHeight / 2,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "blue",
+  },
+  badgeText: {
+    color: colors.white,
+  },
+  badgeIcon: {
+    color: colors.white,
+    fontSize: badgeHeight / 2,
+    marginRight: 5,
   },
 });

@@ -12,6 +12,7 @@ import { TenStarsTouchable } from "../components/Stars";
 import { BookStatusSelector } from "../components/BookStatusSelector";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 import { useNavigation } from "@react-navigation/native";
+import { BOOK_STATUS } from "../constants/BookStatus";
 
 function BackArrow() {
   const navigation = useNavigation();
@@ -58,10 +59,11 @@ export default function BookScreen({ navigation }) {
         </View>
         <Text>Title</Text>
         <Text>Author</Text>
+        <Text>Serie</Text>
         <View style={{ alignSelf: "center" }}>
           <TenStarsTouchable rating={5} size={30} />
         </View>
-        <BookStatusSelector status="Read" borrowed={true} />
+        <BookStatusSelector status={BOOK_STATUS.READ} borrowed={true} />
       </ScrollView>
       <BackArrow />
     </View>

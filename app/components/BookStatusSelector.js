@@ -6,17 +6,14 @@ import {
   ScrollView,
   Text,
 } from "react-native";
-//Icons
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Feather from "react-native-vector-icons/Feather";
-import Octicons from "react-native-vector-icons/Octicons";
 import { colors } from "../constants/Colors";
+import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
 
 /**
  * Renders a book status selector component.
  *
  * @param {Object} props - The component props.
- * @param {string} props.status - The current status of the book in  "Read", "Want to read",  "In reading","Abandoned",.
+ * @param {integer} props.status - The current id status of the book in  0,1,2,3,4,5.
  * @param {boolean} props.Borrowed - Indicates if the book is borrowed.
  * @param {boolean} props.ToExchange - Indicates if the book is available for exchange.
  * @returns {JSX.Element} The book status selector component.
@@ -25,13 +22,13 @@ export function BookStatusSelector({ status, borrowed, toExchange }) {
   const initSelectedStatus = (status, borrowed, toExchange) => {
     const borrowedSelected = borrowed ? 1 : 0;
     const toExchangeSelected = toExchange ? 1 : 0;
-    if (status === "Read") {
+    if (status === BOOK_STATUS.READ) {
       return [1, 0, 0, 0, borrowedSelected, toExchangeSelected];
-    } else if (status === "Want to read") {
+    } else if (status === BOOK_STATUS.TO_READ) {
       return [0, 1, 0, 0, borrowedSelected, toExchangeSelected];
-    } else if (status === "In reading") {
+    } else if (status === BOOK_STATUS.READING) {
       return [0, 0, 1, 0, borrowedSelected, toExchangeSelected];
-    } else if (status === "Abandoned") {
+    } else if (status === BOOK_STATUS.ABANDONED) {
       return [0, 0, 0, 1, borrowedSelected, toExchangeSelected];
     } else {
       return [0, 0, 0, 0, borrowedSelected, toExchangeSelected];
@@ -53,30 +50,6 @@ export function BookStatusSelector({ status, borrowed, toExchange }) {
   const [selectedStatus, setSelectedStatus] = useState(
     initSelectedStatus(status, borrowed, toExchange)
   );
-  const selectors = [
-    { text: "Read", iconLibrary: Octicons, iconName: "check-circle-fill" },
-    { text: "Want to read", iconLibrary: Feather, iconName: "book" },
-    {
-      text: "In reading",
-      iconLibrary: MaterialCommunityIcons,
-      iconName: "book-open-page-variant-outline",
-    },
-    {
-      text: "Abandoned",
-      iconLibrary: MaterialCommunityIcons,
-      iconName: "book-off-outline",
-    },
-    {
-      text: "Borrowed",
-      iconLibrary: MaterialCommunityIcons,
-      iconName: "book-clock-outline",
-    },
-    {
-      text: "To Exchange",
-      iconLibrary: MaterialCommunityIcons,
-      iconName: "swap-horizontal",
-    },
-  ];
 
   return (
     <ScrollView
@@ -84,7 +57,7 @@ export function BookStatusSelector({ status, borrowed, toExchange }) {
       horizontal={true}
       showsHorizontalScrollIndicator={false}
     >
-      {selectors.map((value, index) => {
+      {BOOK_STATUS_PROPS.map((value, index) => {
         const IconComponent = value.iconLibrary;
         const isSelected = selectedStatus[index];
         return (
