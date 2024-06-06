@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Entypo";
 import BookPreview from "../components/BookPreview";
 
 export default function HomeScreen({ navigation }) {
+  //fetchBooks();
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
