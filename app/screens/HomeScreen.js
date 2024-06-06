@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import {
   View,
   Text,
@@ -8,36 +8,42 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import { SQLiteProvider } from "expo-sqlite/next";
 import { colors } from "../constants/Colors";
 import Icon from "react-native-vector-icons/Entypo";
 import BookPreview from "../components/BookPreview";
+import LoadindingView from "../components/LoadingView";
+import { dbName } from "../setupDatabase";
 
 export default function HomeScreen({ navigation }) {
-  //fetchBooks();
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-        <BookPreview />
-      </ScrollView>
-      <View style={styles.addBook}>
-        <TouchableWithoutFeedback
-          onPress={() => console.log("Add book button pressed")}
-        >
-          <Icon name="plus" style={styles.iconPlus} />
-        </TouchableWithoutFeedback>
-      </View>
-    </View>
+    <Suspense fallback={<LoadindingView />}>
+      <SQLiteProvider databaseName={dbName} useSuspense>
+        <View style={styles.container}>
+          <ScrollView style={styles.scrollView}>
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+            <BookPreview />
+          </ScrollView>
+          <View style={styles.addBook}>
+            <TouchableWithoutFeedback
+              onPress={() => console.log("Add book button pressed")}
+            >
+              <Icon name="plus" style={styles.iconPlus} />
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
+      </SQLiteProvider>
+    </Suspense>
   );
 }
 

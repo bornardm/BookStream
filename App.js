@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
-import React, { useEffect } from "react";
-import { Button } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Button, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -8,7 +8,9 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from "./app/screens/HomeScreen";
 import BookScreen from "./app/screens/BookScreen";
 import MenuScreen from "./app/screens/MenuScreen";
+import LoadindingView from "./app/components/LoadingView";
 import { colors } from "./app/constants/Colors";
+import { loadDatabase } from "./app/setupDatabase";
 
 const HomeStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -33,6 +35,17 @@ const HomeStackScreen = () => (
 );
 
 export default function App() {
+  const [dbLoaded, setDbLoaded] = useState(false);
+  useEffect(() => {
+    loadDatabase()
+      .then(() => setDbLoaded(true))
+      .catch((e) => console.error(e));
+  }, []);
+  if (!dbLoaded) {
+    console.log("Loading database...");
+    return <LoadindingView />;
+  }
+
   return (
     <NavigationContainer>
       <Drawer.Navigator
