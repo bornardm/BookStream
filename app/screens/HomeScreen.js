@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,8 +14,12 @@ import Icon from "react-native-vector-icons/Entypo";
 import BookPreview from "../components/BookPreview";
 import LoadindingView from "../components/LoadingView";
 import { dbName } from "../setupDatabase";
+import { fetchData } from "../requests";
 
 export default function HomeScreen({ navigation }) {
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <Suspense fallback={<LoadindingView />}>
       <SQLiteProvider databaseName={dbName} useSuspense>
