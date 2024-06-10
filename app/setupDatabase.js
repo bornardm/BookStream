@@ -3,7 +3,7 @@ import { Asset } from "expo-asset";
 import * as SQLite from "expo-sqlite";
 
 export const dbName = "myBooksDB.db";
-export let db = null;
+const updateDB = false;
 
 export const loadDatabase = async () => {
   const dbAsset = require("../database/myBooksDB.db");
@@ -18,6 +18,9 @@ export const loadDatabase = async () => {
     );
     await FileSystem.downloadAsync(dbUri, dbFilePath);
   }
-
-  db = SQLite.openDatabaseSync("myBooksDB.db");
+  if (updateDB) {
+    //await FileSystem.deleteAsync(dbFilePath);
+    console.log("DB Updating...");
+    await FileSystem.downloadAsync(dbUri, dbFilePath);
+  }
 };
