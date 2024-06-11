@@ -17,9 +17,9 @@ import { dbName } from "../setupDatabase";
 import { fetchData } from "../requests";
 
 export default function HomeScreen({ navigation }) {
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   return (
     <Suspense fallback={<LoadindingView />}>
       <SQLiteProvider databaseName={dbName} useSuspense>

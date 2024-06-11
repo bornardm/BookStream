@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 
 export default function LoadindingView() {
   return (
     <View style={styles.container}>
       <Text> Loading database...</Text>
+      <ActivityIndicator size="large" color="#0000ff" />
     </View>
   );
 }
