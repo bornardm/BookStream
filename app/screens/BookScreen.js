@@ -62,15 +62,16 @@ function InfoList(book) {
 }
 const imageMargin = 20;
 
-export default function BookScreen({ navigation }) {
+export default function BookScreen({ route, navigation }) {
+  const bookID = route.params.bookID;
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 }); // to set the size of the imageView
   const [book, setBook] = useState(null);
   const [bookLoaded, setBookLoaded] = useState(false);
-
+  //console.log("BookScreen", bookID);
   useEffect(() => {
     const fetchBook = async () => {
-      const fetchedBook = await fetchBookInfos({ id: 43 });
-      console.log("fetchedBook : ", fetchedBook);
+      const fetchedBook = await fetchBookInfos({ id: bookID });
+      //console.log("fetchedBook : ", fetchedBook);
       setBook(fetchedBook);
       if (fetchedBook) {
         setBookLoaded(true);

@@ -26,14 +26,14 @@ export async function fetchBookInfos({ id }) {
   let result = null;
   try {
     await db.withTransactionAsync(async () => {
-      console.log("transaction start ");
+      //console.log("transaction start ");
 
       result = await db.getFirstAsync("SELECT * FROM BOOKS where id = ?", [id]);
-      console.log("Row:", result);
+      //console.log("Row:", result);
       if (result) {
         result = modifyDefaultBookInfos(result);
       }
-      console.log("transaction end");
+      //console.log("transaction end");
     });
     return result;
   } catch (e) {
@@ -47,4 +47,25 @@ function modifyDefaultBookInfos(book) {
     book.rating = 0;
   }
   return book;
+}
+
+export async function fetchBookPreview() {
+  console.log("start fetching all book preview");
+  const db = SQLite.openDatabaseSync(dbName);
+  let result = null;
+  try {
+    await db.withTransactionAsync(async () => {
+      //console.log("transaction start ");
+
+      result = await db.getAllAsync(
+        "SELECT id, title, author, rating, status, imagePath FROM BOOKS"
+      );
+      //console.log("Rows:", result);
+      //console.log("transaction end");
+    });
+    return result;
+  } catch (e) {
+    console.error("error", e);
+    return null;
+  }
 }

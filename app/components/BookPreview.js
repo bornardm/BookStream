@@ -25,11 +25,19 @@ function BadgeStatus({ status }) {
   );
 }
 
-export default function BookPreview() {
+export default function BookPreview({
+  bookID,
+  title,
+  author,
+  rating,
+  status,
+  imagePath,
+}) {
+  //console.log("BookPreview", bookID, title, author, rating, status, imagePath);
   const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback
-      onPress={() => navigation.navigate("BookScreen", { name: "Jane" })}
+      onPress={() => navigation.navigate("BookScreen", { bookID: bookID })}
     >
       <View style={styles.container}>
         <Image
@@ -37,13 +45,13 @@ export default function BookPreview() {
           style={styles.image}
         />
         <View style={styles.info}>
-          <Text style={styles.title}>Title</Text>
-          <Text style={styles.author}>Author</Text>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.author}>{author}</Text>
           <View style={styles.stars}>
-            <FiveStarsDisplay rating={5} size={20} />
+            <FiveStarsDisplay rating={rating} size={20} />
           </View>
         </View>
-        <BadgeStatus status={BOOK_STATUS.READING} />
+        <BadgeStatus status={status} />
       </View>
     </TouchableWithoutFeedback>
   );
