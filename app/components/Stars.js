@@ -9,7 +9,9 @@ export function FiveStarsDisplay({ rating, size }) {
     <View style={styles.starsContainer}>
       {ratings.map((value, index) => {
         let name;
-        if (rating <= value) {
+        if (!rating) {
+          name = "star";
+        } else if (rating <= value) {
           name = "star-o";
         } else if (rating >= value + 2) {
           name = "star";
@@ -22,7 +24,7 @@ export function FiveStarsDisplay({ rating, size }) {
             key={index}
             name={name}
             size={size}
-            color="gold"
+            color={rating ? "gold" : "gainsboro"}
             style={styles.star}
           />
         );
