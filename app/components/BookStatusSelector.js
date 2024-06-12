@@ -9,9 +9,9 @@ import {
 import { colors } from "../constants/Colors";
 import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
 import {
-  updateBookStatus,
-  updateBookBorrowed,
-  updateBookToExchange,
+  updateBookStatusDB,
+  updateBookBorrowedDB,
+  updateBookToExchangeDB,
 } from "../requests";
 
 /**
@@ -23,7 +23,13 @@ import {
  * @param {boolean} props.ToExchange - Indicates if the book is available for exchange.
  * @returns {JSX.Element} The book status selector component.
  */
-export function BookStatusSelector({ bookID, status, borrowed, toExchange }) {
+export function BookStatusSelector({
+  bookID,
+  status,
+  borrowed,
+  toExchange,
+  updateStateBookFunc,
+}) {
   function initSelectedStatus() {
     const borrowedSelected = borrowed ? 1 : 0;
     const toExchangeSelected = toExchange ? 1 : 0;
@@ -57,11 +63,15 @@ export function BookStatusSelector({ bookID, status, borrowed, toExchange }) {
   }
   function updateDBCalls(index) {
     if (index < 4) {
-      updateBookStatus({ id: bookID, status: index });
+      updateStateBookFunc({ status: index }); //Change the state of the parent component
+      updateBookStatusDB({ id: bookID, status: index });
     } else if (index === 4) {
-      updateBookBorrowed({ id: bookID, borrowed: !selectedStatus[index] });
+      updateBookBorrowedDB({ id: bookID, borrowed: !selectedStatus[index] });
     } else if (index === 5) {
-      updateBookToExchange({ id: bookID, toExchange: !selectedStatus[index] });
+      updateBookToExchangeDB({
+        id: bookID,
+        toExchange: !selectedStatus[index],
+      });
     }
   }
 

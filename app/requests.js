@@ -103,7 +103,7 @@ function updateDB({ request, params }) {
   * @returns {boolean} - Returns true if the update was successful, false otherwise.
         
 */
-export function updateBookRating({ id, rating }) {
+export function updateBookRatingDB({ id, rating }) {
   console.log("start updating book rating: id = ", id, "rating = ", rating);
   return updateDB({
     request: "UPDATE BOOKS SET rating = ? WHERE id = ?",
@@ -111,7 +111,7 @@ export function updateBookRating({ id, rating }) {
   });
 }
 
-export function updateBookStatus({ id, status }) {
+export function updateBookStatusDB({ id, status }) {
   console.log("start updating book status: id = ", id, "status = ", status);
   return updateDB({
     request: "UPDATE BOOKS SET status = ? WHERE id = ?",
@@ -119,7 +119,7 @@ export function updateBookStatus({ id, status }) {
   });
 }
 
-export function updateBookBorrowed({ id, borrowed }) {
+export function updateBookBorrowedDB({ id, borrowed }) {
   console.log(
     "start updating book borrowed: id = ",
     id,
@@ -132,7 +132,7 @@ export function updateBookBorrowed({ id, borrowed }) {
   });
 }
 
-export function updateBookToExchange({ id, toExchange }) {
+export function updateBookToExchangeDB({ id, toExchange }) {
   console.log(
     "start updating book toExchange: id = ",
     id,

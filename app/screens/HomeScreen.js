@@ -20,6 +20,14 @@ export default function HomeScreen({ navigation }) {
   const [allBookPreview, setAllBookPreview] = useState(null);
   const [previewsLoaded, setPreviewsLoaded] = useState(false);
 
+  function updateBookPreview(updatedPreview) {
+    console.log("Book preview updated : ", updatedPreview);
+    setAllBookPreview((prevBookPreviews) => {
+      return prevBookPreviews.map((bookPreview) =>
+        bookPreview.id === updatedPreview.id ? updatedPreview : bookPreview
+      );
+    });
+  }
   useEffect(() => {
     const fetchPreviews = async () => {
       const fetchedPreviews = await fetchBookPreview();
@@ -48,6 +56,7 @@ export default function HomeScreen({ navigation }) {
                   rating={book.rating}
                   status={book.status}
                   imagePath={book.imagePath}
+                  updateBookPreviewFunc={updateBookPreview} // pass the function as a prop
                 />
               ))}
           </ScrollView>

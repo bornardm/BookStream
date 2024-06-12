@@ -32,12 +32,18 @@ export default function BookPreview({
   rating,
   status,
   imagePath,
+  updateBookPreviewFunc, // receive the function as a prop
 }) {
   //console.log("BookPreview", bookID, title, author, rating, status, imagePath);
   const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback
-      onPress={() => navigation.navigate("BookScreen", { bookID: bookID })}
+      onPress={() =>
+        navigation.navigate("BookScreen", {
+          bookID: bookID,
+          updateBookPreviewFunc: updateBookPreviewFunc, // pass the function as a parameter
+        })
+      }
     >
       <View style={styles.container}>
         <Image

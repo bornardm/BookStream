@@ -11,6 +11,12 @@ import MenuScreen from "./app/screens/MenuScreen";
 import LoadindingView from "./app/components/LoadingView";
 import { colors } from "./app/constants/Colors";
 import { loadDatabase } from "./app/setupDatabase";
+import { LogBox } from "react-native";
+
+//ignore some warnigs
+LogBox.ignoreLogs([
+  "Non-serializable values were found in the navigation state",
+]);
 
 const HomeStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();

@@ -21,21 +21,6 @@ import { SQLiteProvider } from "expo-sqlite/next";
 import LoadingView from "../components/LoadingView";
 import { dbName } from "../setupDatabase";
 
-function BackArrow() {
-  const navigation = useNavigation();
-  return (
-    <View style={styles.backArrow}>
-      <SimpleLineIcons.Button
-        name="arrow-left"
-        size={20}
-        color={colors.secondary}
-        alignSelf="flex-start"
-        backgroundColor="transparent"
-        onPress={() => navigation.goBack()}
-      />
-    </View>
-  );
-}
 function InfoList(book) {
   const infoProps = [
     { icon: Feather, name: "calendar", text: book.publicationDate },
@@ -62,12 +47,46 @@ function InfoList(book) {
 }
 const imageMargin = 20;
 
-export default function BookScreen({ route, navigation }) {
-  const bookID = route.params.bookID;
+export default function BookScreen({ route }) {
+  const { bookID, updateBookPreviewFunc } = route.params;
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 }); // to set the size of the imageView
   const [book, setBook] = useState(null);
   const [bookLoaded, setBookLoaded] = useState(false);
   //console.log("BookScreen", bookID);
+
+  function BackArrow() {
+    const navigation = useNavigation();
+    return (
+      <View style={styles.backArrow}>
+        <SimpleLineIcons.Button
+          name="arrow-left"
+          size={20}
+          color={colors.secondary}
+          alignSelf="flex-start"
+          backgroundColor="transparent"
+          onPress={() => {
+            navigation.goBack();
+            updateBookPreviewFunc({
+              id: book.id,
+              title: book.title,
+              author: book.author,
+              rating: book.rating,
+              status: book.status,
+              imagePath: book.imagePath,
+            });
+          }}
+        />
+      </View>
+    );
+  }
+  function modifyStateBook({ rating, status }) {
+    setBook({
+      ...book,
+      rating: rating === undefined ? book.rating : rating,
+      status: status === undefined ? book.status : status,
+    });
+  }
+
   useEffect(() => {
     const fetchBook = async () => {
       const fetchedBook = await fetchBookInfos({ id: bookID });
@@ -113,7 +132,7 @@ export default function BookScreen({ route, navigation }) {
               <Text style={styles.textAuthor}>{book.author}</Text>
               {book.series && (
                 <Text style={styles.textSeries}>
-                  {book.series}
+                  {book.series}{" "}
                   {book.volume ? (
                     <Text style={styles.textVolume}>
                       (volume {book.volume})
@@ -126,6 +145,7 @@ export default function BookScreen({ route, navigation }) {
                   bookID={bookID}
                   rating={book.rating}
                   size={30}
+                  updateStateBookFunc={modifyStateBook}
                 />
               </View>
               <View style={styles.statusView}>
@@ -134,6 +154,7 @@ export default function BookScreen({ route, navigation }) {
                   status={book.status}
                   borrowed={book.borrowed}
                   toExchange={book.toExchange}
+                  updateStateBookFunc={modifyStateBook}
                 />
               </View>
             </View>
