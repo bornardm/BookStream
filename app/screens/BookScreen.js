@@ -63,7 +63,7 @@ export default function BookScreen({ route }) {
         <SimpleLineIcons.Button
           name="arrow-left"
           size={20}
-          color={colors.secondary}
+          color={colors.lightGray}
           alignSelf="flex-start"
           underlayColor={"transparent"}
           backgroundColor="transparent"
@@ -89,7 +89,7 @@ export default function BookScreen({ route }) {
         <FontAwesome5.Button
           name="trash"
           size={20}
-          color={"#505050"}
+          color={colors.lightGray}
           backgroundColor={"transparent"}
           underlayColor={"transparent"}
           onPress={() =>
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   horizontalLine: {
-    borderBottomColor: colors.secondary,
+    borderBottomColor: colors.lightGray,
     borderBottomWidth: 1,
     marginVertical: 10,
   },
