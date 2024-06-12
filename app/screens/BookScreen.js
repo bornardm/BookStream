@@ -130,8 +130,10 @@ export default function BookScreen({ route, navigation }) {
               </View>
               <View style={styles.statusView}>
                 <BookStatusSelector
+                  bookID={bookID}
                   status={book.status}
                   borrowed={book.borrowed}
+                  toExchange={book.toExchange}
                 />
               </View>
             </View>

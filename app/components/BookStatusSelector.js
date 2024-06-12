@@ -8,6 +8,11 @@ import {
 } from "react-native";
 import { colors } from "../constants/Colors";
 import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+import {
+  updateBookStatus,
+  updateBookBorrowed,
+  updateBookToExchange,
+} from "../requests";
 
 /**
  * Renders a book status selector component.
@@ -18,8 +23,8 @@ import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
  * @param {boolean} props.ToExchange - Indicates if the book is available for exchange.
  * @returns {JSX.Element} The book status selector component.
  */
-export function BookStatusSelector({ status, borrowed, toExchange }) {
-  const initSelectedStatus = (status, borrowed, toExchange) => {
+export function BookStatusSelector({ bookID, status, borrowed, toExchange }) {
+  function initSelectedStatus() {
     const borrowedSelected = borrowed ? 1 : 0;
     const toExchangeSelected = toExchange ? 1 : 0;
     if (status === BOOK_STATUS.READ) {
@@ -33,7 +38,9 @@ export function BookStatusSelector({ status, borrowed, toExchange }) {
     } else {
       return [0, 0, 0, 0, borrowedSelected, toExchangeSelected];
     }
-  };
+  }
+
+  const [selectedStatus, setSelectedStatus] = useState(initSelectedStatus);
   function handleSelectorPress(index) {
     setSelectedStatus((prevStatuses) => {
       const newStatuses = [...prevStatuses]; // create a copy of the array
@@ -45,11 +52,18 @@ export function BookStatusSelector({ status, borrowed, toExchange }) {
       newStatuses[index] = newValue;
       return newStatuses; // return the updated array
     });
-  }
 
-  const [selectedStatus, setSelectedStatus] = useState(
-    initSelectedStatus(status, borrowed, toExchange)
-  );
+    updateDBCalls(index); //here the state selectedStatus is not yet updated. We must wait a rerender
+  }
+  function updateDBCalls(index) {
+    if (index < 4) {
+      updateBookStatus({ id: bookID, status: index });
+    } else if (index === 4) {
+      updateBookBorrowed({ id: bookID, borrowed: !selectedStatus[index] });
+    } else if (index === 5) {
+      updateBookToExchange({ id: bookID, toExchange: !selectedStatus[index] });
+    }
+  }
 
   return (
     <ScrollView
@@ -64,7 +78,7 @@ export function BookStatusSelector({ status, borrowed, toExchange }) {
           <View key={index} style={styles.statusContainer}>
             <TouchableWithoutFeedback
               onPress={() => {
-                console.log(`Status ${value.text} was pressed.`);
+                //console.log(`Status ${value.text} was pressed.`);
                 handleSelectorPress(index);
               }}
             >
