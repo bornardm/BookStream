@@ -1,27 +1,8 @@
 import { dbName } from "./setupDatabase";
 import * as SQLite from "expo-sqlite";
 
-export function fetchData() {
-  console.log("start");
-  const db = SQLite.openDatabaseSync(dbName);
-  console.log("db:", db);
-  db.withTransactionAsync(async () => {
-    console.log("transaction");
-
-    const result = await db.getAllAsync("SELECT * FROM BOOKS");
-    for (let i = 0; i < result.length; i++) {
-      console.log("Row:", result[i].title);
-    }
-    //console.log("Count:", result);
-    console.log("transaction end");
-  }).catch((e) => {
-    console.log("error", e);
-  });
-  console.log("finish");
-}
-
 export async function fetchBookInfos({ id }) {
-  console.log("start fetching book infos: id = ", id);
+  console.log("DB : start fetching book infos: id = ", id);
   const db = SQLite.openDatabaseSync(dbName);
   let result = null;
   try {
@@ -50,7 +31,7 @@ function modifyDefaultBookInfos(book) {
 }
 
 export async function fetchBookPreview() {
-  console.log("start fetching all book preview");
+  console.log("DB : start fetching all book preview");
   const db = SQLite.openDatabaseSync(dbName);
   let result = null;
   try {
@@ -104,7 +85,12 @@ function updateDB({ request, params }) {
         
 */
 export function updateBookRatingDB({ id, rating }) {
-  console.log("start updating book rating: id = ", id, "rating = ", rating);
+  console.log(
+    "DB : start updating book rating: id = ",
+    id,
+    "rating = ",
+    rating
+  );
   return updateDB({
     request: "UPDATE BOOKS SET rating = ? WHERE id = ?",
     params: [rating, id],
@@ -112,7 +98,12 @@ export function updateBookRatingDB({ id, rating }) {
 }
 
 export function updateBookStatusDB({ id, status }) {
-  console.log("start updating book status: id = ", id, "status = ", status);
+  console.log(
+    "DB : start updating book status: id = ",
+    id,
+    "status = ",
+    status
+  );
   return updateDB({
     request: "UPDATE BOOKS SET status = ? WHERE id = ?",
     params: [status, id],
@@ -121,7 +112,7 @@ export function updateBookStatusDB({ id, status }) {
 
 export function updateBookBorrowedDB({ id, borrowed }) {
   console.log(
-    "start updating book borrowed: id = ",
+    "DB : start updating book borrowed: id = ",
     id,
     "borrowed = ",
     borrowed
@@ -134,7 +125,7 @@ export function updateBookBorrowedDB({ id, borrowed }) {
 
 export function updateBookToExchangeDB({ id, toExchange }) {
   console.log(
-    "start updating book toExchange: id = ",
+    "DB : start updating book toExchange: id = ",
     id,
     "toExchange = ",
     toExchange
@@ -142,5 +133,13 @@ export function updateBookToExchangeDB({ id, toExchange }) {
   return updateDB({
     request: "UPDATE BOOKS SET toExchange = ? WHERE id = ?",
     params: [toExchange, id],
+  });
+}
+
+export function deleteBookDB({ id }) {
+  console.log("DB :start remove book : id = ", id);
+  return updateDB({
+    request: "DELETE FROM BOOKS WHERE id = ?",
+    params: [id],
   });
 }

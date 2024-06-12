@@ -21,10 +21,16 @@ export default function HomeScreen({ navigation }) {
   const [previewsLoaded, setPreviewsLoaded] = useState(false);
 
   function updateBookPreview(updatedPreview) {
-    console.log("Book preview updated : ", updatedPreview);
     setAllBookPreview((prevBookPreviews) => {
       return prevBookPreviews.map((bookPreview) =>
         bookPreview.id === updatedPreview.id ? updatedPreview : bookPreview
+      );
+    });
+  }
+  function deleteBookPreview(bookIdToDelete) {
+    setAllBookPreview((prevBookPreviews) => {
+      return prevBookPreviews.filter(
+        (bookPreview) => bookPreview.id !== bookIdToDelete
       );
     });
   }
@@ -56,7 +62,10 @@ export default function HomeScreen({ navigation }) {
                   rating={book.rating}
                   status={book.status}
                   imagePath={book.imagePath}
-                  updateBookPreviewFunc={updateBookPreview} // pass the function as a prop
+                  functions={{
+                    updateBookPreviewFunc: updateBookPreview,
+                    deleteBookPreviewFunc: deleteBookPreview,
+                  }}
                 />
               ))}
           </ScrollView>

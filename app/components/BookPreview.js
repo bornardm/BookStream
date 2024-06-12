@@ -32,7 +32,7 @@ export default function BookPreview({
   rating,
   status,
   imagePath,
-  updateBookPreviewFunc, // receive the function as a prop
+  functions, // receive the function as a prop
 }) {
   //console.log("BookPreview", bookID, title, author, rating, status, imagePath);
   const navigation = useNavigation();
@@ -41,7 +41,7 @@ export default function BookPreview({
       onPress={() =>
         navigation.navigate("BookScreen", {
           bookID: bookID,
-          updateBookPreviewFunc: updateBookPreviewFunc, // pass the function as a parameter
+          functions: functions, // pass the functions as a parameter
         })
       }
     >

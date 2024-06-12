@@ -6,6 +6,7 @@ import {
   Button,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 import { colors } from "../constants/Colors";
 import { TenStarsTouchable } from "../components/Stars";
@@ -14,9 +15,10 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
 import { BOOK_STATUS } from "../constants/BookStatus";
-import { fetchBookInfos } from "../requests";
+import { fetchBookInfos, deleteBookDB } from "../requests";
 import { SQLiteProvider } from "expo-sqlite/next";
 import LoadingView from "../components/LoadingView";
 import { dbName } from "../setupDatabase";
@@ -48,7 +50,7 @@ function InfoList(book) {
 const imageMargin = 20;
 
 export default function BookScreen({ route }) {
-  const { bookID, updateBookPreviewFunc } = route.params;
+  const { bookID, functions } = route.params;
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 }); // to set the size of the imageView
   const [book, setBook] = useState(null);
   const [bookLoaded, setBookLoaded] = useState(false);
@@ -63,10 +65,11 @@ export default function BookScreen({ route }) {
           size={20}
           color={colors.secondary}
           alignSelf="flex-start"
+          underlayColor={"transparent"}
           backgroundColor="transparent"
           onPress={() => {
             navigation.goBack();
-            updateBookPreviewFunc({
+            functions.updateBookPreviewFunc({
               id: book.id,
               title: book.title,
               author: book.author,
@@ -75,6 +78,37 @@ export default function BookScreen({ route }) {
               imagePath: book.imagePath,
             });
           }}
+        />
+      </View>
+    );
+  }
+  function Trash() {
+    const navigation = useNavigation();
+    return (
+      <View style={styles.trash}>
+        <FontAwesome5.Button
+          name="trash"
+          size={20}
+          color={"#505050"}
+          backgroundColor={"transparent"}
+          underlayColor={"transparent"}
+          onPress={() =>
+            Alert.alert(
+              "Delete this book",
+              "Would you like to remove this book from your library?",
+              [
+                { text: "NO" },
+                {
+                  text: "YES",
+                  onPress: () => {
+                    navigation.goBack();
+                    deleteBookDB({ id: bookID });
+                    functions.deleteBookPreviewFunc(bookID);
+                  },
+                },
+              ]
+            )
+          }
         />
       </View>
     );
@@ -178,6 +212,7 @@ export default function BookScreen({ route }) {
             <View style={styles.infosView}>
               <Text>{book.comment}</Text>
             </View>
+            <Trash />
           </ScrollView>
           <BackArrow />
         </View>
@@ -199,7 +234,11 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
   },
-
+  trash: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+  },
   ScrollView: {
     width: "100%",
     backgroundColor: "transparent",
