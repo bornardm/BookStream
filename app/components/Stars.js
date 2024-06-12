@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { updateBookRating } from "../requests";
 
 export function FiveStarsDisplay({ rating, size }) {
   const ratings = [0, 2, 4, 6, 8];
@@ -33,7 +34,7 @@ export function FiveStarsDisplay({ rating, size }) {
   );
 }
 
-export function TenStarsTouchable({ rating, size }) {
+export function TenStarsTouchable({ bookID, rating, size }) {
   const [ratingState, setRating] = useState(rating);
   const ratings = Array.from({ length: 10 }, (_, index) => index);
   return (
@@ -52,6 +53,7 @@ export function TenStarsTouchable({ rating, size }) {
             onPress={() => {
               console.log(`Star ${index + 1} was pressed.`);
               setRating(index + 1);
+              updateBookRating({ id: bookID, rating: index + 1 });
             }} // Update the rating when a star is clicked
           >
             <Icon name={name} size={size} color="gold" style={styles.star} />

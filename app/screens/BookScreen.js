@@ -122,7 +122,11 @@ export default function BookScreen({ route, navigation }) {
                 </Text>
               )}
               <View style={styles.starsView}>
-                <TenStarsTouchable rating={book.rating} size={30} />
+                <TenStarsTouchable
+                  bookID={bookID}
+                  rating={book.rating}
+                  size={30}
+                />
               </View>
               <View style={styles.statusView}>
                 <BookStatusSelector

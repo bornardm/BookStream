@@ -29,7 +29,7 @@ export async function fetchBookInfos({ id }) {
       //console.log("transaction start ");
 
       result = await db.getFirstAsync("SELECT * FROM BOOKS where id = ?", [id]);
-      //console.log("Row:", result);
+      console.log("Row:", result);
       if (result) {
         result = modifyDefaultBookInfos(result);
       }
@@ -67,5 +67,23 @@ export async function fetchBookPreview() {
   } catch (e) {
     console.error("error", e);
     return null;
+  }
+}
+
+export function updateBookRating({ id, rating }) {
+  console.log("start updating book rating: id = ", id, "rating = ", rating);
+  const db = SQLite.openDatabaseSync(dbName);
+  try {
+    db.withTransactionAsync(async () => {
+      //console.log("transaction start ");
+      await db.runAsync("UPDATE BOOKS SET rating = ? WHERE id = ?", [
+        rating,
+        id,
+      ]);
+    });
+    return true;
+  } catch (e) {
+    console.error("error", e);
+    return false;
   }
 }
