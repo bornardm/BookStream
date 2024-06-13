@@ -11,6 +11,7 @@ import {
 import { colors } from "../constants/Colors";
 import { TenStarsTouchable } from "../components/Stars";
 import { BookStatusSelector } from "../components/BookStatusSelector";
+import DatePicker from "../components/DatePicker";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -25,25 +26,41 @@ import { dbName } from "../setupDatabase";
 
 function InfoList(book) {
   const infoProps = [
-    { icon: Feather, name: "calendar", text: book.publicationDate },
+    {
+      icon: Feather,
+      name: "calendar",
+      text: new Date(book.publicationDate).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    },
     { icon: Ionicons, name: "business-outline", text: book.publisher },
     { icon: MaterialCommunityIcons, name: "barcode-scan", text: book.isbn },
-    { icon: Feather, name: "book", text: book.pageNumber },
+    {
+      icon: Feather,
+      name: "book",
+      text: book.pageNumber ? book.pageNumber + " pages" : null,
+    },
+    { icon: Ionicons, name: "language-outline", text: book.language },
   ];
   return (
     <View style={styles.infosView}>
-      {infoProps.map((info, index) => (
-        <View key={index} style={styles.infoRow}>
-          <info.icon
-            name={info.name}
-            size={20}
-            color={colors.secondary}
-            alignSelf="flex-start"
-            backgroundColor="transparent"
-          />
-          <Text style={styles.textInfos}>{info.text}</Text>
-        </View>
-      ))}
+      {infoProps.map(
+        (info, index) =>
+          info.text && (
+            <View key={index} style={styles.infoRow}>
+              <info.icon
+                name={info.name}
+                size={20}
+                color={colors.secondary}
+                alignSelf="flex-start"
+                backgroundColor="transparent"
+              />
+              <Text style={styles.textInfos}>{info.text}</Text>
+            </View>
+          )
+      )}
     </View>
   );
 }
@@ -194,9 +211,12 @@ export default function BookScreen({ route }) {
             </View>
             <View style={styles.horizontalLine} />
             <View style={styles.infosView}>
-              <Text>
-                Date de lecture {book.readingStartDate} à {book.readingEndDate}.
-              </Text>
+              <Text>Reading dates</Text>
+              <DatePicker
+                bookID={bookID}
+                initialStartDate={book.readingStartDate}
+                initialEndDate={book.readingEndDate}
+              />
             </View>
             <View style={styles.horizontalLine} />
             <View style={styles.infosView}>
@@ -273,7 +293,7 @@ const styles = StyleSheet.create({
   horizontalLine: {
     borderBottomColor: colors.lightGray,
     borderBottomWidth: 1,
-    marginVertical: 10,
+    marginVertical: 15,
   },
   infoRow: {
     flexDirection: "row",

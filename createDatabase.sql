@@ -44,6 +44,10 @@ VALUES
 ('The Divine Comedy', 'Dante Alighieri', '1320-01-01', 'Various', 798, '9780142437223', 'A journey through Hell, Purgatory, and Paradise.', 1, 0, 0, 10, '2024-06-01', '2024-07-01', 'path/to/image15.jpg', "SerieK", NULL, 'A spiritual epic.', 'Fiction, Poetry', 'Italian'),
 ('Hamlet', 'William Shakespeare', '1600-01-01', NULL, 160, '9780743477123', 'A tragedy about Prince Hamlet of Denmark.', 0, 0, 0, 8, '2024-08-01', '2024-08-05', 'path/to/image16.jpg', NULL, 1, NULL, 'Fiction, Drama', 'English'),
 ('The Iliad', 'Homer', '-750-01-01', 'Various', 683, '9780140275360', 'An epic Greek poem about the Trojan War.', 1, 0, 0, 9, '2024-09-01', NULL, 'path/to/image17.jpg', NULL, 1, 'A classic epic.', NULL, 'Greek'),
-('Don Quixote', 'Miguel de Cervantes', '1605-01-01', 'Francisco de Robles', 982, '9780060934347', 'A story about a man who becomes a knight.', 0, 0, 0, 8, '2024-10-01', '2024-10-30', 'path/to/image18.jpg', NULL, 1, 'A humorous novel.', 'Fiction, Adventure', NULL);
+('Don Quixote', 'Miguel de Cervantes', '1605-01-01', 'Francisco de Robles', 982, '9780060934347', 'A story about a man who becomes a knight.', 0, 0, 0, 8, '2024-10-01', '2024-10-30', 'path/to/image18.jpg', NULL, 1, 'A humorous novel.', 'Fiction, Adventure', NULL),
+('Don Quixote3', 'Miguel de Cervantes', '1605-01-01', 'Francisco de Robles', 982, '9780060934347', 'A story about a man who becomes a knight.', 0, 0, 0, 8, NULL, NULL, 'path/to/image18.jpg', NULL, 1, 'A humorous novel.', 'Fiction, Adventure', NULL),
+('Don Quixote4', 'Miguel de Cervantes', '1605-01-01', 'Francisco de Robles', 982, '9780060934347', 'A story about a man who becomes a knight.', 0, 0, 0, 8, NULL, NULL, 'path/to/image18.jpg', NULL, 1, 'A humorous novel.', 'Fiction, Adventure', NULL),
+('Don Quixote5', 'Miguel de Cervantes', '1605-01-01', 'Francisco de Robles', 982, '9780060934347', 'A story about a man who becomes a knight.', 0, 0, 0, 8, NULL, NULL, 'path/to/image18.jpg', NULL, 1, 'A humorous novel.', 'Fiction, Adventure', NULL),
+('Don Quixote6', 'Miguel de Cervantes', '1605-01-01', 'Francisco de Robles', 982, '9780060934347', 'A story about a man who becomes a knight.', 0, 0, 0, 8, NULL, NULL, 'path/to/image18.jpg', NULL, 1, 'A humorous novel.', 'Fiction, Adventure', NULL);
 
 

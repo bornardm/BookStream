@@ -136,6 +136,32 @@ export function updateBookToExchangeDB({ id, toExchange }) {
   });
 }
 
+export function updateBookStartDateDB({ id, startDate }) {
+  console.log(
+    "DB : start updating book startDate: id = ",
+    id,
+    "startDate = ",
+    startDate
+  );
+  return updateDB({
+    request: "UPDATE BOOKS SET readingStartDate = ? WHERE id = ?",
+    params: [startDate, id],
+  });
+}
+
+export function updateBookEndDateDB({ id, endDate }) {
+  console.log(
+    "DB : start updating book endDate: id = ",
+    id,
+    "endDate = ",
+    endDate
+  );
+  return updateDB({
+    request: "UPDATE BOOKS SET readingEndDate = ? WHERE id = ?",
+    params: [endDate, id],
+  });
+}
+
 export function deleteBookDB({ id }) {
   console.log("DB :start remove book : id = ", id);
   return updateDB({
