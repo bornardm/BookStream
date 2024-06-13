@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     width: 20,
   },
   touchable: {
-    backgroundColor: colors.lightGray,
+    backgroundColor: colors.lightGrey,
     borderColor: colors.middleLightGrey,
     borderWidth: 1,
     borderRadius: 5,

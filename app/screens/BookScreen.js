@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { colors } from "../constants/Colors";
 import { TenStarsTouchable } from "../components/Stars";
@@ -16,6 +17,7 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
 import { BOOK_STATUS } from "../constants/BookStatus";
@@ -80,7 +82,7 @@ export default function BookScreen({ route }) {
         <SimpleLineIcons.Button
           name="arrow-left"
           size={20}
-          color={colors.lightGray}
+          color={colors.lightGrey}
           alignSelf="flex-start"
           underlayColor={"transparent"}
           backgroundColor="transparent"
@@ -99,35 +101,53 @@ export default function BookScreen({ route }) {
       </View>
     );
   }
+  function EditButton() {
+    const navigation = useNavigation();
+    return (
+      <View style={styles.editButton}>
+        <MaterialIcons.Button
+          name="edit"
+          size={25}
+          color={colors.lightGrey}
+          backgroundColor={"transparent"}
+          underlayColor={"transparent"}
+          onPress={() => navigation.navigate("BookEditScreen")}
+        />
+      </View>
+    );
+  }
   function Trash() {
     const navigation = useNavigation();
     return (
-      <View style={styles.trash}>
-        <FontAwesome5.Button
-          name="trash"
-          size={20}
-          color={colors.lightGray}
-          backgroundColor={"transparent"}
-          underlayColor={"transparent"}
-          onPress={() =>
-            Alert.alert(
-              "Delete this book",
-              "Would you like to remove this book from your library?",
-              [
-                { text: "NO" },
-                {
-                  text: "YES",
-                  onPress: () => {
-                    navigation.goBack();
-                    deleteBookDB({ id: bookID });
-                    functions.deleteBookPreviewFunc(bookID);
-                  },
+      <TouchableWithoutFeedback
+        onPress={() =>
+          Alert.alert(
+            "Delete this book",
+            "Would you like to remove this book from your library?",
+            [
+              { text: "NO" },
+              {
+                text: "YES",
+                onPress: () => {
+                  navigation.goBack();
+                  deleteBookDB({ id: bookID });
+                  functions.deleteBookPreviewFunc(bookID);
                 },
-              ]
-            )
-          }
-        />
-      </View>
+              },
+            ]
+          )
+        }
+      >
+        <View style={styles.trash}>
+          <FontAwesome5
+            name="trash"
+            size={20}
+            color={colors.darkGrey}
+            backgroundColor={"transparent"}
+          />
+          <Text style={styles.textTrash}>Remove this book from my library</Text>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
   function modifyStateBook({ rating, status }) {
@@ -232,7 +252,10 @@ export default function BookScreen({ route }) {
             <View style={styles.infosView}>
               <Text>{book.comment}</Text>
             </View>
+            <View style={styles.horizontalLine} />
+
             <Trash />
+            <EditButton />
           </ScrollView>
           <BackArrow />
         </View>
@@ -254,7 +277,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
   },
-  trash: {
+  editButton: {
     position: "absolute",
     top: 0,
     right: 0,
@@ -291,7 +314,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   horizontalLine: {
-    borderBottomColor: colors.lightGray,
+    borderBottomColor: colors.lightGrey,
     borderBottomWidth: 1,
     marginVertical: 15,
   },
@@ -320,5 +343,16 @@ const styles = StyleSheet.create({
   textInfos: {
     marginLeft: 7,
     color: colors.secondary,
+  },
+  trash: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  textTrash: {
+    color: colors.darkGrey,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
 });

@@ -7,6 +7,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import HomeScreen from "./app/screens/HomeScreen";
 import BookScreen from "./app/screens/BookScreen";
+import BookEditScreen from "./app/screens/BookEditScreen";
 import MenuScreen from "./app/screens/MenuScreen";
 import LoadindingView from "./app/components/LoadingView";
 import { colors } from "./app/constants/Colors";
@@ -36,6 +37,11 @@ const HomeStackScreen = () => (
       name="BookScreen"
       component={BookScreen}
       options={{ headerTitle: "Book" }}
+    />
+    <HomeStack.Screen
+      name="BookEditScreen"
+      component={BookEditScreen}
+      options={{ headerTitle: "Edit Book" }}
     />
   </HomeStack.Navigator>
 );
