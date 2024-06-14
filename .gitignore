@@ -36,3 +36,5 @@ yarn-error.*
 
 #database
 *.db
+
+assetForTest/

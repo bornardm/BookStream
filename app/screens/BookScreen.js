@@ -160,6 +160,9 @@ export default function BookScreen({ route }) {
       status: status === undefined ? book.status : status,
     });
   }
+  useEffect(() => {
+    console.log("BOOK :", book);
+  }, [book]);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -176,7 +179,6 @@ export default function BookScreen({ route }) {
   useEffect(() => {
     if (book && book.imageName) {
       Image.getSize(`${coversDir}${book.imageName}`, (width, height) => {
-        console.log("Image size : ", width, height);
         setAspectRatio(width / height); // Update aspect ratio
       });
     }
@@ -214,7 +216,6 @@ export default function BookScreen({ route }) {
                 style={[styles.cover, { aspectRatio: aspectRatio }]}
                 onLayout={(event) => {
                   const { width, height } = event.nativeEvent.layout;
-                  console.log("Image size : ", width, height);
                   setImageSize({ width, height });
                 }}
               />
@@ -257,6 +258,7 @@ export default function BookScreen({ route }) {
                 bookID={bookID}
                 initialStartDate={book.readingStartDate}
                 initialEndDate={book.readingEndDate}
+                updateStateBookFunc={modifyStateBook}
               />
             </View>
             <View style={styles.horizontalLine} />

@@ -61,7 +61,7 @@ export async function fetchBookPreview() {
 function updateDB({ request, params }) {
   const db = SQLite.openDatabaseSync(dbName);
   try {
-    db.withTransactionAsync(async () => {
+    db.withTransactionSync(async () => {
       //console.log("transaction start ");
       //console.log("request:", request, " ; params:", params);
       const res = await db.runAsync(request, ...params);

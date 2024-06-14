@@ -12,12 +12,18 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { colors } from "../constants/Colors";
-import { updateBookStartDateDB, updateBookEndDateDB } from "../requests";
+import {
+  updateBookStartDateDB,
+  updateBookEndDateDB,
+  updateBookStatusDB,
+} from "../requests";
+import { BOOK_STATUS } from "../constants/BookStatus";
 
 export default function DatePicker({
   bookID,
   initialStartDate,
   initialEndDate,
+  updateStateBookFunc,
 }) {
   const [dateStart, setDateStart] = useState(null);
   const [showStart, setShowStart] = useState(false);
@@ -100,6 +106,7 @@ export default function DatePicker({
               minimumDate={dateStart}
               maximumDate={null}
               onChange={(event, selectedDate) => {
+                setShowEnd(false);
                 if (selectedDate && event.type === "set") {
                   console.log(selectedDate);
                   setDateEnd(selectedDate);
@@ -108,8 +115,10 @@ export default function DatePicker({
                     id: bookID,
                     endDate: selectedDate.toISOString().slice(0, 10),
                   });
+                  //Change the status of the book to "read"
+                  updateStateBookFunc({ status: BOOK_STATUS.READ });
+                  updateBookStatusDB({ id: bookID, status: BOOK_STATUS.READ });
                 }
-                setShowEnd(false);
               }}
             />
           )}
