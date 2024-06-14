@@ -11,7 +11,7 @@ import BookEditScreen from "./app/screens/BookEditScreen";
 import MenuScreen from "./app/screens/MenuScreen";
 import LoadindingView from "./app/components/LoadingView";
 import { colors } from "./app/constants/Colors";
-import { loadDatabase } from "./app/setupDatabase";
+import { loadDatabase, updateAllImages } from "./app/setupDatabase";
 import { LogBox } from "react-native";
 
 //ignore some warnigs
@@ -49,6 +49,7 @@ const HomeStackScreen = () => (
 export default function App() {
   const [dbLoaded, setDbLoaded] = useState(false);
   useEffect(() => {
+    updateAllImages().catch((e) => console.error("Failed to load Cover : ", e));
     loadDatabase()
       .then(() => setDbLoaded(true))
       .catch((e) => console.error(e));

@@ -61,7 +61,7 @@ export default function HomeScreen({ navigation }) {
                   author={book.author}
                   rating={book.rating}
                   status={book.status}
-                  imagePath={book.imagePath}
+                  imageName={book.imageName}
                   functions={{
                     updateBookPreviewFunc: updateBookPreview,
                     deleteBookPreviewFunc: deleteBookPreview,

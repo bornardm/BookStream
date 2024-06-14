@@ -39,7 +39,7 @@ export async function fetchBookPreview() {
       //console.log("transaction start ");
 
       result = await db.getAllAsync(
-        "SELECT id, title, author, rating, status, imagePath FROM BOOKS"
+        "SELECT id, title, author, rating, status, imageName FROM BOOKS"
       );
       //console.log("Rows:", result);
       //console.log("transaction end");

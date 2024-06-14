@@ -11,6 +11,7 @@ import { colors } from "../constants/Colors";
 import { FiveStarsDisplay } from "./Stars";
 import { useNavigation } from "@react-navigation/native";
 import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+import { coversDir } from "../setupDatabase";
 
 function BadgeStatus({ status }) {
   const statusProps = BOOK_STATUS_PROPS[status];
@@ -31,10 +32,10 @@ export default function BookPreview({
   author,
   rating,
   status,
-  imagePath,
+  imageName,
   functions, // receive the function as a prop
 }) {
-  //console.log("BookPreview", bookID, title, author, rating, status, imagePath);
+  // console.log("BookPreview", bookID, title, author, rating, status, imageName);
   const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback
@@ -47,7 +48,11 @@ export default function BookPreview({
     >
       <View style={styles.container}>
         <Image
-          source={require("../../assets/poter_cover-M.jpg")}
+          source={
+            imageName
+              ? { uri: `${coversDir}${imageName}` }
+              : require("../../assets/no_image.jpg")
+          }
           style={styles.image}
         />
         <View style={styles.info}>

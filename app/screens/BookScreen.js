@@ -25,6 +25,7 @@ import { fetchBookInfos, deleteBookDB } from "../requests";
 import { SQLiteProvider } from "expo-sqlite/next";
 import LoadingView from "../components/LoadingView";
 import { dbName } from "../setupDatabase";
+import { coversDir } from "../setupDatabase";
 
 function InfoList(book) {
   const infoProps = [
@@ -73,6 +74,8 @@ export default function BookScreen({ route }) {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 }); // to set the size of the imageView
   const [book, setBook] = useState(null);
   const [bookLoaded, setBookLoaded] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
+
   //console.log("BookScreen", bookID);
 
   function BackArrow() {
@@ -94,7 +97,7 @@ export default function BookScreen({ route }) {
               author: book.author,
               rating: book.rating,
               status: book.status,
-              imagePath: book.imagePath,
+              imageName: book.imageName,
             });
           }}
         />
@@ -170,6 +173,15 @@ export default function BookScreen({ route }) {
 
     fetchBook();
   }, []);
+  useEffect(() => {
+    if (book && book.imageName) {
+      Image.getSize(`${coversDir}${book.imageName}`, (width, height) => {
+        console.log("Image size : ", width, height);
+        setAspectRatio(width / height); // Update aspect ratio
+      });
+    }
+  }, [book]); // Run effect when imageName changes
+
   if (!bookLoaded) {
     return <LoadingView />;
   }
@@ -185,15 +197,24 @@ export default function BookScreen({ route }) {
               ]}
             >
               <Image
-                source={require("../../assets/poter_cover-M.jpg")}
+                source={
+                  book.imageName
+                    ? { uri: `${coversDir}${book.imageName}` }
+                    : require("../../assets/no_image.jpg")
+                }
                 blurRadius={3}
                 style={styles.headerImage}
               />
               <Image
-                source={require("../../assets/poter_cover-M.jpg")}
-                style={styles.cover}
+                source={
+                  book.imageName
+                    ? { uri: `${coversDir}${book.imageName}` }
+                    : require("../../assets/no_image.jpg")
+                }
+                style={[styles.cover, { aspectRatio: aspectRatio }]}
                 onLayout={(event) => {
                   const { width, height } = event.nativeEvent.layout;
+                  console.log("Image size : ", width, height);
                   setImageSize({ width, height });
                 }}
               />
