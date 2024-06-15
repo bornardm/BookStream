@@ -159,8 +159,11 @@ export default function BookEditScreen({ route }) {
                       size={40}
                       color={colors.black}
                       backgroundColor={"transparent"}
+                      underlayColor="rgba(0,0,0,0.1)"
                       onPress={() => {
                         console.log("Take a picture");
+                        takePicture();
+                        setModalVisible(false);
                       }}
                     />
                     <Text
@@ -177,6 +180,7 @@ export default function BookEditScreen({ route }) {
                       size={40}
                       color={colors.black}
                       backgroundColor={"transparent"}
+                      underlayColor="rgba(0,0,0,0.1)"
                       onPress={() => {
                         console.log("Choose a picture");
                         pickImage();
@@ -204,8 +208,21 @@ export default function BookEditScreen({ route }) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      quality: 1,
+      quality: 0.6,
     });
+
+    console.log(result);
+    if (!result.canceled) {
+      setTempoImageURI(result.assets[0].uri);
+    }
+  };
+
+  const takePicture = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.6,
+    });
+
     console.log(result);
     if (!result.canceled) {
       setTempoImageURI(result.assets[0].uri);
