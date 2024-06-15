@@ -13,6 +13,7 @@ export const BOOK_STATUS = {
   TO_EXCHANGE: 5,
 };
 
+defaultStatus = BOOK_STATUS.TO_READ;
 //props of the status
 export const BOOK_STATUS_PROPS = [
   {

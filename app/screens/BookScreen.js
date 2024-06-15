@@ -114,7 +114,7 @@ export default function BookScreen({ route }) {
           color={colors.lightGrey}
           backgroundColor={"transparent"}
           underlayColor={"transparent"}
-          onPress={() => navigation.navigate("BookEditScreen")}
+          onPress={() => navigation.navigate("BookEditScreen", { book: book })}
         />
       </View>
     );

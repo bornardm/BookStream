@@ -15,25 +15,62 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Octicons from "react-native-vector-icons/Octicons";
 
 import { useNavigation } from "@react-navigation/native";
+import { defaultStatus } from "../constants/BookStatus";
+
+const defaultBook = {
+  title: null,
+  author: null,
+  publicationDate: null,
+  publisher: null,
+  pageNumber: null,
+  isbn: null,
+  summary: null,
+  status: defaultStatus,
+  borrowed: false,
+  toExchange: false,
+  rating: null,
+  readingStartDate: null,
+  readingEndDate: null,
+  imageName: null,
+  series: null,
+  volume: null,
+  comment: null,
+  categories: null,
+  language: null,
+};
 
 export default function BookEditScreen({ route }) {
-  function DatePicker() {
+  const [book, setBook] = useState(route.params?.book || defaultBook);
+  function DatePicker({ defaultDate }) {
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [date, setDate] = useState(new Date(defaultDate) || new Date());
+    const [dateUpdated, setDateUpdated] = useState(false);
     return (
       <TouchableWithoutFeedback onPress={() => setShowDatePicker(true)}>
         <View style={[styles.textInput, { flexDirection: "row" }]}>
-          <Text style={{ color: placeholderTextColor }}>
-            {" Publication date"}
+          <Text
+            style={{
+              color:
+                dateUpdated || defaultDate
+                  ? colors.black
+                  : placeholderTextColor,
+            }}
+          >
+            {!dateUpdated && !defaultDate
+              ? "Publication date"
+              : date.toLocaleDateString("en-GB")}
           </Text>
           {showDatePicker && (
             <DateTimePicker
               mode="date"
-              value={new Date()}
+              value={date}
               display="default"
               onChange={(event, selectedDate) => {
                 setShowDatePicker(false);
                 if (selectedDate && event.type === "set") {
                   console.log(selectedDate);
+                  setDate(selectedDate);
+                  setDateUpdated(true);
                 }
               }}
             />
@@ -62,6 +99,7 @@ export default function BookEditScreen({ route }) {
       </View>
     );
   }
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -71,6 +109,7 @@ export default function BookEditScreen({ route }) {
           <Text>Title :</Text>
           <TextInput
             placeholder="Title"
+            defaultValue={book.title}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={200}
@@ -80,6 +119,7 @@ export default function BookEditScreen({ route }) {
           <Text>Author :</Text>
           <TextInput
             placeholder="Firstname"
+            //TODO add default value
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
@@ -87,6 +127,7 @@ export default function BookEditScreen({ route }) {
           <TextInput
             placeholder="Lastname"
             style={styles.textInput}
+            defaultValue={book.author} //TODO change this
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
           />
@@ -95,6 +136,7 @@ export default function BookEditScreen({ route }) {
           <Text>Summary :</Text>
           <TextInput
             placeholder="Summary"
+            defaultValue={book.summary}
             multiline={true}
             style={[styles.textInput, styles.textInputMultiline]}
             placeholderTextColor={placeholderTextColor}
@@ -104,6 +146,7 @@ export default function BookEditScreen({ route }) {
           <Text>Number of pages :</Text>
           <TextInput
             placeholder="Number of pages"
+            defaultValue={book.pageNumber?.toString()}
             keyboardType="number-pad"
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
@@ -114,12 +157,14 @@ export default function BookEditScreen({ route }) {
           <Text>Series :</Text>
           <TextInput
             placeholder="Series name "
+            defaultValue={book.series}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
           />
           <TextInput
             placeholder="Volume"
+            defaultValue={book.volume?.toString()}
             keyboardType="number-pad"
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
@@ -130,6 +175,7 @@ export default function BookEditScreen({ route }) {
           <Text>Publisher :</Text>
           <TextInput
             placeholder="Publisher"
+            defaultValue={book.publisher}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
@@ -137,12 +183,13 @@ export default function BookEditScreen({ route }) {
         </View>
         <View style={styles.row}>
           <Text>Publication date :</Text>
-          <DatePicker />
+          <DatePicker defaultDate={book.publicationDate} />
         </View>
         <View style={styles.row}>
           <Text>ISBN :</Text>
           <TextInput
             placeholder="ISBN"
+            defaultValue={book.isbn?.toString()}
             keyboardType="number-pad"
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
@@ -153,6 +200,7 @@ export default function BookEditScreen({ route }) {
           <Text>Language :</Text>
           <TextInput
             placeholder="Language"
+            defaultValue={book.language}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
@@ -162,6 +210,7 @@ export default function BookEditScreen({ route }) {
           <Text>Categories :</Text>
           <TextInput
             placeholder="Category"
+            defaultValue={book.categories} //TODO change this
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
