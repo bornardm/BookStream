@@ -22,6 +22,7 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { useNavigation } from "@react-navigation/native";
 import { defaultStatus } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
+import * as ImagePicker from "expo-image-picker";
 
 const defaultBook = {
   title: null,
@@ -49,6 +50,9 @@ export default function BookEditScreen({ route }) {
   const [book, setBook] = useState(route.params?.book || defaultBook);
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [modalVisible, setModalVisible] = useState(false);
+  const [tempoImageURI, setTempoImageURI] = useState(
+    route.params?.book?.imageName ? `${coversDir}${book.imageName}` : null
+  );
 
   function BackArrow() {
     const navigation = useNavigation();
@@ -175,6 +179,8 @@ export default function BookEditScreen({ route }) {
                       backgroundColor={"transparent"}
                       onPress={() => {
                         console.log("Choose a picture");
+                        pickImage();
+                        setModalVisible(false);
                       }}
                     />
                     <Text
@@ -193,14 +199,26 @@ export default function BookEditScreen({ route }) {
       </Modal>
     );
   }
+  const pickImage = async () => {
+    console.log("Pick image");
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+    console.log(result);
+    if (!result.canceled) {
+      setTempoImageURI(result.assets[0].uri);
+    }
+  };
 
   useEffect(() => {
-    if (book && book.imageName) {
-      Image.getSize(`${coversDir}${book.imageName}`, (width, height) => {
+    if (tempoImageURI) {
+      Image.getSize(tempoImageURI, (width, height) => {
         setAspectRatio(width / height); // Update aspect ratio
       });
     }
-  }, [book]); // Run effect when imageName changes
+  }, [tempoImageURI]); // Run effect when tempoImageURI changes
 
   return (
     <ScrollView>
@@ -214,8 +232,8 @@ export default function BookEditScreen({ route }) {
         >
           <Image
             source={
-              book.imageName
-                ? { uri: `${coversDir}${book.imageName}` }
+              tempoImageURI
+                ? { uri: tempoImageURI }
                 : require("../../assets/no_image.jpg")
             }
             style={[styles.cover, { aspectRatio: aspectRatio }]}
