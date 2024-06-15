@@ -17,6 +17,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Octicons from "react-native-vector-icons/Octicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 import { useNavigation } from "@react-navigation/native";
 import { defaultStatus } from "../constants/BookStatus";
@@ -47,7 +48,27 @@ const defaultBook = {
 export default function BookEditScreen({ route }) {
   const [book, setBook] = useState(route.params?.book || defaultBook);
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function BackArrow() {
+    const navigation = useNavigation();
+    return (
+      <View style={styles.backArrow}>
+        <SimpleLineIcons.Button
+          name="arrow-left"
+          size={20}
+          color={colors.lightGrey}
+          alignSelf="flex-start"
+          underlayColor={"transparent"}
+          backgroundColor="transparent"
+          onPress={() => {
+            navigation.goBack();
+            //TODO update book Scrren
+          }}
+        />
+      </View>
+    );
+  }
 
   function DatePicker({ defaultDate }) {
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -91,7 +112,7 @@ export default function BookEditScreen({ route }) {
     const navigation = useNavigation();
     return (
       <View style={styles.headerBand}>
-        <Text>Here back arrow</Text>
+        <BackArrow />
         <Text>Edit Book</Text>
         <Octicons.Button
           name="check-circle-fill"
@@ -126,7 +147,7 @@ export default function BookEditScreen({ route }) {
           <View style={styles.overlay}>
             <TouchableWithoutFeedback>
               <View style={styles.popup}>
-                <Text style={styles.title}>New picture</Text>
+                <Text style={styles.title}>Change picture</Text>
                 <View style={styles.centredViewPopup}>
                   <View style={styles.iconAndText}>
                     <MaterialCommunityIcons.Button
@@ -261,7 +282,7 @@ export default function BookEditScreen({ route }) {
             placeholder="Volume"
             defaultValue={book.volume?.toString()}
             keyboardType="number-pad"
-            style={styles.textInput}
+            style={[styles.textInput, { flex: 0.3 }]}
             placeholderTextColor={placeholderTextColor}
             maxLength={20}
           />
