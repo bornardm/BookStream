@@ -9,13 +9,18 @@ import {
   Image,
   Alert,
   TouchableWithoutFeedback,
+  Touchable,
+  Modal,
 } from "react-native";
 import { colors } from "../constants/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Octicons from "react-native-vector-icons/Octicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { useNavigation } from "@react-navigation/native";
 import { defaultStatus } from "../constants/BookStatus";
+import { coversDir } from "../setupDatabase";
 
 const defaultBook = {
   title: null,
@@ -41,6 +46,9 @@ const defaultBook = {
 
 export default function BookEditScreen({ route }) {
   const [book, setBook] = useState(route.params?.book || defaultBook);
+  const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
+  const [modalVisible, setModalVisible] = useState(true);
+
   function DatePicker({ defaultDate }) {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [date, setDate] = useState(new Date(defaultDate) || new Date());
@@ -100,11 +108,98 @@ export default function BookEditScreen({ route }) {
     );
   }
 
+  function ModalPicker() {
+    return (
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="fade"
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.popup}>
+                <Text style={styles.title}>New picture</Text>
+                <View style={styles.centredViewPopup}>
+                  <View style={styles.iconAndText}>
+                    <MaterialCommunityIcons.Button
+                      name="camera"
+                      size={40}
+                      color={colors.black}
+                      backgroundColor={"transparent"}
+                      onPress={() => {
+                        console.log("Take a picture");
+                      }}
+                    />
+                    <Text
+                      style={{
+                        textAlign: "center",
+                      }}
+                    >
+                      {"Take a\npicture"}
+                    </Text>
+                  </View>
+                  <View style={styles.iconAndText}>
+                    <MaterialIcons.Button
+                      name="photo-library"
+                      size={40}
+                      color={colors.black}
+                      backgroundColor={"transparent"}
+                      onPress={() => {
+                        console.log("Choose a picture");
+                      }}
+                    />
+                    <Text
+                      style={{
+                        textAlign: "center",
+                      }}
+                    >
+                      {"Choose a\npicture"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    );
+  }
+
+  useEffect(() => {
+    if (book && book.imageName) {
+      Image.getSize(`${coversDir}${book.imageName}`, (width, height) => {
+        setAspectRatio(width / height); // Update aspect ratio
+      });
+    }
+  }, [book]); // Run effect when imageName changes
+
   return (
     <ScrollView>
       <View style={styles.container}>
         <HeaderBand />
-        <Text>Image here ...</Text>
+        <ModalPicker />
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setModalVisible(true);
+          }}
+        >
+          <Image
+            source={
+              book.imageName
+                ? { uri: `${coversDir}${book.imageName}` }
+                : require("../../assets/no_image.jpg")
+            }
+            style={[styles.cover, { aspectRatio: aspectRatio }]}
+          />
+        </TouchableWithoutFeedback>
         <View style={styles.row}>
           <Text>Title :</Text>
           <TextInput
@@ -231,6 +326,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  cover: {
+    width: "45%",
+    borderRadius: 5,
+    alignSelf: "center",
+    marginVertical: 10,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -249,5 +350,31 @@ const styles = StyleSheet.create({
   textInputMultiline: {
     height: 200,
     textAlignVertical: "top",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  popup: {
+    width: "80%",
+    padding: 10,
+    paddingVertical: 30,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  centredViewPopup: {
+    flexDirection: "row",
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 20,
+  },
+  iconAndText: {
+    alignItems: "center",
+    flex: 1,
   },
 });
