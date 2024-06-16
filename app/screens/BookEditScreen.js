@@ -24,34 +24,47 @@ import { defaultStatus } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
 import * as ImagePicker from "expo-image-picker";
 
-const defaultBook = {
-  title: null,
-  author: null,
-  publicationDate: null,
-  publisher: null,
-  pageNumber: null,
-  isbn: null,
-  summary: null,
-  status: defaultStatus,
-  borrowed: false,
-  toExchange: false,
-  rating: null,
-  readingStartDate: null,
-  readingEndDate: null,
-  imageName: null,
-  series: null,
-  volume: null,
-  comment: null,
-  categories: null,
-  language: null,
+const initBook = (initialBook) => {
+  const defaultBook = {
+    id: { value: null, isValid: true },
+    title: { value: null, isValid: true },
+    author: { value: null, isValid: true },
+    publicationDate: { value: null, isValid: true },
+    publisher: { value: null, isValid: true },
+    pageNumber: { value: null, isValid: true },
+    isbn: { value: null, isValid: true },
+    summary: { value: null, isValid: true },
+    status: { value: defaultStatus, isValid: true },
+    borrowed: { value: false, isValid: true },
+    toExchange: { value: false, isValid: true },
+    rating: { value: null, isValid: true },
+    readingStartDate: { value: null, isValid: true },
+    readingEndDate: { value: null, isValid: true },
+    imageName: { value: null, isValid: true },
+    series: { value: null, isValid: true },
+    volume: { value: null, isValid: true },
+    comment: { value: null, isValid: true },
+    categories: { value: null, isValid: true },
+    language: { value: null, isValid: true },
+  };
+
+  if (initialBook) {
+    for (const field in defaultBook) {
+      if (initialBook.hasOwnProperty(field)) {
+        defaultBook[field].value = initialBook[field];
+      }
+    }
+  }
+
+  return defaultBook;
 };
 
 export default function BookEditScreen({ route }) {
-  const [book, setBook] = useState(route.params?.book || defaultBook);
+  const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [modalVisible, setModalVisible] = useState(false);
   const [tempoImageURI, setTempoImageURI] = useState(
-    route.params?.book?.imageName ? `${coversDir}${book.imageName}` : null
+    book.imageName.value ? `${coversDir}${book.imageName.value}` : null
   );
 
   function BackArrow() {
@@ -101,9 +114,12 @@ export default function BookEditScreen({ route }) {
               onChange={(event, selectedDate) => {
                 setShowDatePicker(false);
                 if (selectedDate && event.type === "set") {
-                  console.log(selectedDate);
                   setDate(selectedDate);
                   setDateUpdated(true);
+                  updateBookField(
+                    "publicationDate",
+                    selectedDate.toISOString().split("T")[0]
+                  );
                 }
               }}
             />
@@ -228,6 +244,33 @@ export default function BookEditScreen({ route }) {
       setTempoImageURI(result.assets[0].uri);
     }
   };
+  const updateBookField = (field, value) => {
+    if (value != book[field].value) {
+      if (value === "") {
+        value = null;
+      }
+      setBook((prevState) => ({
+        ...prevState,
+        [field]: { value: value, isValid: prevState[field].isValid },
+      }));
+    }
+  };
+  const updateBookFieldValidity = (field, isValid) => {
+    setBook((prevState) => ({
+      ...prevState,
+      [field]: { value: prevState[field].value, isValid: isValid },
+    }));
+  };
+  const checkInputValidity = (field, acceptanceCondition) => {
+    if (!acceptanceCondition && book[field].isValid) {
+      updateBookFieldValidity(field, false);
+      console.log("Title is empty");
+    } else if (acceptanceCondition && !book[field].isValid) {
+      updateBookFieldValidity(field, true);
+    }
+  };
+
+  const isDigitsOnly = (str) => /^\d*$/.test(str);
 
   useEffect(() => {
     if (tempoImageURI) {
@@ -236,6 +279,10 @@ export default function BookEditScreen({ route }) {
       });
     }
   }, [tempoImageURI]); // Run effect when tempoImageURI changes
+
+  useEffect(() => {
+    console.log("Book updated", book);
+  }, [book]);
 
   return (
     <ScrollView>
@@ -260,10 +307,19 @@ export default function BookEditScreen({ route }) {
           <Text>Title :</Text>
           <TextInput
             placeholder="Title"
-            defaultValue={book.title}
-            style={styles.textInput}
+            defaultValue={book.title.value}
+            style={[
+              styles.textInput,
+              !book.title.isValid && styles.textInputNotValid,
+            ]}
             placeholderTextColor={placeholderTextColor}
             maxLength={200}
+            onChangeText={(text) => {
+              checkInputValidity("title", text.trim() !== "");
+            }}
+            onEndEditing={(event) => {
+              updateBookField("title", event.nativeEvent.text.trim());
+            }}
           />
         </View>
         <View style={styles.row}>
@@ -277,94 +333,165 @@ export default function BookEditScreen({ route }) {
           />
           <TextInput
             placeholder="Lastname"
-            style={styles.textInput}
-            defaultValue={book.author} //TODO change this
+            style={[
+              styles.textInput,
+              !book.author.isValid && styles.textInputNotValid,
+            ]}
+            defaultValue={book.author.value} //TODO change this
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
+            onChangeText={(text) => {
+              checkInputValidity("author", text.trim() !== "");
+            }}
+            onEndEditing={(event) => {
+              updateBookField("author", event.nativeEvent.text.trim());
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Summary :</Text>
           <TextInput
             placeholder="Summary"
-            defaultValue={book.summary}
+            defaultValue={book.summary.value}
             multiline={true}
             style={[styles.textInput, styles.textInputMultiline]}
             placeholderTextColor={placeholderTextColor}
+            onEndEditing={(event) => {
+              updateBookField("summary", event.nativeEvent.text);
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Number of pages :</Text>
           <TextInput
             placeholder="Number of pages"
-            defaultValue={book.pageNumber?.toString()}
+            defaultValue={book.pageNumber.value?.toString()}
             keyboardType="number-pad"
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              !book.pageNumber.isValid && styles.textInputNotValid,
+            ]}
             placeholderTextColor={placeholderTextColor}
             maxLength={20}
+            onChangeText={(text) => {
+              checkInputValidity("pageNumber", isDigitsOnly(text.trim()));
+            }}
+            onEndEditing={(event) => {
+              if (book.pageNumber.isValid) {
+                const pageNumber = parseInt(event.nativeEvent.text.trim());
+                updateBookField(
+                  "pageNumber",
+                  isNaN(pageNumber) ? null : pageNumber
+                );
+              }
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Series :</Text>
           <TextInput
             placeholder="Series name "
-            defaultValue={book.series}
+            defaultValue={book.series.value}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
+            onEndEditing={(event) => {
+              updateBookField("series", event.nativeEvent.text.trim());
+            }}
           />
           <TextInput
             placeholder="Volume"
-            defaultValue={book.volume?.toString()}
+            defaultValue={book.volume.value?.toString()}
             keyboardType="number-pad"
-            style={[styles.textInput, { flex: 0.3 }]}
+            style={[
+              styles.textInput,
+              { flex: 0.3 },
+              !book.volume.isValid && styles.textInputNotValid,
+            ]}
             placeholderTextColor={placeholderTextColor}
             maxLength={20}
+            onChangeText={(text) => {
+              checkInputValidity("volume", isDigitsOnly(text.trim()));
+            }}
+            onEndEditing={(event) => {
+              if (book.volume.isValid) {
+                const volume = parseInt(event.nativeEvent.text.trim());
+                updateBookField("volume", isNaN(volume) ? null : volume);
+              }
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Publisher :</Text>
           <TextInput
             placeholder="Publisher"
-            defaultValue={book.publisher}
+            defaultValue={book.publisher.value}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
+            onEndEditing={(event) => {
+              updateBookField("publisher", event.nativeEvent.text.trim());
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Publication date :</Text>
-          <DatePicker defaultDate={book.publicationDate} />
+          <DatePicker defaultDate={book.publicationDate.value} />
         </View>
         <View style={styles.row}>
           <Text>ISBN :</Text>
           <TextInput
             placeholder="ISBN"
-            defaultValue={book.isbn?.toString()}
+            defaultValue={book.isbn.value?.toString()}
             keyboardType="number-pad"
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              !book.isbn.isValid && styles.textInputNotValid,
+            ]}
             placeholderTextColor={placeholderTextColor}
             maxLength={13}
+            onChangeText={(text) => {
+              text = text.trim();
+              checkInputValidity(
+                "isbn",
+                isDigitsOnly(text) &&
+                  (text.length === 13 ||
+                    text.length === 0 ||
+                    text.length === 10)
+              );
+            }}
+            onEndEditing={(event) => {
+              if (book.isbn.isValid) {
+                const isbn = parseInt(event.nativeEvent.text.trim());
+                updateBookField("isbn", isNaN(isbn) ? null : isbn);
+              }
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Language :</Text>
           <TextInput
             placeholder="Language"
-            defaultValue={book.language}
+            defaultValue={book.language.value}
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
+            onEndEditing={(event) => {
+              updateBookField("publisher", event.nativeEvent.text.trim());
+            }}
           />
         </View>
         <View style={styles.row}>
           <Text>Categories :</Text>
           <TextInput
             placeholder="Category"
-            defaultValue={book.categories} //TODO change this
+            defaultValue={book.categories.value} //TODO change this
             style={styles.textInput}
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
+            onEndEditing={(event) => {
+              updateBookField("publisher", event.nativeEvent.text.trim());
+            }}
           />
         </View>
       </View>
@@ -406,6 +533,11 @@ const styles = StyleSheet.create({
   textInputMultiline: {
     height: 200,
     textAlignVertical: "top",
+  },
+  textInputNotValid: {
+    borderColor: "red",
+    borderWidth: 2,
+    backgroundColor: "rgba(255,0,0,0.1)",
   },
   overlay: {
     flex: 1,
