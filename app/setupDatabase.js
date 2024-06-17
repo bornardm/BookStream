@@ -36,14 +36,6 @@ export const replaceImage = async (
 ) => {
   console.log("Image replacement", oldImageName, newImageUri, newImageFormat);
   if (newImageUri) {
-    //delete old image
-    if (oldImageName) {
-      const oldImageFilePath = `${coversDir}${oldImageName}`;
-      const oldImageInfo = await FileSystem.getInfoAsync(oldImageFilePath);
-      if (oldImageInfo.exists) {
-        await FileSystem.deleteAsync(oldImageFilePath);
-      }
-    }
     //download new image
     if (
       !newImageFormat ||
@@ -61,11 +53,25 @@ export const replaceImage = async (
     await FileSystem.makeDirectoryAsync(coversDir.slice(0, -1), {
       intermediates: true,
     });
-    await FileSystem.downloadAsync(newImageUri, newImageFilePath);
+    await FileSystem.copyAsync({ from: newImageUri, to: newImageFilePath });
+
+    //delete old image
+    await deleteImageFromCovers(oldImageName);
     return newImageName;
   }
+
   console.log("No new image to replace");
   return null;
+};
+
+export const deleteImageFromCovers = async (imageName) => {
+  if (imageName) {
+    const imageFilePath = `${coversDir}${imageName}`;
+    const imageInfo = await FileSystem.getInfoAsync(imageFilePath);
+    if (imageInfo.exists) {
+      await FileSystem.deleteAsync(imageFilePath);
+    }
+  }
 };
 
 //For tests

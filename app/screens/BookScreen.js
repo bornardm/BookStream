@@ -138,7 +138,7 @@ export default function BookScreen({ route }) {
                 text: "YES",
                 onPress: () => {
                   navigation.goBack();
-                  deleteBookDB({ id: bookID });
+                  deleteBookDB({ id: bookID, imageName: book.imageName });
                   functions.deleteBookPreviewFunc(bookID);
                 },
               },

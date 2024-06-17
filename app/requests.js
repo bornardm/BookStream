@@ -1,4 +1,9 @@
-import { dbName, dbConnexion, replaceImage } from "./setupDatabase";
+import {
+  dbName,
+  dbConnexion,
+  replaceImage,
+  deleteImageFromCovers,
+} from "./setupDatabase";
 import * as SQLite from "expo-sqlite";
 
 export function fetchBookInfos({ id }) {
@@ -163,7 +168,10 @@ export function updateBookEndDateDB({ id, endDate }) {
   });
 }
 
-export function deleteBookDB({ id }) {
+export function deleteBookDB({ id, imageName }) {
+  //Remove the image
+  deleteImageFromCovers(imageName);
+
   console.log("DB :start remove book : id = ", id);
   return updateDB({
     request: "DELETE FROM BOOKS WHERE id = ?",
