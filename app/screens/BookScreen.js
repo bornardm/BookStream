@@ -26,6 +26,7 @@ import { SQLiteProvider } from "expo-sqlite/next";
 import LoadingView from "../components/LoadingView";
 import { dbName } from "../setupDatabase";
 import { coversDir } from "../setupDatabase";
+import * as FileSystem from "expo-file-system";
 
 function InfoList(book) {
   const infoProps = [
@@ -72,6 +73,7 @@ const imageMargin = 20;
 export default function BookScreen({ route }) {
   const { bookID, functions } = route.params;
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 }); // to set the size of the imageView
+  const [imageNameState, setImageNameState] = useState(null);
   const [book, setBook] = useState(null);
   const [bookLoaded, setBookLoaded] = useState(false);
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
@@ -188,12 +190,35 @@ export default function BookScreen({ route }) {
   }, [bookLoaded]);
 
   useEffect(() => {
-    if (book && book.imageName) {
-      Image.getSize(`${coversDir}${book.imageName}`, (width, height) => {
-        setAspectRatio(width / height); // Update aspect ratio
-      });
-    }
+    const fetchImageSize = async () => {
+      try {
+        if (book && book.imageName) {
+          const fileInfo = await FileSystem.getInfoAsync(
+            `${coversDir}${book.imageName}`
+          );
+          if (fileInfo.exists) {
+            Image.getSize(
+              `${coversDir}${book.imageName}`,
+              (width, height) => {
+                setAspectRatio(width / height); // Update aspect ratio
+              },
+              (error) => {
+                console.error(`Couldn't get the image size: ${error}`);
+              }
+            );
+          }
+        }
+      } catch (error) {
+        console.error(`An error occurred: ${error}`);
+      }
+    };
+
+    fetchImageSize();
   }, [book]); // Run effect when imageName changes
+
+  useEffect(() => {
+    setImageNameState(book?.imageName);
+  }, [book?.imageName]);
 
   if (!bookLoaded) {
     return <LoadingView />;
@@ -211,20 +236,22 @@ export default function BookScreen({ route }) {
             >
               <Image
                 source={
-                  book.imageName
-                    ? { uri: `${coversDir}${book.imageName}` }
+                  imageNameState
+                    ? { uri: `${coversDir}${imageNameState}` }
                     : require("../../assets/no_image.jpg")
                 }
                 blurRadius={3}
                 style={styles.headerImage}
+                onError={() => setImageNameState(null)}
               />
               <Image
                 source={
-                  book.imageName
-                    ? { uri: `${coversDir}${book.imageName}` }
+                  imageNameState
+                    ? { uri: `${coversDir}${imageNameState}` }
                     : require("../../assets/no_image.jpg")
                 }
                 style={[styles.cover, { aspectRatio: aspectRatio }]}
+                onError={() => setImageNameState(null)}
                 onLayout={(event) => {
                   const { width, height } = event.nativeEvent.layout;
                   setImageSize({ width, height });

@@ -24,6 +24,7 @@ import { defaultStatus } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
 import { addOrModifyBookDB } from "../requests";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 const initBook = (initialBook) => {
   const defaultBook = {
@@ -57,6 +58,7 @@ const initBook = (initialBook) => {
 export default function BookEditScreen({ route }) {
   const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
+  const [imageUriState, setImageUriState] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [tempoImageURI, setTempoImageURI] = useState(
     book.imageName.value ? `${coversDir}${book.imageName.value}` : null
@@ -298,16 +300,37 @@ export default function BookEditScreen({ route }) {
   const isDigitsOnly = (str) => /^\d*$/.test(str);
 
   useEffect(() => {
-    if (tempoImageURI) {
-      Image.getSize(tempoImageURI, (width, height) => {
-        setAspectRatio(width / height); // Update aspect ratio
-      });
-    }
-  }, [tempoImageURI]); // Run effect when tempoImageURI changes
-
-  useEffect(() => {
     console.log("Book updated", book);
   }, [book]);
+
+  useEffect(() => {
+    const fetchImageSize = async () => {
+      try {
+        if (tempoImageURI) {
+          const fileInfo = await FileSystem.getInfoAsync(tempoImageURI);
+          if (fileInfo.exists) {
+            Image.getSize(
+              tempoImageURI,
+              (width, height) => {
+                setAspectRatio(width / height); // Update aspect ratio
+              },
+              (error) => {
+                console.error(`Couldn't get the image size: ${error}`);
+              }
+            );
+          }
+        }
+      } catch (error) {
+        console.error(`An error occurred: ${error}`);
+      }
+    };
+
+    fetchImageSize();
+  }, [tempoImageURI]); // Run effect when imageName changes
+
+  useEffect(() => {
+    setImageUriState(tempoImageURI);
+  }, [tempoImageURI]);
 
   return (
     <ScrollView>
@@ -321,11 +344,12 @@ export default function BookEditScreen({ route }) {
         >
           <Image
             source={
-              tempoImageURI
-                ? { uri: tempoImageURI }
+              imageUriState
+                ? { uri: imageUriState }
                 : require("../../assets/no_image.jpg")
             }
             style={[styles.cover, { aspectRatio: aspectRatio }]}
+            onError={() => setImageUriState(null)}
           />
         </TouchableWithoutFeedback>
         <View style={styles.row}>

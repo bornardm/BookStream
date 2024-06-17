@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -37,6 +37,12 @@ export default function BookPreview({
 }) {
   // console.log("BookPreview", bookID, title, author, rating, status, imageName);
   const navigation = useNavigation();
+  const [imageNameState, setImageNameState] = useState(imageName);
+
+  useEffect(() => {
+    setImageNameState(imageName);
+  }, [imageName]);
+
   return (
     <TouchableWithoutFeedback
       onPress={() =>
@@ -49,10 +55,11 @@ export default function BookPreview({
       <View style={styles.container}>
         <Image
           source={
-            imageName
-              ? { uri: `${coversDir}${imageName}` }
+            imageNameState
+              ? { uri: `${coversDir}${imageNameState}` }
               : require("../../assets/no_image.jpg")
           }
+          onError={() => setImageNameState(null)}
           style={styles.image}
         />
         <View style={styles.info}>
