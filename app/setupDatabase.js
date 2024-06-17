@@ -3,6 +3,7 @@ import { Asset } from "expo-asset";
 import * as SQLite from "expo-sqlite";
 
 export const dbName = "myBooksDB.db";
+export let dbConnexion = null;
 export const coversDir = `${FileSystem.documentDirectory}Covers/`;
 const updateDB = false;
 
@@ -24,6 +25,47 @@ export const loadDatabase = async () => {
     console.log("DB Updating...");
     await FileSystem.downloadAsync(dbUri, dbFilePath);
   }
+  //open the connexio to db
+  dbConnexion = await SQLite.openDatabaseAsync(dbName);
+};
+
+export const replaceImage = async (
+  oldImageName,
+  newImageUri,
+  newImageFormat
+) => {
+  console.log("Image replacement", oldImageName, newImageUri, newImageFormat);
+  if (newImageUri) {
+    //delete old image
+    if (oldImageName) {
+      const oldImageFilePath = `${coversDir}${oldImageName}`;
+      const oldImageInfo = await FileSystem.getInfoAsync(oldImageFilePath);
+      if (oldImageInfo.exists) {
+        await FileSystem.deleteAsync(oldImageFilePath);
+      }
+    }
+    //download new image
+    if (
+      !newImageFormat ||
+      (newImageFormat !== "jpg" &&
+        newImageFormat !== "png" &&
+        newImageFormat !== "jpeg")
+    ) {
+      newImageFormat = "jpeg";
+    }
+    const newImageName =
+      "cover_" + new Date().getTime().toString() + "." + newImageFormat;
+    const newImageFilePath = `${coversDir}${newImageName}`;
+
+    //create the directory if it doesn't exist
+    await FileSystem.makeDirectoryAsync(coversDir.slice(0, -1), {
+      intermediates: true,
+    });
+    await FileSystem.downloadAsync(newImageUri, newImageFilePath);
+    return newImageName;
+  }
+  console.log("No new image to replace");
+  return null;
 };
 
 //For tests
@@ -57,15 +99,15 @@ export const updateImage = async (imageAsset, imageName) => {
   const imageInfo = await FileSystem.getInfoAsync(imageFilePath);
   if (!imageInfo.exists) {
     console.log("Downloading image to cache");
-    await FileSystem.makeDirectoryAsync(
-      `${FileSystem.documentDirectory}Covers`,
-      { intermediates: true }
-    );
+    await FileSystem.makeDirectoryAsync(coversDir.slice(0, -1), {
+      intermediates: true,
+    });
     await FileSystem.downloadAsync(imageUri, imageFilePath);
   }
 };
 
 export const updateAllImages = async () => {
+  console.log("Updating all images");
   for (const cover of covers) {
     await updateImage(cover.imageAsset, cover.imageName);
   }

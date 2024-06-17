@@ -114,7 +114,12 @@ export default function BookScreen({ route }) {
           color={colors.lightGrey}
           backgroundColor={"transparent"}
           underlayColor={"transparent"}
-          onPress={() => navigation.navigate("BookEditScreen", { book: book })}
+          onPress={() =>
+            navigation.navigate("BookEditScreen", {
+              book: book,
+              onGoBack: onGoBack,
+            })
+          }
         />
       </View>
     );
@@ -160,22 +165,28 @@ export default function BookScreen({ route }) {
       status: status === undefined ? book.status : status,
     });
   }
+  function onGoBack() {
+    setBookLoaded(false);
+  }
   useEffect(() => {
     console.log("BOOK :", book);
   }, [book]);
 
   useEffect(() => {
-    const fetchBook = async () => {
-      const fetchedBook = await fetchBookInfos({ id: bookID });
-      //console.log("fetchedBook : ", fetchedBook);
+    const fetchBook = () => {
+      const fetchedBook = fetchBookInfos({ id: bookID });
+      //console.log("fetchedBook ", fetchedBook);
       setBook(fetchedBook);
       if (fetchedBook) {
         setBookLoaded(true);
       }
     };
+    if (!bookLoaded) {
+      //console.log("fetching book again");
+      fetchBook();
+    }
+  }, [bookLoaded]);
 
-    fetchBook();
-  }, []);
   useEffect(() => {
     if (book && book.imageName) {
       Image.getSize(`${coversDir}${book.imageName}`, (width, height) => {

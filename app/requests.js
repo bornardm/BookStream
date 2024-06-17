@@ -1,21 +1,23 @@
-import { dbName } from "./setupDatabase";
+import { dbName, dbConnexion, replaceImage } from "./setupDatabase";
 import * as SQLite from "expo-sqlite";
 
-export async function fetchBookInfos({ id }) {
+export function fetchBookInfos({ id }) {
   console.log("DB : start fetching book infos: id = ", id);
-  const db = SQLite.openDatabaseSync(dbName);
   let result = null;
   try {
-    await db.withTransactionAsync(async () => {
+    dbConnexion.withTransactionSync(() => {
       //console.log("transaction start ");
 
-      result = await db.getFirstAsync("SELECT * FROM BOOKS where id = ?", [id]);
+      result = dbConnexion.getFirstSync("SELECT * FROM BOOKS where id = ?", [
+        id,
+      ]);
       console.log("Row:", result);
       if (result) {
         result = modifyDefaultBookInfos(result);
       }
       //console.log("transaction end");
     });
+
     return result;
   } catch (e) {
     console.error("error", e);
@@ -32,13 +34,12 @@ function modifyDefaultBookInfos(book) {
 
 export async function fetchBookPreview() {
   console.log("DB : start fetching all book preview");
-  const db = SQLite.openDatabaseSync(dbName);
   let result = null;
   try {
-    await db.withTransactionAsync(async () => {
+    await dbConnexion.withTransactionAsync(async () => {
       //console.log("transaction start ");
 
-      result = await db.getAllAsync(
+      result = await dbConnexion.getAllAsync(
         "SELECT id, title, author, rating, status, imageName FROM BOOKS"
       );
       //console.log("Rows:", result);
@@ -59,18 +60,18 @@ export async function fetchBookPreview() {
  * @returns {boolean} - Returns true if the update was successful, false otherwise.
  */
 function updateDB({ request, params }) {
-  const db = SQLite.openDatabaseSync(dbName);
   try {
-    db.withTransactionSync(async () => {
+    dbConnexion.withTransactionSync(() => {
       //console.log("transaction start ");
       //console.log("request:", request, " ; params:", params);
-      const res = await db.runAsync(request, ...params);
+      const res = dbConnexion.runSync(request, ...params);
       //console.log("res:", res);
       //console.log("transaction end ");
     });
+    console.log("OK");
     return true;
   } catch (e) {
-    console.error("error", e);
+    console.error("error in updateDB", e);
     return false;
   }
 }
@@ -168,4 +169,50 @@ export function deleteBookDB({ id }) {
     request: "DELETE FROM BOOKS WHERE id = ?",
     params: [id],
   });
+}
+
+export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
+  console.log("DB : start adding book ");
+  let dbRequest;
+  let fieldsName = [];
+  let params = [];
+  //Image
+  try {
+    const newImageName = await replaceImage(
+      book.imageName.value,
+      newImageURI,
+      newImageFormat
+    );
+    book.imageName.value = newImageName;
+    console.log("Image name = ", book.imageName.value);
+    //fields
+    for (const field in book) {
+      if (field !== "id") {
+        fieldsName.push(field);
+        params.push(book[field].value);
+      }
+    }
+
+    if (book.id.value) {
+      dbRequest = `UPDATE BOOKS SET ${fieldsName
+        .map((field) => `${field} = ?`)
+        .join(", ")} WHERE id = ?`;
+      params.push(book.id.value);
+    } else {
+      //addedDate
+      fieldsName.push("addedDate");
+      params.push(new Date().toISOString().split("T")[0]);
+
+      dbRequest = `INSERT INTO BOOKS (${fieldsName
+        .map((field) => `${field}`)
+        .join(", ")}) VALUES(${params.map(() => "?").join(", ")})`;
+    }
+    console.log("DB  : request = ", dbRequest, "params = ", params);
+    return updateDB({
+      request: dbRequest,
+      params: params,
+    });
+  } catch (error) {
+    console.error("Error replacing image: ", error);
+  }
 }

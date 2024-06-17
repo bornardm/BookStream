@@ -22,6 +22,7 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { useNavigation } from "@react-navigation/native";
 import { defaultStatus } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
+import { addOrModifyBookDB } from "../requests";
 import * as ImagePicker from "expo-image-picker";
 
 const initBook = (initialBook) => {
@@ -34,12 +35,6 @@ const initBook = (initialBook) => {
     pageNumber: { value: null, isValid: true },
     isbn: { value: null, isValid: true },
     summary: { value: null, isValid: true },
-    status: { value: defaultStatus, isValid: true },
-    borrowed: { value: false, isValid: true },
-    toExchange: { value: false, isValid: true },
-    rating: { value: null, isValid: true },
-    readingStartDate: { value: null, isValid: true },
-    readingEndDate: { value: null, isValid: true },
     imageName: { value: null, isValid: true },
     series: { value: null, isValid: true },
     volume: { value: null, isValid: true },
@@ -66,7 +61,32 @@ export default function BookEditScreen({ route }) {
   const [tempoImageURI, setTempoImageURI] = useState(
     book.imageName.value ? `${coversDir}${book.imageName.value}` : null
   );
+  const [newImageFormat, setNewImageFormat] = useState(null);
 
+  async function saveBookChanges() {
+    const allValid = Object.values(book).every((field) => field.isValid);
+    if (allValid) {
+      console.log(" Save book : All fields valid");
+      if (newImageFormat) {
+        //A new image heve been selected
+        await addOrModifyBookDB({
+          book: book,
+          newImageURI: tempoImageURI,
+          newImageFormat: newImageFormat,
+        });
+      } else {
+        // the image has not been changed
+        await addOrModifyBookDB({
+          book: book,
+          newImageURI: null,
+          newImageFormat: null,
+        });
+      }
+      console.log("Book saved");
+      return true;
+    }
+    return false;
+  }
   function BackArrow() {
     const navigation = useNavigation();
     return (
@@ -140,9 +160,12 @@ export default function BookEditScreen({ route }) {
           color={colors.lightGrey}
           underlayColor={"transparent"}
           backgroundColor="transparent"
-          onPress={() => {
-            navigation.goBack();
-            console.log("Save book");
+          onPress={async () => {
+            const isSaved = await saveBookChanges();
+            if (isSaved) {
+              route.params?.onGoBack();
+              navigation.goBack();
+            }
           }}
         />
       </View>
@@ -230,6 +253,7 @@ export default function BookEditScreen({ route }) {
     console.log(result);
     if (!result.canceled) {
       setTempoImageURI(result.assets[0].uri);
+      setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
     }
   };
 
@@ -242,6 +266,7 @@ export default function BookEditScreen({ route }) {
     console.log(result);
     if (!result.canceled) {
       setTempoImageURI(result.assets[0].uri);
+      setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
     }
   };
   const updateBookField = (field, value) => {
@@ -477,7 +502,7 @@ export default function BookEditScreen({ route }) {
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
-              updateBookField("publisher", event.nativeEvent.text.trim());
+              updateBookField("language", event.nativeEvent.text.trim());
             }}
           />
         </View>
@@ -490,7 +515,7 @@ export default function BookEditScreen({ route }) {
             placeholderTextColor={placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
-              updateBookField("publisher", event.nativeEvent.text.trim());
+              updateBookField("categories", event.nativeEvent.text.trim());
             }}
           />
         </View>
