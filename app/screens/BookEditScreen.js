@@ -52,6 +52,14 @@ const initBook = (initialBook) => {
     }
   }
 
+  //update validity for title and Author that can't be empty
+  if (!defaultBook.title.value) {
+    defaultBook.title.isValid = false;
+  }
+  if (!defaultBook.author.value) {
+    defaultBook.author.isValid = false;
+  }
+
   return defaultBook;
 };
 
