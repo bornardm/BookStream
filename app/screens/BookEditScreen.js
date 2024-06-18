@@ -56,6 +56,7 @@ const initBook = (initialBook) => {
 };
 
 export default function BookEditScreen({ route }) {
+  const { onGoBack } = route.params;
   const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [imageUriState, setImageUriState] = useState(null);
@@ -165,7 +166,7 @@ export default function BookEditScreen({ route }) {
           onPress={async () => {
             const isSaved = await saveBookChanges();
             if (isSaved) {
-              route.params?.onGoBack();
+              onGoBack();
               navigation.goBack();
             }
           }}
@@ -405,8 +406,8 @@ export default function BookEditScreen({ route }) {
             multiline={true}
             style={[styles.textInput, styles.textInputMultiline]}
             placeholderTextColor={placeholderTextColor}
-            onEndEditing={(event) => {
-              updateBookField("summary", event.nativeEvent.text);
+            onChangeText={(text) => {
+              updateBookField("summary", text);
             }}
           />
         </View>

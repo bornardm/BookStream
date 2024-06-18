@@ -191,11 +191,13 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
       newImageURI,
       newImageFormat
     );
-    book.imageName.value = newImageName;
+    if (newImageName !== null) {
+      book.imageName.value = newImageName;
+    }
     console.log("Image name = ", book.imageName.value);
     //fields
     for (const field in book) {
-      if (field !== "id") {
+      if (field !== "id" && field !== "imageName") {
         fieldsName.push(field);
         params.push(book[field].value);
       }
