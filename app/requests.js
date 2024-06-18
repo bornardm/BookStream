@@ -65,19 +65,20 @@ export async function fetchBookPreview() {
  * @returns {boolean} - Returns true if the update was successful, false otherwise.
  */
 function updateDB({ request, params }) {
+  let res = null;
   try {
     dbConnexion.withTransactionSync(() => {
       //console.log("transaction start ");
       //console.log("request:", request, " ; params:", params);
-      const res = dbConnexion.runSync(request, ...params);
+      res = dbConnexion.runSync(request, ...params);
       //console.log("res:", res);
       //console.log("transaction end ");
     });
     console.log("OK");
-    return true;
+    return res;
   } catch (e) {
     console.error("error in updateDB", e);
-    return false;
+    return null;
   }
 }
 
@@ -197,12 +198,11 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
     console.log("Image name = ", book.imageName.value);
     //fields
     for (const field in book) {
-      if (field !== "id" && field !== "imageName") {
+      if (field !== "id") {
         fieldsName.push(field);
         params.push(book[field].value);
       }
     }
-
     if (book.id.value) {
       dbRequest = `UPDATE BOOKS SET ${fieldsName
         .map((field) => `${field} = ?`)
@@ -218,11 +218,14 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
         .join(", ")}) VALUES(${params.map(() => "?").join(", ")})`;
     }
     console.log("DB  : request = ", dbRequest, "params = ", params);
-    return updateDB({
+    const res = updateDB({
       request: dbRequest,
       params: params,
     });
+    const bookID = book.id.value ? book.id.value : res.lastInsertRowId;
+    console.log("Book ID = ", res, bookID);
+    return res ? bookID : false;
   } catch (error) {
-    console.error("Error replacing image: ", error);
+    console.error("Error in editing book in db ", error);
   }
 }

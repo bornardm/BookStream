@@ -65,25 +65,30 @@ export default function BookEditScreen({ route }) {
     book.imageName.value ? `${coversDir}${book.imageName.value}` : null
   );
   const [newImageFormat, setNewImageFormat] = useState(null);
+  let bookIdAfterRequest = null;
 
   async function saveBookChanges() {
     const allValid = Object.values(book).every((field) => field.isValid);
     if (allValid) {
       console.log(" Save book : All fields valid");
+      let returnedId = null;
       if (newImageFormat) {
         //A new image heve been selected
-        await addOrModifyBookDB({
+        returnedId = await addOrModifyBookDB({
           book: book,
           newImageURI: tempoImageURI,
           newImageFormat: newImageFormat,
         });
       } else {
         // the image has not been changed
-        await addOrModifyBookDB({
+        returnedId = await addOrModifyBookDB({
           book: book,
           newImageURI: null,
           newImageFormat: null,
         });
+      }
+      if (returnedId) {
+        bookIdAfterRequest = returnedId;
       }
       console.log("Book saved");
       return true;
@@ -112,7 +117,9 @@ export default function BookEditScreen({ route }) {
 
   function DatePicker({ defaultDate }) {
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [date, setDate] = useState(new Date(defaultDate) || new Date());
+    const [date, setDate] = useState(
+      defaultDate ? new Date(defaultDate) : new Date()
+    );
     const [dateUpdated, setDateUpdated] = useState(false);
     return (
       <TouchableWithoutFeedback onPress={() => setShowDatePicker(true)}>
@@ -166,7 +173,12 @@ export default function BookEditScreen({ route }) {
           onPress={async () => {
             const isSaved = await saveBookChanges();
             if (isSaved) {
-              onGoBack();
+              onGoBack({
+                id: bookIdAfterRequest,
+                title: book.title.value,
+                author: book.author.value,
+                imageName: book.imageName.value,
+              });
               navigation.goBack();
             }
           }}

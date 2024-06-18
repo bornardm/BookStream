@@ -34,6 +34,11 @@ export default function HomeScreen({ navigation }) {
       );
     });
   }
+  function addBookPreview(newPreview) {
+    setAllBookPreview((prevBookPreviews) => {
+      return [...prevBookPreviews, newPreview];
+    });
+  }
   useEffect(() => {
     const fetchPreviews = async () => {
       const fetchedPreviews = await fetchBookPreview();
@@ -71,7 +76,12 @@ export default function HomeScreen({ navigation }) {
           </ScrollView>
           <View style={styles.addBook}>
             <TouchableWithoutFeedback
-              onPress={() => console.log("Add book button pressed")}
+              onPress={() => {
+                console.log("Add book button pressed");
+                navigation.navigate("AddScreen", {
+                  addBookPreviewFunc: addBookPreview,
+                });
+              }}
             >
               <Icon name="plus" style={styles.iconPlus} />
             </TouchableWithoutFeedback>
