@@ -40,6 +40,7 @@ export default function AddScreen({ route, navigation }) {
         backgroundColor={colors.white}
         onPress={() => {
           console.log("Scan button pressed");
+          navigation.navigate("ScannerScreen");
         }}
       />
       <Button

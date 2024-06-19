@@ -11,6 +11,7 @@ import BookEditScreen from "./app/screens/BookEditScreen";
 import MenuScreen from "./app/screens/MenuScreen";
 import LoadindingView from "./app/components/LoadingView";
 import AddScreen from "./app/screens/AddScreen";
+import ScannerScreen from "./app/screens/ScannerScreen";
 import { colors } from "./app/constants/Colors";
 import { loadDatabase, updateAllImages } from "./app/setupDatabase";
 import { LogBox } from "react-native";
@@ -48,6 +49,11 @@ const HomeStackScreen = () => (
       name="AddScreen"
       component={AddScreen}
       options={{ headerTitle: "Add a book" }}
+    />
+    <HomeStack.Screen
+      name="ScannerScreen"
+      component={ScannerScreen}
+      options={{ headerTitle: "Scan a book" }}
     />
   </HomeStack.Navigator>
 );
