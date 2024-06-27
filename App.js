@@ -79,13 +79,18 @@ export default function App() {
           headerStyle: {
             backgroundColor: colors.white,
           },
+          headerShown: true,
           headerTintColor: colors.black, //color of the title
           headerTitleStyle: {
             fontWeight: "bold",
           },
         }}
       >
-        <Drawer.Screen name="Home" component={HomeStackScreen} />
+        <Drawer.Screen
+          name="Home"
+          component={HomeStackScreen}
+          options={{ headerTitle: "My books" }}
+        />
         <Drawer.Screen
           name="MenuScreen"
           component={MenuScreen}

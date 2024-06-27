@@ -137,7 +137,7 @@ export default function BookEditScreen({ route }) {
               color:
                 dateUpdated || defaultDate
                   ? colors.black
-                  : placeholderTextColor,
+                  : colors.placeholderTextColor,
             }}
           >
             {!dateUpdated && !defaultDate
@@ -382,7 +382,7 @@ export default function BookEditScreen({ route }) {
               styles.textInput,
               !book.title.isValid && styles.textInputNotValid,
             ]}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={200}
             onChangeText={(text) => {
               checkInputValidity("title", text.trim() !== "");
@@ -398,7 +398,7 @@ export default function BookEditScreen({ route }) {
             placeholder="Firstname"
             //TODO add default value
             style={styles.textInput}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
           />
           <TextInput
@@ -408,7 +408,7 @@ export default function BookEditScreen({ route }) {
               !book.author.isValid && styles.textInputNotValid,
             ]}
             defaultValue={book.author.value} //TODO change this
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onChangeText={(text) => {
               checkInputValidity("author", text.trim() !== "");
@@ -425,7 +425,7 @@ export default function BookEditScreen({ route }) {
             defaultValue={book.summary.value}
             multiline={true}
             style={[styles.textInput, styles.textInputMultiline]}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             onChangeText={(text) => {
               updateBookField("summary", text);
             }}
@@ -441,7 +441,7 @@ export default function BookEditScreen({ route }) {
               styles.textInput,
               !book.pageNumber.isValid && styles.textInputNotValid,
             ]}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={20}
             onChangeText={(text) => {
               checkInputValidity("pageNumber", isDigitsOnly(text.trim()));
@@ -463,7 +463,7 @@ export default function BookEditScreen({ route }) {
             placeholder="Series name "
             defaultValue={book.series.value}
             style={styles.textInput}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
               updateBookField("series", event.nativeEvent.text.trim());
@@ -478,7 +478,7 @@ export default function BookEditScreen({ route }) {
               { flex: 0.3 },
               !book.volume.isValid && styles.textInputNotValid,
             ]}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={20}
             onChangeText={(text) => {
               checkInputValidity("volume", isDigitsOnly(text.trim()));
@@ -497,7 +497,7 @@ export default function BookEditScreen({ route }) {
             placeholder="Publisher"
             defaultValue={book.publisher.value}
             style={styles.textInput}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
               updateBookField("publisher", event.nativeEvent.text.trim());
@@ -518,7 +518,7 @@ export default function BookEditScreen({ route }) {
               styles.textInput,
               !book.isbn.isValid && styles.textInputNotValid,
             ]}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={13}
             onChangeText={(text) => {
               text = text.trim();
@@ -544,7 +544,7 @@ export default function BookEditScreen({ route }) {
             placeholder="Language"
             defaultValue={book.language.value}
             style={styles.textInput}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
               updateBookField("language", event.nativeEvent.text.trim());
@@ -557,7 +557,7 @@ export default function BookEditScreen({ route }) {
             placeholder="Category"
             defaultValue={book.categories.value} //TODO change this
             style={styles.textInput}
-            placeholderTextColor={placeholderTextColor}
+            placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
               updateBookField("categories", event.nativeEvent.text.trim());
@@ -568,7 +568,6 @@ export default function BookEditScreen({ route }) {
     </ScrollView>
   );
 }
-const placeholderTextColor = colors.middleLightGrey;
 const styles = StyleSheet.create({
   container: {},
   headerBand: {
@@ -593,7 +592,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 40,
-    borderColor: colors.grey,
+    borderColor: colors.textInputBorder,
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,

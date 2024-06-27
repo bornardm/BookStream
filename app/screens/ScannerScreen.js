@@ -13,6 +13,7 @@ import {
 import { CameraView, useCameraPermissions } from "expo-camera";
 
 export default function ScannerScreen({ route, navigation }) {
+  const { onGoBack } = route.params;
   const [camContainerSize, setCamContainerSize] = useState({
     width: 0,
     height: 0,
@@ -23,12 +24,13 @@ export default function ScannerScreen({ route, navigation }) {
     top: 0,
     left: 0,
   });
-  const [boundingBox, setBoundingBox] = useState({
-    height: 0,
-    width: 0,
-    top: 0,
-    left: 0,
-  });
+  const [permission, requestPermission] = useCameraPermissions();
+  // const [boundingBox, setBoundingBox] = useState({
+  //   height: 0,
+  //   width: 0,
+  //   top: 0,
+  //   left: 0,
+  // });
 
   useEffect(() => {
     if (camContainerSize.width !== 0) {
@@ -45,21 +47,42 @@ export default function ScannerScreen({ route, navigation }) {
     }
   }, [camContainerSize]);
 
-  //   useEffect(() => {
-  //     console.log(clearSquare);
-  //   }, [clearSquare]);
-
   const onScan = (scanningResult) => {
     //console.log(scanningResult.boundingBox);
-    //console.log("isbn :", scanningResult.data);
-    const boundingBox = {
-      height: scanningResult.boundingBox.size.width,
-      width: scanningResult.boundingBox.size.height,
-      top: scanningResult.boundingBox.origin.x,
-      left: scanningResult.boundingBox.origin.y,
-    };
-    setBoundingBox(boundingBox);
+    console.log("isbn :", scanningResult.data);
+    // const boundingBox = {
+    //   height: scanningResult.boundingBox.size.width,
+    //   width: scanningResult.boundingBox.size.height,
+    //   top: scanningResult.boundingBox.origin.x,
+    //   left: scanningResult.boundingBox.origin.y,
+    // };
+    // setBoundingBox(boundingBox);
+    onGoBack(scanningResult.data);
+    navigation.goBack();
   };
+  useEffect(() => {
+    console.log("Permission :", permission);
+  }, [permission]);
+
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    requestPermission();
+
+    // return (
+    //   <View style={styles.container}>
+    //     <Text style={{ textAlign: "center" }}>
+    //       We need your permission to show the camera
+    //     </Text>
+    //     <Button onPress={requestPermission} title="grant permission" />
+    //   </View>
+    // );
+  }
+
   return (
     <View
       style={styles.camContainer}
@@ -76,10 +99,7 @@ export default function ScannerScreen({ route, navigation }) {
           onScan(scanningResult);
         }}
       >
-        <View
-          style={[styles.opacityTop, { height: clearSquare.top }]}
-          //onLayout={console.log("layout", clearSquare)}
-        ></View>
+        <View style={[styles.opacityTop, { height: clearSquare.top }]}></View>
         <View
           style={[styles.opacityBottom, { height: clearSquare.top }]}
         ></View>
@@ -113,7 +133,7 @@ export default function ScannerScreen({ route, navigation }) {
             },
           ]}
         />
-        <View
+        {/* <View
           style={{
             position: "absolute",
             height: boundingBox.height,
@@ -123,8 +143,7 @@ export default function ScannerScreen({ route, navigation }) {
             borderColor: "blue",
             borderWidth: 3,
           }}
-          //onLayout={console.log("boundingBox", boundingBox)}
-        ></View>
+        ></View> */}
       </CameraView>
     </View>
   );
@@ -166,21 +185,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     height: 1,
     backgroundColor: "red",
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "transparent",
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: "flex-end",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
   },
 });

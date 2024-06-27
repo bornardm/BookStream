@@ -20,11 +20,17 @@
         "backgroundColor": "#ffffff"
       }
     },
+    "plugins": [
+      "expo-asset",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow the app to access your camera"
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-asset"
-    ]
+    }
   }
 }

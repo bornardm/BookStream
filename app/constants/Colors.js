@@ -2,6 +2,8 @@
  * Below are the colors that are used in the app.
  **/
 
+import { TextInput } from "react-native-gesture-handler";
+
 export const colors = {
   white: "#FFFFFF",
   black: "#000000",
@@ -12,4 +14,7 @@ export const colors = {
   grey: "#808080",
   darkGrey: "#505050",
   ivory: "#fffff0",
+
+  placeholderTextColor: "#B0B0B0",
+  textInputBorder: "#808080",
 };
