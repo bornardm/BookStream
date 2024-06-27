@@ -12,9 +12,11 @@ import { colors } from "../constants/Colors";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { defaultStatus } from "../constants/BookStatus";
+import { fetchBookFromOpenLibrary } from "../apiRequests";
 
 export default function AddScreen({ route, navigation }) {
   const addBookPreviewFunc = route.params.addBookPreviewFunc;
+  const functions = route.params.functions;
   const [searchText, setSearchText] = useState(null);
 
   const onGoBackFromBookEditScreen = ({ id, title, author, imageName }) => {
@@ -30,6 +32,10 @@ export default function AddScreen({ route, navigation }) {
     };
     console.log("PREVIEW : ", preview);
     addBookPreviewFunc(preview);
+    navigation.navigate("BookScreen", {
+      bookID: id,
+      functions: functions, // pass the functions as a parameter
+    });
     //id, title, author, rating, status, imageName
   };
 
@@ -54,7 +60,15 @@ export default function AddScreen({ route, navigation }) {
           placeholder="Title, isbn, author..."
           value={searchText}
           onChangeText={setSearchText}
-          text
+          onEndEditing={async () => {
+            const book = await fetchBookFromOpenLibrary("9780140328721");
+            if (book) {
+              navigation.navigate("BookEditScreen", {
+                book: book,
+                onGoBack: onGoBackFromBookEditScreen,
+              });
+            }
+          }}
           style={styles.textInput}
           placeholderTextColor={colors.placeholderTextColor}
           maxLength={200}

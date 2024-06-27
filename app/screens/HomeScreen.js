@@ -80,6 +80,10 @@ export default function HomeScreen({ navigation }) {
                 console.log("Add book button pressed");
                 navigation.navigate("AddScreen", {
                   addBookPreviewFunc: addBookPreview,
+                  functions: {
+                    updateBookPreviewFunc: updateBookPreview,
+                    deleteBookPreviewFunc: deleteBookPreview,
+                  },
                 });
               }}
             >

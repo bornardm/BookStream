@@ -181,13 +181,13 @@ export default function BookEditScreen({ route }) {
           onPress={async () => {
             const isSaved = await saveBookChanges();
             if (isSaved) {
+              navigation.goBack();
               onGoBack({
                 id: bookIdAfterRequest,
                 title: book.title.value,
                 author: book.author.value,
                 imageName: book.imageName.value,
               });
-              navigation.goBack();
             }
           }}
         />
