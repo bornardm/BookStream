@@ -74,7 +74,6 @@ function updateDB({ request, params }) {
       //console.log("res:", res);
       //console.log("transaction end ");
     });
-    console.log("OK");
     return res;
   } catch (e) {
     console.error("error in updateDB", e);

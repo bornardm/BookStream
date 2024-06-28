@@ -1,17 +1,21 @@
+// React and React Native components and hooks
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   Image,
+  StyleSheet,
+  Text,
   TouchableWithoutFeedback,
-  Button,
+  View,
 } from "react-native";
-import { colors } from "../constants/Colors";
-import { FiveStarsDisplay } from "./Stars";
+
+// Third-party libraries/components
 import { useNavigation } from "@react-navigation/native";
+
+// Utility functions, constants, and other local imports
+import { colors } from "../constants/Colors";
 import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
+import { FiveStarsDisplay } from "./Stars";
 
 function BadgeStatus({ status }) {
   const statusProps = BOOK_STATUS_PROPS[status];
@@ -26,6 +30,19 @@ function BadgeStatus({ status }) {
   );
 }
 
+/**
+ * Renders a preview of a book.
+ *
+ * @param {Object} props - The component props.
+ * @param {integer} props.bookID - The ID of the book.
+ * @param {string} props.title - The title of the book.
+ * @param {string} props.author - The author of the book.
+ * @param {integer} props.rating - The rating of the book in [0,10].
+ * @param {integer} props.status - The status of the book (cf BookSatatus.js).
+ * @param {string} props.imageName - The name of the book's image.
+ * @param {Object} props.functions - The functions to be passed as props.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function BookPreview({
   bookID,
   title,

@@ -1,24 +1,29 @@
-import React, { useState, useEffect, Suspense } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  ScrollView,
-  Image,
-  Alert,
-  TouchableWithoutFeedback,
-} from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+// React and React Native components and hooks
+import React, { useEffect, useState, Suspense } from "react";
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+
+// Third-party libraries/components
 import DateTimePicker from "@react-native-community/datetimepicker";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+// Utility functions, constants, and other local imports
+import { BOOK_STATUS } from "../constants/BookStatus";
 import { colors } from "../constants/Colors";
 import {
-  updateBookStartDateDB,
   updateBookEndDateDB,
+  updateBookStartDateDB,
   updateBookStatusDB,
 } from "../requests";
-import { BOOK_STATUS } from "../constants/BookStatus";
 
+/**
+ * DatePicker component for selecting start and end dates for reading a book.
+ * @param {Object} props - The component props.
+ * @param {integer} props.bookID - The ID of the book.
+ * @param {string} props.initialStartDate - The initial start date for the book reading.
+ * @param {string} props.initialEndDate - The initial end date for the book reading.
+ * @param {Function} props.updateStateBookFunc - The function to update the state of the book.
+ * @returns {JSX.Element} The DatePicker component.
+ */
 export default function DatePicker({
   bookID,
   initialStartDate,
@@ -65,7 +70,6 @@ export default function DatePicker({
               maximumDate={dateEnd}
               onChange={(event, selectedDate) => {
                 if (selectedDate && event.type === "set") {
-                  console.log(selectedDate.toISOString().slice(0, 10));
                   setDateStart(selectedDate);
                   updateBookStartDateDB({
                     id: bookID,
@@ -108,7 +112,6 @@ export default function DatePicker({
               onChange={(event, selectedDate) => {
                 setShowEnd(false);
                 if (selectedDate && event.type === "set") {
-                  console.log(selectedDate);
                   setDateEnd(selectedDate);
 
                   updateBookEndDateDB({

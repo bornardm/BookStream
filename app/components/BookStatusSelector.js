@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
+// React and React Native components and hooks
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
   ScrollView,
+  StyleSheet,
   Text,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { colors } from "../constants/Colors";
+
+// Utility functions, constants, and other local imports
 import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+import { colors } from "../constants/Colors";
 import {
-  updateBookStatusDB,
   updateBookBorrowedDB,
+  updateBookStatusDB,
   updateBookToExchangeDB,
 } from "../requests";
 
@@ -47,6 +50,7 @@ export function BookStatusSelector({
   }
 
   const [selectedStatus, setSelectedStatus] = useState(initSelectedStatus);
+
   function handleSelectorPress(index) {
     setSelectedStatus((prevStatuses) => {
       const newStatuses = [...prevStatuses]; // create a copy of the array
@@ -61,6 +65,7 @@ export function BookStatusSelector({
 
     updateDBCalls(index); //here the state selectedStatus is not yet updated. We must wait a rerender
   }
+
   function updateDBCalls(index) {
     if (index < 4) {
       updateStateBookFunc({ status: index }); //Change the state of the parent component

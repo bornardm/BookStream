@@ -1,8 +1,20 @@
+// React and React Native components and hooks
 import React, { useState } from "react";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+
+// Third-party libraries/components
 import Icon from "react-native-vector-icons/FontAwesome";
-import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+
+// Utility functions, constants, and other local imports
 import { updateBookRatingDB } from "../requests";
 
+/**
+ * Renders a display of five stars based on the given rating.
+ * @param {Object} props - The component props.
+ * @param {integer} props.rating - The rating value in [0,10].
+ * @param {number} props.size - The size of the stars.
+ * @returns {JSX.Element} - The rendered component.
+ */
 export function FiveStarsDisplay({ rating, size }) {
   const ratings = [0, 2, 4, 6, 8];
 
@@ -34,6 +46,16 @@ export function FiveStarsDisplay({ rating, size }) {
   );
 }
 
+/**
+ * Renders a component with ten stars that can be clicked to update the rating.
+ *
+ * @param {Object} props - The component props.
+ * @param {integer} props.bookID - The ID of the book.
+ * @param {integer} props.rating - The current rating of the book in [0,10].
+ * @param {number} props.size - The size of the stars.
+ * @param {function} props.updateStateBookFunc - The function to update the book's state.
+ * @returns {JSX.Element} The rendered component.
+ */
 export function TenStarsTouchable({
   bookID,
   rating,
@@ -56,7 +78,6 @@ export function TenStarsTouchable({
           <TouchableWithoutFeedback
             key={index}
             onPress={() => {
-              //console.log(`Star ${index + 1} was pressed.`);
               setRating(index + 1);
               updateBookRatingDB({ id: bookID, rating: index + 1 });
               updateStateBookFunc({ rating: index + 1 });
