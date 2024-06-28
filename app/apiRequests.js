@@ -81,6 +81,15 @@ const getBookFromRequestData = (jsonBook) => {
   if (jsonBook.authors) {
     book.author = jsonBook.authors[0].name;
   } //TODO if multiple authors ???
+
+  //cover
+  if (jsonBook.cover) {
+    const coverUrl =
+      jsonBook.cover.medium || jsonBook.cover.small || jsonBook.cover.large;
+    if (coverUrl) {
+      book.imageInternetURL = coverUrl; //Be carreful : it's imageInternetURL and not imageName !
+    }
+  }
   return book;
 };
 

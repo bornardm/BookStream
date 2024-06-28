@@ -79,7 +79,7 @@ export default function AddScreen({ route, navigation }) {
         onPress={() => {
           console.log("Add manually button pressed");
           navigation.navigate("BookEditScreen", {
-            bookID: null,
+            book: null,
             onGoBack: onGoBackFromBookEditScreen,
           });
         }}

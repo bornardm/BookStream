@@ -70,8 +70,25 @@ export const deleteImageFromCovers = async (imageName) => {
     const imageInfo = await FileSystem.getInfoAsync(imageFilePath);
     if (imageInfo.exists) {
       await FileSystem.deleteAsync(imageFilePath);
+      console.log("Image deleted from covers ", imageFilePath);
     }
   }
+};
+
+export const downloadImageFromInternetToCovers = async (
+  imageUri,
+  imageFormat
+) => {
+  const newImageName =
+    "cover_temporary_" + new Date().getTime().toString() + "." + imageFormat;
+  const newImageFilePath = `${coversDir}${newImageName}`;
+  //create the directory if it doesn't exist
+  await FileSystem.makeDirectoryAsync(coversDir.slice(0, -1), {
+    intermediates: true,
+  });
+  await FileSystem.downloadAsync(imageUri, newImageFilePath);
+  console.log("Image downloaded to covers ", newImageFilePath);
+  return newImageFilePath;
 };
 
 //For tests

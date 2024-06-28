@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useCallback } from "react";
 import {
   View,
   Text,
@@ -19,12 +19,17 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { defaultStatus } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
 import { addOrModifyBookDB } from "../requests";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import {
+  downloadImageFromInternetToCovers,
+  deleteImageFromCovers,
+} from "../setupDatabase";
+import { State } from "react-native-gesture-handler";
 
 const initBook = (initialBook) => {
   const defaultBook = {
@@ -65,6 +70,9 @@ const initBook = (initialBook) => {
 
 export default function BookEditScreen({ route }) {
   const { onGoBack } = route.params;
+  const [apiImageUrl, setApiImageUrl] = useState(
+    route.params?.book?.imageInternetURL
+  );
   const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [imageUriState, setImageUriState] = useState(null);
@@ -73,6 +81,7 @@ export default function BookEditScreen({ route }) {
     book.imageName.value ? `${coversDir}${book.imageName.value}` : null
   );
   const [newImageFormat, setNewImageFormat] = useState(null);
+  const navigation = useNavigation();
   let bookIdAfterRequest = null;
 
   async function saveBookChanges() {
@@ -84,7 +93,7 @@ export default function BookEditScreen({ route }) {
         //A new image heve been selected
         returnedId = await addOrModifyBookDB({
           book: book,
-          newImageURI: tempoImageURI,
+          newImageURI: apiImageUrl || tempoImageURI,
           newImageFormat: newImageFormat,
         });
       } else {
@@ -104,7 +113,6 @@ export default function BookEditScreen({ route }) {
     return false;
   }
   function BackArrow() {
-    const navigation = useNavigation();
     return (
       <View style={styles.backArrow}>
         <SimpleLineIcons.Button
@@ -167,7 +175,6 @@ export default function BookEditScreen({ route }) {
     );
   }
   function HeaderBand() {
-    const navigation = useNavigation();
     return (
       <View style={styles.headerBand}>
         <BackArrow />
@@ -277,6 +284,7 @@ export default function BookEditScreen({ route }) {
     if (!result.canceled) {
       setTempoImageURI(result.assets[0].uri);
       setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
+      reinitializeApiImage();
     }
   };
 
@@ -290,6 +298,7 @@ export default function BookEditScreen({ route }) {
     if (!result.canceled) {
       setTempoImageURI(result.assets[0].uri);
       setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
+      reinitializeApiImage();
     }
   };
   const updateBookField = (field, value) => {
@@ -320,6 +329,37 @@ export default function BookEditScreen({ route }) {
 
   const isDigitsOnly = (str) => /^\d*$/.test(str);
 
+  const reinitializeApiImage = () => {
+    deleteImageFromCovers(apiImageUrl.split("/").pop());
+    setApiImageUrl(null);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // This function is called when the screen is blurred (navigated away from)
+        if (apiImageUrl) {
+          reinitializeApiImage();
+        }
+      };
+    }, []) // Dependencies array, re-run if these values change
+  );
+
+  useEffect(() => {
+    const downloadImage = async () => {
+      if (apiImageUrl) {
+        const newImagePath = await downloadImageFromInternetToCovers(
+          apiImageUrl,
+          "jpg"
+        );
+        setApiImageUrl(newImagePath);
+        setNewImageFormat("jpg");
+        console.log("New image path: ", newImagePath);
+      }
+    };
+    downloadImage();
+  }, []);
+
   useEffect(() => {
     console.log("Book updated", book);
   }, [book]);
@@ -327,13 +367,19 @@ export default function BookEditScreen({ route }) {
   useEffect(() => {
     const fetchImageSize = async () => {
       try {
-        if (tempoImageURI) {
-          const fileInfo = await FileSystem.getInfoAsync(tempoImageURI);
+        const url =
+          apiImageUrl && !apiImageUrl.startsWith("http")
+            ? apiImageUrl
+            : tempoImageURI;
+        console.log("URL : ", url);
+        if (url) {
+          const fileInfo = await FileSystem.getInfoAsync(url);
           if (fileInfo.exists) {
             Image.getSize(
-              tempoImageURI,
+              url,
               (width, height) => {
                 setAspectRatio(width / height); // Update aspect ratio
+                console.log("\n\n Ratio\n\n");
               },
               (error) => {
                 console.error(`Couldn't get the image size: ${error}`);
@@ -345,9 +391,14 @@ export default function BookEditScreen({ route }) {
         console.error(`An error occurred: ${error}`);
       }
     };
-
+    console.log(
+      "OKKKKKKKKKKKKKKK              ",
+      tempoImageURI,
+      "  ",
+      apiImageUrl
+    );
     fetchImageSize();
-  }, [tempoImageURI]); // Run effect when imageName changes
+  }, [tempoImageURI, apiImageUrl]); // Run effect when imageName changes
 
   useEffect(() => {
     setImageUriState(tempoImageURI);
@@ -365,7 +416,9 @@ export default function BookEditScreen({ route }) {
         >
           <Image
             source={
-              imageUriState
+              apiImageUrl
+                ? { uri: apiImageUrl }
+                : imageUriState
                 ? { uri: imageUriState }
                 : require("../../assets/no_image.jpg")
             }
