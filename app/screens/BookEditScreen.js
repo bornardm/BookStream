@@ -1,36 +1,42 @@
+// React and React Native components and hooks
 import React, { useState, useEffect, Suspense, useCallback } from "react";
 import {
-  View,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
-  StyleSheet,
-  Button,
-  ScrollView,
-  Image,
-  Alert,
   TouchableWithoutFeedback,
-  Touchable,
-  Modal,
+  View,
 } from "react-native";
-import { colors } from "../constants/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Octicons from "react-native-vector-icons/Octicons";
+
+// Third-party libraries/components
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Octicons from "react-native-vector-icons/Octicons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { defaultStatus } from "../constants/BookStatus";
-import { coversDir } from "../setupDatabase";
+// Utility functions, constants, and other local imports
 import { addOrModifyBookDB } from "../requests";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
+import { colors } from "../constants/Colors";
 import {
+  coversDir,
   downloadImageFromInternetToCovers,
   deleteImageFromCovers,
 } from "../setupDatabase";
-import { State } from "react-native-gesture-handler";
+import { defaultStatus } from "../constants/BookStatus";
 
+/**
+ * Initializes a book object with default values and optionally copies values from an initial book object.
+ *
+ * @param {Object} initialBook - The initial book object to copy values from (optional).
+ * @returns {Object} - The initialized book object.
+ */
 const initBook = (initialBook) => {
   const defaultBook = {
     id: { value: null, isValid: true },
@@ -49,6 +55,7 @@ const initBook = (initialBook) => {
     language: { value: null, isValid: true },
   };
 
+  // Copy values from initial book to default book
   if (initialBook) {
     for (const field in defaultBook) {
       if (initialBook.hasOwnProperty(field)) {
@@ -69,31 +76,37 @@ const initBook = (initialBook) => {
 };
 
 export default function BookEditScreen({ route }) {
+  //------------------------ Variables and States------------------------
   const { onGoBack } = route.params;
   const [apiImageUrl, setApiImageUrl] = useState(
     route.params?.book?.imageInternetURL
-  );
+  ); //this variable is first initialized with the image URL from the internet and after the image is downloaded, it is set to the local path
   const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
-  const [imageUriState, setImageUriState] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [tempoImageURI, setTempoImageURI] = useState(
+  const [imageUri, setImageUri] = useState(
     book.imageName.value ? `${coversDir}${book.imageName.value}` : null
-  );
-  const [newImageFormat, setNewImageFormat] = useState(null);
+  ); // Local path of the local image
+  const [newImageFormat, setNewImageFormat] = useState(null); // Format of the new image if it has been changed (null if not)
   const navigation = useNavigation();
   let bookIdAfterRequest = null;
 
-  async function saveBookChanges() {
+  //------------------------ Functions ------------------------
+
+  /**
+   * Saves the changes made to the book.
+   * @returns {boolean} Returns true if the book changes were saved successfully, false otherwise.
+   */
+  const saveBookChanges = async () => {
+    // Check if all fields are valid
     const allValid = Object.values(book).every((field) => field.isValid);
     if (allValid) {
-      console.log(" Save book : All fields valid");
-      let returnedId = null;
+      let returnedId = null; //Id of the book in the DB after the request
       if (newImageFormat) {
         //A new image heve been selected
         returnedId = await addOrModifyBookDB({
           book: book,
-          newImageURI: apiImageUrl || tempoImageURI,
+          newImageURI: apiImageUrl || imageUri,
           newImageFormat: newImageFormat,
         });
       } else {
@@ -111,7 +124,178 @@ export default function BookEditScreen({ route }) {
       return true;
     }
     return false;
-  }
+  };
+
+  /**
+   * Function to pick an image from the image library.
+   * @returns {Promise<void>} A promise that resolves when the image is picked and the image states are updated..
+   */
+  const pickImage = async () => {
+    //console.log("Pick image");
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.6,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+      setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
+      reinitializeApiImage();
+    }
+  };
+
+  /**
+   * Takes a picture using the device's camera.
+   * @returns {Promise<void>} A promise that resolves once the picture is taken and the image states are updated.
+   */
+  const takePicture = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.6,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+      setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
+      reinitializeApiImage();
+    }
+  };
+
+  /**
+   * Updates the specified field of the book with the given value.
+   *
+   * @param {string} field - The field to update.
+   * @param {any} value - The new value for the field.
+   */
+  const updateBookField = (field, value) => {
+    if (value != book[field].value) {
+      if (value === "") {
+        value = null;
+      }
+      setBook((prevState) => ({
+        ...prevState,
+        [field]: { value: value, isValid: prevState[field].isValid },
+      }));
+    }
+  };
+
+  /**
+   * Updates the validity of a specific field in the book object.
+   *
+   * @param {string} field - The field to update the validity for.
+   * @param {boolean} isValid - The new validity value for the field.
+   */
+  const updateBookFieldValidity = (field, isValid) => {
+    setBook((prevState) => ({
+      ...prevState,
+      [field]: { value: prevState[field].value, isValid: isValid },
+    }));
+  };
+
+  /**
+   * Checks an dupdate the validity a book field based on the acceptance condition.
+   *
+   * @param {string} field - The name of the book field to check.
+   * @param {boolean} acceptanceCondition - The condition for validate the input field's value.
+   */
+  const checkInputValidity = (field, acceptanceCondition) => {
+    if (!acceptanceCondition && book[field].isValid) {
+      updateBookFieldValidity(field, false);
+    } else if (acceptanceCondition && !book[field].isValid) {
+      updateBookFieldValidity(field, true);
+    }
+  };
+
+  /**
+   * Checks if a string contains only digits or if it's empty.
+   *
+   * @param {string} str - The string to be checked.
+   * @returns {boolean} - Returns true if the string is empty or contains only digits, otherwise returns false.
+   */
+  const isDigitsOnly = (str) => /^\d*$/.test(str);
+
+  /**
+   * Reinitializes the API image by deleting the image from covers and resetting the API image URL.
+   */
+  const reinitializeApiImage = () => {
+    if (apiImageUrl) {
+      deleteImageFromCovers(apiImageUrl.split("/").pop());
+      setApiImageUrl(null);
+    }
+  };
+
+  //------------------------ UseEffects ------------------------
+
+  /**
+   * Reinitialize the API image when the screen is blurred.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // This function is called when the screen is blurred (navigated away from)
+        if (apiImageUrl) {
+          reinitializeApiImage();
+        }
+      };
+    }, [])
+  );
+
+  /**
+   * Download the image from the internet to the local storage when the screen is loaded.
+   * Run only once when the screen is loaded.
+   */
+  useEffect(() => {
+    const downloadImage = async () => {
+      if (apiImageUrl) {
+        const newImagePath = await downloadImageFromInternetToCovers(
+          apiImageUrl,
+          "jpg"
+        );
+        setApiImageUrl(newImagePath);
+        setNewImageFormat("jpg");
+      }
+    };
+    downloadImage();
+  }, []);
+
+  // useEffect(() => {
+  //   console.log("Book updated", book);
+  // }, [book]);
+
+  /**
+   * Get the image size and update the aspect ratio when the (local or api) image URI changes.
+   */
+  useEffect(() => {
+    const fetchImageSize = async () => {
+      try {
+        const url =
+          apiImageUrl && !apiImageUrl.startsWith("http")
+            ? apiImageUrl
+            : imageUri;
+        if (url) {
+          const fileInfo = await FileSystem.getInfoAsync(url);
+          if (fileInfo.exists) {
+            Image.getSize(
+              url,
+              (width, height) => {
+                setAspectRatio(width / height); // Update aspect ratio
+              },
+              (error) => {
+                console.error(`Couldn't get the image size: ${error}`);
+              }
+            );
+          }
+        }
+      } catch (error) {
+        console.error(`An error occurred while fetching image size: ${error}`);
+      }
+    };
+    fetchImageSize();
+  }, [imageUri, apiImageUrl]);
+
+  //------------------------ Components ------------------------
+
   function BackArrow() {
     return (
       <View style={styles.backArrow}>
@@ -124,7 +308,6 @@ export default function BookEditScreen({ route }) {
           backgroundColor="transparent"
           onPress={() => {
             navigation.goBack();
-            //TODO update book Scrren
           }}
         />
       </View>
@@ -230,7 +413,6 @@ export default function BookEditScreen({ route }) {
                       backgroundColor={"transparent"}
                       underlayColor="rgba(0,0,0,0.1)"
                       onPress={() => {
-                        console.log("Take a picture");
                         takePicture();
                         setModalVisible(false);
                       }}
@@ -251,7 +433,6 @@ export default function BookEditScreen({ route }) {
                       backgroundColor={"transparent"}
                       underlayColor="rgba(0,0,0,0.1)"
                       onPress={() => {
-                        console.log("Choose a picture");
                         pickImage();
                         setModalVisible(false);
                       }}
@@ -272,139 +453,6 @@ export default function BookEditScreen({ route }) {
       </Modal>
     );
   }
-  const pickImage = async () => {
-    console.log("Pick image");
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.6,
-    });
-
-    console.log(result);
-    if (!result.canceled) {
-      setTempoImageURI(result.assets[0].uri);
-      setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
-      reinitializeApiImage();
-    }
-  };
-
-  const takePicture = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      quality: 0.6,
-    });
-
-    console.log(result);
-    if (!result.canceled) {
-      setTempoImageURI(result.assets[0].uri);
-      setNewImageFormat(result.assets[0].mimeType.split("/")[1]);
-      reinitializeApiImage();
-    }
-  };
-  const updateBookField = (field, value) => {
-    if (value != book[field].value) {
-      if (value === "") {
-        value = null;
-      }
-      setBook((prevState) => ({
-        ...prevState,
-        [field]: { value: value, isValid: prevState[field].isValid },
-      }));
-    }
-  };
-  const updateBookFieldValidity = (field, isValid) => {
-    setBook((prevState) => ({
-      ...prevState,
-      [field]: { value: prevState[field].value, isValid: isValid },
-    }));
-  };
-  const checkInputValidity = (field, acceptanceCondition) => {
-    if (!acceptanceCondition && book[field].isValid) {
-      updateBookFieldValidity(field, false);
-      console.log("Title is empty");
-    } else if (acceptanceCondition && !book[field].isValid) {
-      updateBookFieldValidity(field, true);
-    }
-  };
-
-  const isDigitsOnly = (str) => /^\d*$/.test(str);
-
-  const reinitializeApiImage = () => {
-    if (apiImageUrl) {
-      deleteImageFromCovers(apiImageUrl.split("/").pop());
-      setApiImageUrl(null);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        // This function is called when the screen is blurred (navigated away from)
-        if (apiImageUrl) {
-          reinitializeApiImage();
-        }
-      };
-    }, []) // Dependencies array, re-run if these values change
-  );
-
-  useEffect(() => {
-    const downloadImage = async () => {
-      if (apiImageUrl) {
-        const newImagePath = await downloadImageFromInternetToCovers(
-          apiImageUrl,
-          "jpg"
-        );
-        setApiImageUrl(newImagePath);
-        setNewImageFormat("jpg");
-        console.log("New image path: ", newImagePath);
-      }
-    };
-    downloadImage();
-  }, []);
-
-  useEffect(() => {
-    console.log("Book updated", book);
-  }, [book]);
-
-  useEffect(() => {
-    const fetchImageSize = async () => {
-      try {
-        const url =
-          apiImageUrl && !apiImageUrl.startsWith("http")
-            ? apiImageUrl
-            : tempoImageURI;
-        console.log("URL : ", url);
-        if (url) {
-          const fileInfo = await FileSystem.getInfoAsync(url);
-          if (fileInfo.exists) {
-            Image.getSize(
-              url,
-              (width, height) => {
-                setAspectRatio(width / height); // Update aspect ratio
-                console.log("\n\n Ratio\n\n");
-              },
-              (error) => {
-                console.error(`Couldn't get the image size: ${error}`);
-              }
-            );
-          }
-        }
-      } catch (error) {
-        console.error(`An error occurred: ${error}`);
-      }
-    };
-    console.log(
-      "OKKKKKKKKKKKKKKK              ",
-      tempoImageURI,
-      "  ",
-      apiImageUrl
-    );
-    fetchImageSize();
-  }, [tempoImageURI, apiImageUrl]); // Run effect when imageName changes
-
-  useEffect(() => {
-    setImageUriState(tempoImageURI);
-  }, [tempoImageURI]);
 
   return (
     <ScrollView>
@@ -420,12 +468,11 @@ export default function BookEditScreen({ route }) {
             source={
               apiImageUrl
                 ? { uri: apiImageUrl }
-                : imageUriState
-                ? { uri: imageUriState }
+                : imageUri
+                ? { uri: imageUri }
                 : require("../../assets/no_image.jpg")
             }
             style={[styles.cover, { aspectRatio: aspectRatio }]}
-            onError={() => setImageUriState(null)}
           />
         </TouchableWithoutFeedback>
         <View style={styles.row}>
