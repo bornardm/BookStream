@@ -1,33 +1,43 @@
-import React, { useState, useEffect, Suspense } from "react";
+// React and React Native components and hooks
+import React, { useEffect, useState, Suspense } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  ScrollView,
-  Image,
   Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { colors } from "../constants/Colors";
-import { TenStarsTouchable } from "../components/Stars";
-import { BookStatusSelector } from "../components/BookStatusSelector";
+
+// Third-party libraries/components
+import { useNavigation } from "@react-navigation/native";
 import DatePicker from "../components/DatePicker";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import Feather from "react-native-vector-icons/Feather";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { useNavigation } from "@react-navigation/native";
-import { BOOK_STATUS } from "../constants/BookStatus";
-import { fetchBookInfos, deleteBookDB } from "../requests";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { SQLiteProvider } from "expo-sqlite/next";
-import LoadingView from "../components/LoadingView";
-import { dbName } from "../setupDatabase";
-import { coversDir } from "../setupDatabase";
 import * as FileSystem from "expo-file-system";
 
+// Utility functions, constants, and other local imports
+import { BOOK_STATUS } from "../constants/BookStatus";
+import { colors } from "../constants/Colors";
+import { coversDir, dbName } from "../setupDatabase";
+import { deleteBookDB, fetchBookInfos } from "../requests";
+import LoadingView from "../components/LoadingView";
+import { BookStatusSelector } from "../components/BookStatusSelector";
+import { TenStarsTouchable } from "../components/Stars";
+
+/**
+ * Renders a list of book information.
+ * Display if not null : publicationDate, Publisher, ISBN, pageNumber, language.
+ *
+ * @param {Object} book - The book object containing information.
+ * @returns {JSX.Element} - The rendered component.
+ */
 function InfoList(book) {
   const infoProps = [
     {
@@ -68,9 +78,11 @@ function InfoList(book) {
     </View>
   );
 }
+
 const imageMargin = 20;
 
 export default function BookScreen({ route }) {
+  //------------------------ Variables and States------------------------
   const { bookID, functions } = route.params;
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 }); // to set the size of the imageView
   const [imageNameState, setImageNameState] = useState(null);
@@ -78,7 +90,77 @@ export default function BookScreen({ route }) {
   const [bookLoaded, setBookLoaded] = useState(false);
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
 
-  //console.log("BookScreen", bookID);
+  //------------------------ Functions ----------------------------------
+
+  function modifyStateBook({ rating, status }) {
+    setBook({
+      ...book,
+      rating: rating === undefined ? book.rating : rating,
+      status: status === undefined ? book.status : status,
+    });
+  }
+
+  function onGoBack() {
+    setBookLoaded(false);
+  }
+
+  //------------------------ UseEffects ---------------------------------
+
+  // useEffect(() => {
+  //   console.log("BOOK :", book);
+  // }, [book]);
+
+  useEffect(() => {
+    /**
+     * Fetches book information based on the provided book ID.
+     */
+    const fetchBook = () => {
+      const fetchedBook = fetchBookInfos({ id: bookID });
+      setBook(fetchedBook);
+      if (fetchedBook) {
+        setBookLoaded(true);
+      }
+    };
+    if (!bookLoaded) {
+      fetchBook();
+    }
+  }, [bookLoaded]);
+
+  useEffect(() => {
+    /**
+     * Fetches the size of the image associated with the book and updates the aspect ratio.
+     */
+    const fetchImageSize = async () => {
+      try {
+        if (book && book.imageName) {
+          const fileInfo = await FileSystem.getInfoAsync(
+            `${coversDir}${book.imageName}`
+          );
+          if (fileInfo.exists) {
+            Image.getSize(
+              `${coversDir}${book.imageName}`,
+              (width, height) => {
+                setAspectRatio(width / height); // Update aspect ratio
+              },
+              (error) => {
+                console.error(`Couldn't get the image size: ${error}`);
+              }
+            );
+          }
+        }
+      } catch (error) {
+        console.error(`An error occurred: ${error}`);
+      }
+    };
+
+    fetchImageSize();
+  }, [book]); // Run effect when imageName changes
+
+  useEffect(() => {
+    setImageNameState(book?.imageName);
+  }, [book?.imageName]);
+
+  //------------------------ Componnents --------------------------------
 
   function BackArrow() {
     const navigation = useNavigation();
@@ -160,65 +242,6 @@ export default function BookScreen({ route }) {
       </TouchableWithoutFeedback>
     );
   }
-  function modifyStateBook({ rating, status }) {
-    setBook({
-      ...book,
-      rating: rating === undefined ? book.rating : rating,
-      status: status === undefined ? book.status : status,
-    });
-  }
-  function onGoBack() {
-    setBookLoaded(false);
-  }
-  useEffect(() => {
-    console.log("BOOK :", book);
-  }, [book]);
-
-  useEffect(() => {
-    const fetchBook = () => {
-      const fetchedBook = fetchBookInfos({ id: bookID });
-      //console.log("fetchedBook ", fetchedBook);
-      setBook(fetchedBook);
-      if (fetchedBook) {
-        setBookLoaded(true);
-      }
-    };
-    if (!bookLoaded) {
-      //console.log("fetching book again");
-      fetchBook();
-    }
-  }, [bookLoaded]);
-
-  useEffect(() => {
-    const fetchImageSize = async () => {
-      try {
-        if (book && book.imageName) {
-          const fileInfo = await FileSystem.getInfoAsync(
-            `${coversDir}${book.imageName}`
-          );
-          if (fileInfo.exists) {
-            Image.getSize(
-              `${coversDir}${book.imageName}`,
-              (width, height) => {
-                setAspectRatio(width / height); // Update aspect ratio
-              },
-              (error) => {
-                console.error(`Couldn't get the image size: ${error}`);
-              }
-            );
-          }
-        }
-      } catch (error) {
-        console.error(`An error occurred: ${error}`);
-      }
-    };
-
-    fetchImageSize();
-  }, [book]); // Run effect when imageName changes
-
-  useEffect(() => {
-    setImageNameState(book?.imageName);
-  }, [book?.imageName]);
 
   if (!bookLoaded) {
     return <LoadingView />;

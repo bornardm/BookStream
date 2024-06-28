@@ -1,24 +1,32 @@
+// React and React Native components and hooks
 import React, { Suspense, useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  TouchableWithoutFeedback,
-  ScrollView,
   Alert,
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { SQLiteProvider } from "expo-sqlite/next";
-import { colors } from "../constants/Colors";
+
+// Third-party libraries/components
 import Icon from "react-native-vector-icons/Entypo";
+import { SQLiteProvider } from "expo-sqlite/next";
+
+// Utility functions, constants, and other local imports
 import BookPreview from "../components/BookPreview";
 import LoadindingView from "../components/LoadingView";
+import { colors } from "../constants/Colors";
 import { dbName } from "../setupDatabase";
 import { fetchBookPreview } from "../requests";
 
 export default function HomeScreen({ navigation }) {
+  //------------------------ Variables and States------------------------
   const [allBookPreview, setAllBookPreview] = useState(null);
   const [previewsLoaded, setPreviewsLoaded] = useState(false);
+
+  //------------------------ Functions ----------------------------------
 
   function updateBookPreview(updatedPreview) {
     setAllBookPreview((prevBookPreviews) => {
@@ -39,10 +47,16 @@ export default function HomeScreen({ navigation }) {
       return [...prevBookPreviews, newPreview];
     });
   }
+
+  //------------------------ UseEffects ---------------------------------
+
   useEffect(() => {
+    /**
+     * Fetches book previews and updates the state with the fetched data.
+     * @returns {Promise<void>} A promise that resolves when the book previews are fetched and the state is updated.
+     */
     const fetchPreviews = async () => {
       const fetchedPreviews = await fetchBookPreview();
-      //console.log("All previews : ", fetchedPreviews);
       setAllBookPreview(fetchedPreviews);
       if (fetchedPreviews) {
         setPreviewsLoaded(true);

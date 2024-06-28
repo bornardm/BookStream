@@ -1,15 +1,17 @@
+// React and React Native components and hooks
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
   Button,
+  Image,
+  StyleSheet,
+  Text,
   TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
+// Third-party libraries/components
 import { CameraView, useCameraPermissions } from "expo-camera";
 
 export default function ScannerScreen({ route, navigation }) {

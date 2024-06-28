@@ -1,23 +1,31 @@
+// React and React Native components and hooks
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
   Button,
+  Image,
+  StyleSheet,
+  Text,
   TextInput,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { colors } from "../constants/Colors";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+// Third-party libraries/components
 import EvilIcons from "react-native-vector-icons/EvilIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+// Utility functions, constants, and other local imports
+import { colors } from "../constants/Colors";
 import { defaultStatus } from "../constants/BookStatus";
 import { fetchBookFromOpenLibrary } from "../apiRequests";
 
 export default function AddScreen({ route, navigation }) {
+  //------------------------ Variables and States------------------------
   const addBookPreviewFunc = route.params.addBookPreviewFunc;
   const functions = route.params.functions;
   const [searchText, setSearchText] = useState(null);
+
+  //------------------------ Functions ----------------------------------
 
   const onGoBackFromBookEditScreen = ({ id, title, author, imageName }) => {
     navigation.goBack();
@@ -36,7 +44,6 @@ export default function AddScreen({ route, navigation }) {
       bookID: id,
       functions: functions, // pass the functions as a parameter
     });
-    //id, title, author, rating, status, imageName
   };
 
   return (
@@ -48,7 +55,6 @@ export default function AddScreen({ route, navigation }) {
         color={colors.black}
         backgroundColor={colors.white}
         onPress={() => {
-          console.log("Scan button pressed");
           navigation.navigate("ScannerScreen", {
             onGoBack: setSearchText,
           });
