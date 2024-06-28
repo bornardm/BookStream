@@ -330,8 +330,10 @@ export default function BookEditScreen({ route }) {
   const isDigitsOnly = (str) => /^\d*$/.test(str);
 
   const reinitializeApiImage = () => {
-    deleteImageFromCovers(apiImageUrl.split("/").pop());
-    setApiImageUrl(null);
+    if (apiImageUrl) {
+      deleteImageFromCovers(apiImageUrl.split("/").pop());
+      setApiImageUrl(null);
+    }
   };
 
   useFocusEffect(
