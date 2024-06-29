@@ -1,6 +1,7 @@
 // React and React Native components and hooks
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Button,
   Image,
   StyleSheet,
@@ -25,8 +26,32 @@ export default function AddScreen({ route, navigation }) {
   const addBookPreviewFunc = route.params.addBookPreviewFunc;
   const functions = route.params.functions;
   const [searchText, setSearchText] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // for display loading spinner
 
   //------------------------ Functions ----------------------------------
+
+  const searchBookByISBN = async (text) => {
+    if ((text.length === 10 || text.length === 13) && isDigitsOnly(text)) {
+      setIsLoading(true); // Start loading
+      const book = await fetchBookFromOpenLibrary(text); //("9780140328721");
+      if (book) {
+        navigation.navigate("BookEditScreen", {
+          book: book,
+          onGoBack: onGoBackFromBookEditScreen,
+        });
+      } else {
+        alert("Book not found");
+      }
+      setIsLoading(false); // Stop loading regardless of the outcome
+    } else {
+      alert("ISBN not valid (10 or 13 digits)");
+    }
+  };
+
+  const onGoBackFromScannerScreen = async (isbn) => {
+    setSearchText(isbn);
+    await searchBookByISBN(isbn);
+  };
 
   const onGoBackFromBookEditScreen = ({ id, title, author, imageName }) => {
     navigation.goBack();
@@ -49,6 +74,13 @@ export default function AddScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      {isLoading ? (
+        <ActivityIndicator
+          style={styles.activityIndicator}
+          size="large"
+          color="#0000ff"
+        />
+      ) : null}
       <Text>Add Screen</Text>
       <MaterialCommunityIcons.Button
         name="barcode-scan"
@@ -57,7 +89,7 @@ export default function AddScreen({ route, navigation }) {
         backgroundColor={colors.white}
         onPress={() => {
           navigation.navigate("ScannerScreen", {
-            onGoBack: setSearchText,
+            onGoBack: onGoBackFromScannerScreen,
           });
         }}
       />
@@ -67,26 +99,8 @@ export default function AddScreen({ route, navigation }) {
           placeholder="Title, isbn, author..."
           value={searchText}
           onChangeText={setSearchText}
-          onEndEditing={async (event) => {
-            const text = event.nativeEvent.text;
-            if (
-              (text.length === 10 || text.length === 13) &&
-              isDigitsOnly(text)
-            ) {
-              const book = await fetchBookFromOpenLibrary(
-                event.nativeEvent.text
-              ); //("9780140328721");
-              if (book) {
-                navigation.navigate("BookEditScreen", {
-                  book: book,
-                  onGoBack: onGoBackFromBookEditScreen,
-                });
-              } else {
-                alert("Book not found");
-              }
-            } else {
-              alert("ISBN not valid (10 or 13 digits)");
-            }
+          onSubmitEditing={async (event) => {
+            await searchBookByISBN(event.nativeEvent.text);
           }}
           style={styles.textInput}
           placeholderTextColor={colors.placeholderTextColor}
@@ -113,6 +127,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
+  },
+  activityIndicator: {
+    position: "absolute",
+    zIndex: 1,
   },
   scanButton: {
     justifyContent: "center",
