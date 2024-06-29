@@ -26,10 +26,10 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
    * @throws {Error} - Throws an error if the API request fails.
    */
   const processResponse = async (response, requestType) => {
-    console.log(`@${requestType}-- Response : `, response);
+    //console.log(`@${requestType}-- Response : `, response);
     if (response.ok == true && response.status == 200) {
       const data = await response.json();
-      console.log(`@${requestType}-- Data`, data);
+      //console.log(`@${requestType}-- Data`, data);
       const bookKey = `ISBN:${isbn}`;
       if (data[bookKey]) {
         const jsonBook = data[bookKey];

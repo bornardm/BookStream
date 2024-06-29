@@ -1,5 +1,11 @@
 // React and React Native components and hooks
-import React, { useState, useEffect, Suspense, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  Suspense,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Image,
   Modal,
@@ -82,6 +88,7 @@ export default function BookEditScreen({ route }) {
   const [apiImageUrl, setApiImageUrl] = useState(
     route.params?.book?.imageInternetURL
   ); //this variable is first initialized with the image URL from the internet and after the image is downloaded, it is set to the local path
+  const apiImageUrlRef = useRef(apiImageUrl);
   const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [modalVisible, setModalVisible] = useState(false);
@@ -212,27 +219,18 @@ export default function BookEditScreen({ route }) {
    * Reinitializes the API image by deleting the image from covers and resetting the API image URL.
    */
   const reinitializeApiImage = () => {
-    if (apiImageUrl) {
-      deleteImageFromCovers(apiImageUrl.split("/").pop());
+    // Use the ref's current value to get the latest apiImageUrl
+    const currentApiImageUrl = apiImageUrlRef.current;
+    if (currentApiImageUrl) {
+      console.log("Reinitialize API image, apiImageUrl=", currentApiImageUrl);
+      deleteImageFromCovers(currentApiImageUrl.split("/").pop());
       setApiImageUrl(null);
+      // Update the ref
+      apiImageUrlRef.current = null;
     }
   };
 
   //------------------------ UseEffects ------------------------
-
-  /**
-   * Reinitialize the API image when the screen is blurred.
-   */
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        // This function is called when the screen is blurred (navigated away from)
-        if (apiImageUrl) {
-          reinitializeApiImage();
-        }
-      };
-    }, [])
-  );
 
   /**
    * Download the image from the internet to the local storage when the screen is loaded.
@@ -247,9 +245,16 @@ export default function BookEditScreen({ route }) {
         );
         setApiImageUrl(newImagePath);
         setNewImageFormat("jpg");
+        // Update the ref
+        apiImageUrlRef.current = newImagePath;
       }
     };
     downloadImage();
+
+    // Cleanup function to be called on component unmount
+    return () => {
+      reinitializeApiImage();
+    };
   }, []);
 
   // useEffect(() => {

@@ -66,6 +66,7 @@ export const replaceImage = async (
 
 export const deleteImageFromCovers = async (imageName) => {
   if (imageName) {
+    console.log("Deleting image from covers ", imageName);
     const imageFilePath = `${coversDir}${imageName}`;
     const imageInfo = await FileSystem.getInfoAsync(imageFilePath);
     if (imageInfo.exists) {
@@ -129,8 +130,23 @@ export const updateImage = async (imageAsset, imageName) => {
   }
 };
 
+const listAllFilesFromCovers = async () => {
+  const files = await FileSystem.readDirectoryAsync(coversDir);
+  console.log("Files in covers directory: ", files);
+};
+
+const deleteAllFilesFromCovers = async () => {
+  const files = await FileSystem.readDirectoryAsync(coversDir);
+  for (const file of files) {
+    await FileSystem.deleteAsync(`${coversDir}${file}`);
+  }
+};
+
 export const updateAllImages = async () => {
   console.log("Updating all images");
+  // await listAllFilesFromCovers();
+  //await deleteAllFilesFromCovers();
+  await listAllFilesFromCovers();
   for (const cover of covers) {
     await updateImage(cover.imageAsset, cover.imageName);
   }
