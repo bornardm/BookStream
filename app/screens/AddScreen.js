@@ -17,10 +17,11 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
 import { defaultStatus } from "../constants/BookStatus";
+import { isDigitsOnly } from "../utils";
 import { fetchBookFromOpenLibrary } from "../apiRequests";
 
 export default function AddScreen({ route, navigation }) {
-  //------------------------ Variables and States------------------------
+  //------------------------ Variables and States ------------------------
   const addBookPreviewFunc = route.params.addBookPreviewFunc;
   const functions = route.params.functions;
   const [searchText, setSearchText] = useState(null);
@@ -66,13 +67,25 @@ export default function AddScreen({ route, navigation }) {
           placeholder="Title, isbn, author..."
           value={searchText}
           onChangeText={setSearchText}
-          onEndEditing={async () => {
-            const book = await fetchBookFromOpenLibrary("9783789132193"); //9780140328721");
-            if (book) {
-              navigation.navigate("BookEditScreen", {
-                book: book,
-                onGoBack: onGoBackFromBookEditScreen,
-              });
+          onEndEditing={async (event) => {
+            const text = event.nativeEvent.text;
+            if (
+              (text.length === 10 || text.length === 13) &&
+              isDigitsOnly(text)
+            ) {
+              const book = await fetchBookFromOpenLibrary(
+                event.nativeEvent.text
+              ); //("9780140328721");
+              if (book) {
+                navigation.navigate("BookEditScreen", {
+                  book: book,
+                  onGoBack: onGoBackFromBookEditScreen,
+                });
+              } else {
+                alert("Book not found");
+              }
+            } else {
+              alert("ISBN not valid (10 or 13 digits)");
             }
           }}
           style={styles.textInput}

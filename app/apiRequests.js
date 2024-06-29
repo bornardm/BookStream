@@ -1,4 +1,5 @@
-//import { currentLanguage } from "./constants/languages";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { currentLanguage } from "./constants/languages";
 
 const monthNames = [
   "January",
@@ -16,7 +17,14 @@ const monthNames = [
 ];
 
 export const fetchBookFromOpenLibrary = async (isbn) => {
-  // Function to process response
+  /**
+   * Processes the response received from an API request.
+   *
+   * @param {Response} response - The response object received from the API request.
+   * @param {string} requestType - The type of the API request (e.g., "data" or "details").
+   * @returns {Promise<Object|null>} - A promise that resolves to the processed book object if found, or null if not found.
+   * @throws {Error} - Throws an error if the API request fails.
+   */
   const processResponse = async (response, requestType) => {
     console.log(`@${requestType}-- Response : `, response);
     if (response.ok == true && response.status == 200) {
@@ -72,16 +80,31 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
       ...(detailsResponse ? detailsResponse : {}),
     };
 
-    //TODO translate language
+    //Translate language
+    if (combinedResultBook.language) {
+      combinedResultBook.language = await getBookTranslatedLanguage(
+        combinedResultBook.language
+      );
+    }
 
     console.log("Combined result book : ", combinedResultBook);
-    return combinedResultBook;
+    //return the book if it'snot empty
+    if (Object.keys(combinedResultBook).length > 0) {
+      return combinedResultBook;
+    }
+    return null;
   } catch (error) {
     console.error("Error fetching book from Open Library:", error);
   }
   return null;
 };
 
+/**
+ * Extracts relevant book information from the provided JSON book object resulting from a "data" request.
+ *
+ * @param {Object} jsonBook - The JSON book object containing book details.
+ * @returns {Object} - The extracted book information.
+ */
 const getBookFromRequestData = (jsonBook) => {
   let book = {};
   if (jsonBook.title) {
@@ -99,7 +122,6 @@ const getBookFromRequestData = (jsonBook) => {
       book.publicationDate = parsedDate.toISOString().split("T")[0];
     }
   }
-  // TODO categories
   if (jsonBook.publishers) {
     book.publisher = jsonBook.publishers[0].name;
   } //TODO if multiple publishers ???
@@ -107,6 +129,8 @@ const getBookFromRequestData = (jsonBook) => {
   if (jsonBook.authors) {
     book.author = jsonBook.authors[0].name;
   } //TODO if multiple authors ???
+
+  // TODO categories
 
   //cover
   if (jsonBook.cover) {
@@ -118,14 +142,21 @@ const getBookFromRequestData = (jsonBook) => {
   }
   return book;
 };
+
+/**
+ * Extracts relevant book information from the provided JSON book object resulting from a "details" request.
+ *
+ * @param {Object} jsonBook - The JSON book object containing book details.
+ * @returns {Object} - The extracted book information.
+ */
 const getBookFromRequestDetails = (jsonBook) => {
   let book = {};
   if (jsonBook.details) {
     if (jsonBook.details.description) {
       book.summary = jsonBook.details.description.value;
     }
-    if (jsonBook.details.languages) {
-      book.language = jsonBook.details.languages[0].key;
+    if (jsonBook.details.languages && jsonBook.details.languages[0]) {
+      book.language = jsonBook.details.languages[0].key.split("/").pop(); //get only the language key
     }
     if (jsonBook.details.series) {
       book.series = jsonBook.details.series[0];
@@ -134,6 +165,14 @@ const getBookFromRequestDetails = (jsonBook) => {
   return book;
 };
 
+/**
+ * Parses a string representation of a publish date and returns a Date object.
+ * Supports all date formats that can be parsed by the Date constructor.
+ * Supports two specific formats: "Month Day, Year" and "Month Year".
+ *
+ * @param {string} dateStr - The string representation of the publish date.
+ * @returns {Date|null} The parsed Date object or null if the format is unrecognized.
+ */
 function parsePublishDate(dateStr) {
   //check for the full date format, e.g., "May 1, 1988"
   if (/^[a-zA-Z]+ \d{1,2}, \d{4}$/.test(dateStr)) {
@@ -163,3 +202,40 @@ function parsePublishDate(dateStr) {
   // Handle unrecognized format or return a default value
   return null;
 }
+
+/**
+ * Retrieves the translated language name for a given language key.
+ * If the language key matches the current language, it returns the current language name.
+ * Otherwise, it fetches the language data from the Open Library API and returns the translated language name.
+ *
+ * @param {string} languageKey - The language key to retrieve the translated language for.
+ * @returns {Promise<string>} The translated language name.
+ * @throws {Error} If there is an HTTP error while fetching the language data.
+ */
+const getBookTranslatedLanguage = async (languageKey) => {
+  if (languageKey === currentLanguage.urlKey) {
+    return currentLanguage.name;
+  } else {
+    try {
+      const response = await fetch(
+        `https://openlibrary.org/languages/${languageKey}.json`
+      );
+      if (response.ok == true && response.status == 200) {
+        const data = await response.json();
+        let translatedLanguage = data.name_translated[currentLanguage.code];
+        if (translatedLanguage) {
+          translatedLanguage =
+            translatedLanguage[0].charAt(0).toUpperCase() +
+            translatedLanguage[0].slice(1); // Capitalize first letter
+          return translatedLanguage;
+        }
+        return languageKey;
+      } else {
+        throw new Error("Error HTTP : " + response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching language from Open Library:", error);
+      return languageKey;
+    }
+  }
+};

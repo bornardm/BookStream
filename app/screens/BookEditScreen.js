@@ -30,6 +30,7 @@ import {
   deleteImageFromCovers,
 } from "../setupDatabase";
 import { defaultStatus } from "../constants/BookStatus";
+import { isDigitsOnly } from "../utils";
 
 /**
  * Initializes a book object with default values and optionally copies values from an initial book object.
@@ -206,14 +207,6 @@ export default function BookEditScreen({ route }) {
       updateBookFieldValidity(field, true);
     }
   };
-
-  /**
-   * Checks if a string contains only digits or if it's empty.
-   *
-   * @param {string} str - The string to be checked.
-   * @returns {boolean} - Returns true if the string is empty or contains only digits, otherwise returns false.
-   */
-  const isDigitsOnly = (str) => /^\d*$/.test(str);
 
   /**
    * Reinitializes the API image by deleting the image from covers and resetting the API image URL.
