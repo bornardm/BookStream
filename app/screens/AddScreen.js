@@ -67,7 +67,7 @@ export default function AddScreen({ route, navigation }) {
           value={searchText}
           onChangeText={setSearchText}
           onEndEditing={async () => {
-            const book = await fetchBookFromOpenLibrary("9780140328721");
+            const book = await fetchBookFromOpenLibrary("9783789132193"); //9780140328721");
             if (book) {
               navigation.navigate("BookEditScreen", {
                 book: book,

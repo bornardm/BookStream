@@ -497,19 +497,12 @@ export default function BookEditScreen({ route }) {
         <View style={styles.row}>
           <Text>Author :</Text>
           <TextInput
-            placeholder="Firstname"
-            //TODO add default value
-            style={styles.textInput}
-            placeholderTextColor={colors.placeholderTextColor}
-            maxLength={100}
-          />
-          <TextInput
-            placeholder="Lastname"
+            placeholder="Firstname Lastname"
             style={[
               styles.textInput,
               !book.author.isValid && styles.textInputNotValid,
             ]}
-            defaultValue={book.author.value} //TODO change this
+            defaultValue={book.author.value}
             placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onChangeText={(text) => {

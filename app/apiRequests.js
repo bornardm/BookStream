@@ -1,5 +1,5 @@
-// https://openlibrary.org/isbn/9780140328721.json
-// https://openlibrary.org/api/books?bibkeys=ISBN:9780140328721&jscmd=data&format=json
+//import { currentLanguage } from "./constants/languages";
+
 const monthNames = [
   "January",
   "February",
@@ -16,23 +16,27 @@ const monthNames = [
 ];
 
 export const fetchBookFromOpenLibrary = async (isbn) => {
-  let jscmd = "data";
-  const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=${jscmd}&format=json`;
-  try {
-    const response = await fetch(url);
-    console.log("response", response);
+  // Function to process response
+  const processResponse = async (response, requestType) => {
+    console.log(`@${requestType}-- Response : `, response);
     if (response.ok == true && response.status == 200) {
       const data = await response.json();
-      console.log("data", data);
+      console.log(`@${requestType}-- Data`, data);
       const bookKey = `ISBN:${isbn}`;
       if (data[bookKey]) {
         const jsonBook = data[bookKey];
-        console.log("jsonBook", jsonBook);
-        let book = getBookFromRequestData(jsonBook);
-        console.log(book);
+        console.log(`@${requestType}-- jsonBook`, jsonBook);
+        let book = {};
+        if (requestType === "data") {
+          book = getBookFromRequestData(jsonBook);
+        } else if (requestType === "details") {
+          book = getBookFromRequestDetails(jsonBook);
+        }
+        console.log(`@${requestType}--`, book);
         return book;
       } else {
-        console.log("Book not found ! URL : ", response.url);
+        console.log(`@${requestType}-- Book not found ! URL : `, response.url);
+        return null;
       }
     } else {
       console.log(
@@ -45,6 +49,33 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
       );
       throw new Error("Error HTTP : " + response.status);
     }
+  };
+
+  const baseUrl = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json`;
+
+  // Define URLs for both requests
+  const dataUrl = `${baseUrl}&jscmd=data`;
+  const detailsUrl = `${baseUrl}&jscmd=details`;
+
+  try {
+    // Send both requests and process responses simultaneously
+    const [dataResponse, detailsResponse] = await Promise.all([
+      fetch(dataUrl).then((response) => processResponse(response, "data")),
+      fetch(detailsUrl).then((response) =>
+        processResponse(response, "details")
+      ),
+    ]);
+
+    // At this point, dataResponse and detailsResponse are processed results
+    const combinedResultBook = {
+      ...(dataResponse ? dataResponse : {}),
+      ...(detailsResponse ? detailsResponse : {}),
+    };
+
+    //TODO translate language
+
+    console.log("Combined result book : ", combinedResultBook);
+    return combinedResultBook;
   } catch (error) {
     console.error("Error fetching book from Open Library:", error);
   }
@@ -56,8 +87,8 @@ const getBookFromRequestData = (jsonBook) => {
   if (jsonBook.title) {
     book.title = jsonBook.title;
   }
-  if (jsonBook.isbn_13) {
-    book.isbn = jsonBook.isbn_13[0];
+  if (jsonBook.identifiers?.isbn_13) {
+    book.isbn = jsonBook.identifiers.isbn_13[0];
   }
   if (jsonBook.number_of_pages) {
     book.pageNumber = jsonBook.number_of_pages;
@@ -68,12 +99,7 @@ const getBookFromRequestData = (jsonBook) => {
       book.publicationDate = parsedDate.toISOString().split("T")[0];
     }
   }
-  //summary
-  //language
-  //image
-  //series
-  //volume
-  //categories
+  // TODO categories
   if (jsonBook.publishers) {
     book.publisher = jsonBook.publishers[0].name;
   } //TODO if multiple publishers ???
@@ -88,6 +114,21 @@ const getBookFromRequestData = (jsonBook) => {
       jsonBook.cover.medium || jsonBook.cover.small || jsonBook.cover.large;
     if (coverUrl) {
       book.imageInternetURL = coverUrl; //Be carreful : it's imageInternetURL and not imageName !
+    }
+  }
+  return book;
+};
+const getBookFromRequestDetails = (jsonBook) => {
+  let book = {};
+  if (jsonBook.details) {
+    if (jsonBook.details.description) {
+      book.summary = jsonBook.details.description.value;
+    }
+    if (jsonBook.details.languages) {
+      book.language = jsonBook.details.languages[0].key;
+    }
+    if (jsonBook.details.series) {
+      book.series = jsonBook.details.series[0];
     }
   }
   return book;
