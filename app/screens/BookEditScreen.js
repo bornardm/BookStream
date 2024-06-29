@@ -88,7 +88,8 @@ export default function BookEditScreen({ route }) {
   const [apiImageUrl, setApiImageUrl] = useState(
     route.params?.book?.imageInternetURL
   ); //this variable is first initialized with the image URL from the internet and after the image is downloaded, it is set to the local path
-  const apiImageUrlRef = useRef(apiImageUrl);
+  const apiImageUrlRef = useRef(apiImageUrl); //Reference to the apiImageUrl
+  const [layoutImagePath, setLayoutImagePath] = useState(null); // Path to the image which is displayed (different from apiImageUrl to handel image layout errror whithout change unintentionally the db)
   const [book, setBook] = useState(initBook(route.params?.book));
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [modalVisible, setModalVisible] = useState(false);
@@ -292,6 +293,10 @@ export default function BookEditScreen({ route }) {
     fetchImageSize();
   }, [imageUri, apiImageUrl]);
 
+  useEffect(() => {
+    setLayoutImagePath(apiImageUrl || imageUri);
+  }, [apiImageUrl, imageUri]);
+
   //------------------------ Components ------------------------
 
   function BackArrow() {
@@ -464,13 +469,14 @@ export default function BookEditScreen({ route }) {
         >
           <Image
             source={
-              apiImageUrl
-                ? { uri: apiImageUrl }
-                : imageUri
-                ? { uri: imageUri }
+              layoutImagePath
+                ? { uri: layoutImagePath }
                 : require("../../assets/no_image.jpg")
             }
             style={[styles.cover, { aspectRatio: aspectRatio }]}
+            onError={() => {
+              setLayoutImagePath(null);
+            }} //This is why we use differnece state for the layout image
           />
         </TouchableWithoutFeedback>
         <View style={styles.row}>
