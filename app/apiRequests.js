@@ -1,5 +1,6 @@
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { currentLanguage } from "./constants/languages";
+import { APP_NAME, APP_VERSION } from "./constants/general";
+import { contactEmail } from "./confidential";
 
 const monthNames = [
   "January",
@@ -15,6 +16,15 @@ const monthNames = [
   "November",
   "December",
 ];
+
+const headers = new Headers({
+  "User-Agent": `${APP_NAME}/${APP_VERSION} (${contactEmail})`,
+});
+console.log("Headers : ", headers);
+const options = {
+  method: "GET",
+  headers: headers,
+};
 
 export const fetchBookFromOpenLibrary = async (isbn) => {
   /**
@@ -77,8 +87,10 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
   try {
     // Send both requests and process responses simultaneously
     const [dataResponse, detailsResponse] = await Promise.all([
-      fetch(dataUrl).then((response) => processResponse(response, "data")),
-      fetch(detailsUrl).then((response) =>
+      fetch(dataUrl, options).then((response) =>
+        processResponse(response, "data")
+      ),
+      fetch(detailsUrl, options).then((response) =>
         processResponse(response, "details")
       ),
     ]);
@@ -95,7 +107,7 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
       if (!combinedResultBook.summary) {
         console.log("fetching work summary...");
         const workUrl = `https://openlibrary.org${combinedResultBook.work}.json`;
-        let workResponse = await fetch(workUrl);
+        let workResponse = await fetch(workUrl, options);
         workResponse = await processResponse(workResponse, "work");
         combinedResultBook = {
           ...combinedResultBook,
@@ -271,7 +283,8 @@ const getBookTranslatedLanguage = async (languageKey) => {
   } else {
     try {
       const response = await fetch(
-        `https://openlibrary.org/languages/${languageKey}.json`
+        `https://openlibrary.org/languages/${languageKey}.json`,
+        options
       );
       if (response.ok == true && response.status == 200) {
         const data = await response.json();

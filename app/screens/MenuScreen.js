@@ -6,6 +6,7 @@ export default function MenuScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text>Menu</Text>
+      <Text>Mention OpenLibrary APi in about</Text>
     </View>
   );
 }
