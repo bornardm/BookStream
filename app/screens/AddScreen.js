@@ -82,29 +82,31 @@ export default function AddScreen({ route, navigation }) {
         />
       ) : null}
       <Text>Add Screen</Text>
-      <MaterialCommunityIcons.Button
-        name="barcode-scan"
-        style={styles.scanButton}
-        color={colors.black}
-        backgroundColor={colors.white}
-        onPress={() => {
-          navigation.navigate("ScannerScreen", {
-            onGoBack: onGoBackFromScannerScreen,
-          });
-        }}
-      />
-      <View style={styles.inputView}>
-        <EvilIcons name="search" size={35} color={colors.textInputBorder} />
-        <TextInput
-          placeholder="Title, isbn, author..."
-          value={searchText}
-          onChangeText={setSearchText}
-          onSubmitEditing={async (event) => {
-            await searchBookByISBN(event.nativeEvent.text);
+      <View style={styles.search}>
+        <View style={styles.inputView}>
+          <EvilIcons name="search" size={35} color={colors.textInputBorder} />
+          <TextInput
+            placeholder="Title, isbn, author..."
+            value={searchText}
+            onChangeText={setSearchText}
+            onSubmitEditing={async (event) => {
+              await searchBookByISBN(event.nativeEvent.text);
+            }}
+            style={styles.textInput}
+            placeholderTextColor={colors.placeholderTextColor}
+            maxLength={200}
+          />
+        </View>
+        <MaterialCommunityIcons.Button
+          name="barcode-scan"
+          style={styles.scanButton}
+          color={colors.black}
+          backgroundColor={colors.white}
+          onPress={() => {
+            navigation.navigate("ScannerScreen", {
+              onGoBack: onGoBackFromScannerScreen,
+            });
           }}
-          style={styles.textInput}
-          placeholderTextColor={colors.placeholderTextColor}
-          maxLength={200}
         />
       </View>
       <Button
@@ -127,6 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
+    padding: 10,
   },
   activityIndicator: {
     position: "absolute",
@@ -140,14 +143,19 @@ const styles = StyleSheet.create({
     borderColor: colors.textInputBorder,
     borderWidth: 1,
   },
+  search: {
+    flexDirection: "row",
+    marginVertical: 20,
+  },
   inputView: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     height: 40,
     borderRadius: 5,
     borderColor: colors.textInputBorder,
     borderWidth: 1,
-    margin: 10,
+    marginRight: 10,
   },
   textInput: {
     padding: 10,

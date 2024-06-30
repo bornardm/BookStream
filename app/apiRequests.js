@@ -21,30 +21,39 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
    * Processes the response received from an API request.
    *
    * @param {Response} response - The response object received from the API request.
-   * @param {string} requestType - The type of the API request (e.g., "data" or "details").
+   * @param {string} requestType - The type of the API request (e.g., "data" or "details" or "work").
    * @returns {Promise<Object|null>} - A promise that resolves to the processed book object if found, or null if not found.
    * @throws {Error} - Throws an error if the API request fails.
    */
   const processResponse = async (response, requestType) => {
-    //console.log(`@${requestType}-- Response : `, response);
+    console.log(`@${requestType}-- Response : `, response);
     if (response.ok == true && response.status == 200) {
+      let book = {};
       const data = await response.json();
-      //console.log(`@${requestType}-- Data`, data);
-      const bookKey = `ISBN:${isbn}`;
-      if (data[bookKey]) {
-        const jsonBook = data[bookKey];
-        console.log(`@${requestType}-- jsonBook`, jsonBook);
-        let book = {};
-        if (requestType === "data") {
-          book = getBookFromRequestData(jsonBook);
-        } else if (requestType === "details") {
-          book = getBookFromRequestDetails(jsonBook);
-        }
+      if (requestType === "work") {
+        const book = getBookFromRequestWork(data);
         console.log(`@${requestType}--`, book);
         return book;
       } else {
-        console.log(`@${requestType}-- Book not found ! URL : `, response.url);
-        return null;
+        //console.log(`@${requestType}-- Data`, data);
+        const bookKey = `ISBN:${isbn}`;
+        if (data[bookKey]) {
+          const jsonBook = data[bookKey];
+          console.log(`@${requestType}-- jsonBook`, jsonBook);
+          if (requestType === "data") {
+            book = getBookFromRequestData(jsonBook);
+          } else if (requestType === "details") {
+            book = getBookFromRequestDetails(jsonBook);
+          }
+          console.log(`@${requestType}--`, book);
+          return book;
+        } else {
+          console.log(
+            `@${requestType}-- Book not found ! URL : `,
+            response.url
+          );
+          return null;
+        }
       }
     } else {
       console.log(
@@ -75,10 +84,25 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
     ]);
 
     // At this point, dataResponse and detailsResponse are processed results
-    const combinedResultBook = {
+    let combinedResultBook = {
       ...(dataResponse ? dataResponse : {}),
       ...(detailsResponse ? detailsResponse : {}),
     };
+    console.log("Combined result book : ", combinedResultBook);
+
+    //get summary if it's null :
+    if (combinedResultBook.hasOwnProperty("work")) {
+      if (!combinedResultBook.summary) {
+        console.log("fetching work summary...");
+        const workUrl = `https://openlibrary.org${combinedResultBook.work}.json`;
+        let workResponse = await fetch(workUrl);
+        workResponse = await processResponse(workResponse, "work");
+        combinedResultBook = {
+          ...combinedResultBook,
+          ...(workResponse ? workResponse : {}),
+        };
+      }
+    }
 
     //Translate language
     if (combinedResultBook.language) {
@@ -108,7 +132,11 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
 const getBookFromRequestData = (jsonBook) => {
   let book = {};
   if (jsonBook.title) {
-    book.title = jsonBook.title;
+    let title = jsonBook.title;
+    if (jsonBook.subtitle) {
+      title += `: ${jsonBook.subtitle}`;
+    }
+    book.title = title;
   }
   if (jsonBook.identifiers?.isbn_13) {
     book.isbn = jsonBook.identifiers.isbn_13[0];
@@ -153,7 +181,14 @@ const getBookFromRequestDetails = (jsonBook) => {
   let book = {};
   if (jsonBook.details) {
     if (jsonBook.details.description) {
-      book.summary = jsonBook.details.description.value;
+      const description = jsonBook.details.description;
+      // Check if description is an object with a value property
+      if (description.value) {
+        book.summary = description.value;
+      } else {
+        // If description is a string, use it directly
+        book.summary = description;
+      }
     }
     if (jsonBook.details.languages && jsonBook.details.languages[0]) {
       book.language = jsonBook.details.languages[0].key.split("/").pop(); //get only the language key
@@ -161,8 +196,26 @@ const getBookFromRequestDetails = (jsonBook) => {
     if (jsonBook.details.series) {
       book.series = jsonBook.details.series[0];
     }
+    if (jsonBook.details.works && jsonBook.details.works[0]) {
+      book.work = jsonBook.details.works[0].key;
+    }
   }
   return book;
+};
+
+const getBookFromRequestWork = (jsonBook) => {
+  let book = {};
+  if (jsonBook.description) {
+    // Check if description is an object with a value property
+    if (jsonBook.description.value) {
+      book.summary = jsonBook.description.value;
+    } else {
+      // If description is a string, use it directly
+      book.summary = jsonBook.description;
+    }
+    return book;
+  }
+  return null;
 };
 
 /**
