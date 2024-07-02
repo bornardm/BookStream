@@ -228,3 +228,35 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
     console.error("Error in editing book in db ", error);
   }
 }
+
+/**
+ * Retrieves distinct values from the specified field in the BOOKS table.
+ * Exclude null and empty values.
+ *
+ * @param {Object} options - The options for retrieving distinct values.
+ * @param {string} options.field - The field to retrieve distinct values from.
+ * @returns {Array|null} - An array of distinct values from the specified field, or null if an error occurs.
+ */
+export function getDistinctDB({ field }) {
+  //console.log("DB : start fetching distinct field: ", field);
+  let result = null;
+  try {
+    dbConnexion.withTransactionSync(() => {
+      //console.log("transaction start ");
+
+      result = dbConnexion.getAllSync(
+        `SELECT DISTINCT ${field} FROM BOOKS WHERE ${field} IS NOT NULL AND ${field} != ""`
+      );
+      //console.log("Rows:", result);
+      //console.log("transaction end");
+
+      //transform to array
+      result = result.map((row) => row[field]);
+      //console.log("Array result:", result);
+    });
+    return result;
+  } catch (e) {
+    console.error("error in getDistinctDB", e);
+    return null;
+  }
+}

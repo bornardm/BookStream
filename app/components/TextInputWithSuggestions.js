@@ -16,6 +16,15 @@ import Autocomplete from "react-native-autocomplete-input";
 
 import { colors } from "../constants/Colors";
 
+/**
+ * Renders a text component with bold matching text based on a query.
+ * in the text, only the query is bold.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.text - The text to be rendered.
+ * @param {string} props.query - The query used to find the matching text.
+ * @returns {JSX.Element} The rendered component.
+ */
 const BoldMatchingText = ({ text, query }) => {
   if (!query) return <Text>{text}</Text>;
 
@@ -36,6 +45,12 @@ const BoldMatchingText = ({ text, query }) => {
   );
 };
 
+/**
+ * Merges multiple styles into a single object, excluding the 'flex' property.
+ *
+ * @param {Object|Array} styles - The styles to merge. Can be a single object or an array of objects.
+ * @returns {Object} - The merged styles object.
+ */
 const mergeStylesExcludingFlex = (styles) => {
   // Convert styles to an array if it's not already an array
   const stylesArray = Array.isArray(styles) ? styles : [styles];
@@ -59,24 +74,26 @@ export default function TextInputWithSuggestions({
   onSubmitEditing,
   value,
 }) {
+  //------------------------ Variables and States------------------------
   const [suggestions, setSuggestions] = useState(suggestionsArrray); //List of the suggestions
   const [query, setQuery] = useState(defaultValue || ""); //texte enter in the input
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const restTextInputStyle = textInputStyle
     ? mergeStylesExcludingFlex(textInputStyle)
-    : {};
+    : {}; //Style resulting from the merge of the styles of the text input and excluding the flex property
 
-  // Filter authors based on query
+  // Filter suggestions based on query
   const filteredSuggestions = query
     ? suggestions.filter((suggestion) =>
         suggestion.toLowerCase().includes(query.toLowerCase())
       )
     : [];
 
-  // Render each item in the autocomplete dropdown
+  //------------------------ Functions-----------------------------------
+
+  // Render each item in the autocomplete dropdown, it's a TouchableOpacity that when clicked will set the query to the item and hide the suggestions
   const renderSuggestionItem = ({ item }) => {
-    //console.log("item :", item);
     return (
       <TouchableOpacity
         onPress={() => {

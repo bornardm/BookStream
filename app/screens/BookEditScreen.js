@@ -30,7 +30,7 @@ import { ScrollView as VirtualizedScrollView } from "react-native-virtualized-vi
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 // Utility functions, constants, and other local imports
-import { addOrModifyBookDB } from "../requests";
+import { addOrModifyBookDB, getDistinctDB } from "../requests";
 import { colors } from "../constants/Colors";
 import {
   coversDir,
@@ -41,6 +41,7 @@ import { defaultStatus } from "../constants/BookStatus";
 import { isDigitsOnly } from "../utils";
 import { FlatList } from "react-native-gesture-handler";
 import TextInputWithSuggestions from "../components/TextInputWithSuggestions";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 /**
  * Initializes a book object with default values and optionally copies values from an initial book object.
@@ -103,6 +104,12 @@ export default function BookEditScreen({ route }) {
   const [newImageFormat, setNewImageFormat] = useState(null); // Format of the new image if it has been changed (null if not)
   const navigation = useNavigation();
   let bookIdAfterRequest = null;
+
+  // Suggestions for the TextInputWithSuggestions components (get from the DB)
+  const authorSuggestions = getDistinctDB({ field: "author" });
+  const publisherSuggestions = getDistinctDB({ field: "publisher" });
+  const seriesSuggestions = getDistinctDB({ field: "series" });
+  const languageSuggestions = getDistinctDB({ field: "language" });
 
   //------------------------ Functions ------------------------
 
@@ -460,26 +467,6 @@ export default function BookEditScreen({ route }) {
       </Modal>
     );
   }
-  const authors = [
-    "J.K Rowling",
-    "J.K Rowling 1",
-    "J.K Rowling 2",
-    "J.K Rowling 3",
-    "J.K Rowling 4",
-    "J.K Rowling 5",
-    "J.K Rowling 6",
-    "J.K Rowling 7",
-    "J.K Rowling 8",
-    "J.K Rowling 9",
-    "George R.R. Martin",
-    "J.R.R. Tolkien",
-    "Stephen King",
-    "Agatha Christie",
-    "Dan Brown",
-    "Paulo Coelho",
-    "Haruki Murakami",
-    "Philip Pullman",
-  ]; //List of all the authors
 
   return (
     <ScrollView nestedScrollEnabled={true}>
@@ -527,7 +514,7 @@ export default function BookEditScreen({ route }) {
             Author :
           </Text>
           <TextInputWithSuggestions
-            suggestionsArrray={authors}
+            suggestionsArrray={authorSuggestions}
             textInputStyle={[
               styles.textInput,
               !book.author.isValid && styles.textInputNotValid,
@@ -586,7 +573,7 @@ export default function BookEditScreen({ route }) {
         <View style={[styles.row, { alignItems: "flex-start" }]}>
           <Text style={styles.alignWithInputSuggestions}>Series :</Text>
           <TextInputWithSuggestions
-            suggestionsArrray={authors}
+            suggestionsArrray={seriesSuggestions}
             placeholder="Series name"
             defaultValue={book.series.value}
             textInputStyle={styles.textInput}
@@ -621,7 +608,7 @@ export default function BookEditScreen({ route }) {
         <View style={styles.row}>
           <Text style={styles.alignWithInputSuggestions}>Publisher :</Text>
           <TextInputWithSuggestions
-            suggestionsArrray={authors}
+            suggestionsArrray={publisherSuggestions}
             placeholder="Publisher"
             defaultValue={book.publisher.value}
             textInputStyle={styles.textInput}
@@ -669,7 +656,7 @@ export default function BookEditScreen({ route }) {
         <View style={styles.row}>
           <Text style={styles.alignWithInputSuggestions}>Language :</Text>
           <TextInputWithSuggestions
-            suggestionsArrray={authors}
+            suggestionsArrray={languageSuggestions}
             placeholder="Language"
             defaultValue={book.language.value}
             textInputStyle={styles.textInput}
