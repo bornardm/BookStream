@@ -23,7 +23,6 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import Autocomplete from "react-native-autocomplete-input";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -41,6 +40,7 @@ import {
 import { defaultStatus } from "../constants/BookStatus";
 import { isDigitsOnly } from "../utils";
 import { FlatList } from "react-native-gesture-handler";
+import TextInputWithSuggestions from "../components/TextInputWithSuggestions";
 
 /**
  * Initializes a book object with default values and optionally copies values from an initial book object.
@@ -460,86 +460,29 @@ export default function BookEditScreen({ route }) {
       </Modal>
     );
   }
-
-  function AutocompleteAuthor() {
-    const [authors, setAuthors] = useState([
-      "J.K. Rowling",
-      "J.K Rowling 1",
-      "J.K Rowling 2",
-      "J.K Rowling 3",
-      "J.K Rowling 4",
-      "J.K Rowling 5",
-      "J.K Rowling 6",
-      "J.K Rowling 7",
-      "J.K Rowling 8",
-      "J.K Rowling 9",
-      "George R.R. Martin",
-      "J.R.R. Tolkien",
-      "Stephen King",
-      "Agatha Christie",
-      "Dan Brown",
-      "Paulo Coelho",
-      "Haruki Murakami",
-      "Philip Pullman",
-    ]); //List of all the authors
-    const [query, setQuery] = useState(""); //texte enter in the input
-    const [selectedAuthor, setSelectedAuthor] = useState("");
-    const [showSuggestions, setShowSuggestions] = useState(false);
-
-    // Filter authors based on query
-    const filteredAuthors = query
-      ? authors.filter((author) =>
-          author.toLowerCase().includes(query.toLowerCase())
-        )
-      : [];
-
-    // Render each item in the autocomplete dropdown
-    const renderAuthorItem = ({ item }) => (
-      <TouchableOpacity
-        onPress={() => {
-          setQuery(item);
-          setSelectedAuthor(item);
-          setShowSuggestions(false);
-        }}
-      >
-        <Text style={{ margin: 10 }}>{item}</Text>
-      </TouchableOpacity>
-    );
-
-    return (
-      <Autocomplete
-        style={[styles.textInput, { marginBottom: 0 }]}
-        inputContainerStyle={{ borderWidth: 0 }}
-        data={filteredAuthors}
-        defaultValue={query}
-        onChangeText={(text) => setQuery(text)}
-        onFocus={() => setShowSuggestions(true)}
-        onBlur={() => {
-          setTimeout(() => setShowSuggestions(false), 1000);
-        }} // Delay hiding the suggestions to allow the user to click on them
-        placeholder="Enter author's name"
-        keyExtractor={(item, index) => index.toString()}
-        renderResultList={() =>
-          showSuggestions ? (
-            <FlatList
-              style={[
-                styles.suggestionsFlatList,
-                { margin: styles.textInput.margin + 5, marginTop: 0 },
-              ]}
-              data={filteredAuthors}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderAuthorItem}
-              windowSize={5}
-              maxToRenderPerBatch={5}
-            />
-          ) : null
-        }
-      />
-    );
-  }
+  const authors = [
+    "J.K Rowling",
+    "J.K Rowling 1",
+    "J.K Rowling 2",
+    "J.K Rowling 3",
+    "J.K Rowling 4",
+    "J.K Rowling 5",
+    "J.K Rowling 6",
+    "J.K Rowling 7",
+    "J.K Rowling 8",
+    "J.K Rowling 9",
+    "George R.R. Martin",
+    "J.R.R. Tolkien",
+    "Stephen King",
+    "Agatha Christie",
+    "Dan Brown",
+    "Paulo Coelho",
+    "Haruki Murakami",
+    "Philip Pullman",
+  ]; //List of all the authors
 
   return (
-    <VirtualizedScrollView>
+    <ScrollView nestedScrollEnabled={true}>
       <View style={styles.container}>
         <HeaderBand />
         <ModalPicker />
@@ -579,8 +522,27 @@ export default function BookEditScreen({ route }) {
             }}
           />
         </View>
-        <View>
-          <AutocompleteAuthor />
+        <View style={styles.row}>
+          <Text style={{ alignSelf: "flex-start", marginTop: 20 }}>
+            Author :
+          </Text>
+          <TextInputWithSuggestions
+            suggestionsArrray={authors}
+            textInputStyle={[
+              styles.textInput,
+              !book.author.isValid && styles.textInputNotValid,
+            ]}
+            defaultValue={book.author.value}
+            placeholder={"Firstname Lastname"}
+            placeholderTextColor={colors.placeholderTextColor}
+            maxLength={100}
+            onChangeText={(text) => {
+              checkInputValidity("author", text.trim() !== "");
+            }}
+            onEndEditing={(event) => {
+              updateBookField("author", event.nativeEvent.text.trim());
+            }}
+          />
         </View>
         <View style={styles.row}>
           <Text>Author :</Text>
@@ -748,7 +710,7 @@ export default function BookEditScreen({ route }) {
           />
         </View>
       </View>
-    </VirtualizedScrollView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
@@ -816,19 +778,5 @@ const styles = StyleSheet.create({
   iconAndText: {
     alignItems: "center",
     flex: 1,
-  },
-  suggestionsFlatList: {
-    maxHeight: 150,
-    backgroundColor: colors.white,
-    borderRadius: 2,
-    // Shadow properties
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5, // for Android
   },
 });
