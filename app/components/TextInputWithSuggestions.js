@@ -63,7 +63,9 @@ export default function TextInputWithSuggestions({
   const [query, setQuery] = useState(defaultValue || ""); //texte enter in the input
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const restTextInputStyle = mergeStylesExcludingFlex(textInputStyle);
+  const restTextInputStyle = textInputStyle
+    ? mergeStylesExcludingFlex(textInputStyle)
+    : {};
 
   // Filter authors based on query
   const filteredSuggestions = query
@@ -74,7 +76,7 @@ export default function TextInputWithSuggestions({
 
   // Render each item in the autocomplete dropdown
   const renderSuggestionItem = ({ item }) => {
-    console.log("item :", item);
+    //console.log("item :", item);
     return (
       <TouchableOpacity
         onPress={() => {

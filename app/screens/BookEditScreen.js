@@ -545,25 +545,6 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Author :</Text>
-          <TextInput
-            placeholder="Firstname Lastname"
-            style={[
-              styles.textInput,
-              !book.author.isValid && styles.textInputNotValid,
-            ]}
-            defaultValue={book.author.value}
-            placeholderTextColor={colors.placeholderTextColor}
-            maxLength={100}
-            onChangeText={(text) => {
-              checkInputValidity("author", text.trim() !== "");
-            }}
-            onEndEditing={(event) => {
-              updateBookField("author", event.nativeEvent.text.trim());
-            }}
-          />
-        </View>
-        <View style={styles.row}>
           <Text>Summary :</Text>
           <TextInput
             placeholder="Summary"
@@ -602,12 +583,13 @@ export default function BookEditScreen({ route }) {
             }}
           />
         </View>
-        <View style={styles.row}>
-          <Text>Series :</Text>
-          <TextInput
-            placeholder="Series name "
+        <View style={[styles.row, { alignItems: "flex-start" }]}>
+          <Text style={styles.alignWithInputSuggestions}>Series :</Text>
+          <TextInputWithSuggestions
+            suggestionsArrray={authors}
+            placeholder="Series name"
             defaultValue={book.series.value}
-            style={styles.textInput}
+            textInputStyle={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
@@ -637,11 +619,12 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Publisher :</Text>
-          <TextInput
+          <Text style={styles.alignWithInputSuggestions}>Publisher :</Text>
+          <TextInputWithSuggestions
+            suggestionsArrray={authors}
             placeholder="Publisher"
             defaultValue={book.publisher.value}
-            style={styles.textInput}
+            textInputStyle={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
@@ -684,11 +667,12 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Language :</Text>
-          <TextInput
+          <Text style={styles.alignWithInputSuggestions}>Language :</Text>
+          <TextInputWithSuggestions
+            suggestionsArrray={authors}
             placeholder="Language"
             defaultValue={book.language.value}
-            style={styles.textInput}
+            textInputStyle={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onEndEditing={(event) => {
@@ -778,5 +762,9 @@ const styles = StyleSheet.create({
   iconAndText: {
     alignItems: "center",
     flex: 1,
+  },
+  alignWithInputSuggestions: {
+    alignSelf: "flex-start",
+    marginTop: 20,
   },
 });

@@ -20,6 +20,7 @@ import { LogBox } from "react-native";
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
 ]);
+LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 
 const HomeStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
