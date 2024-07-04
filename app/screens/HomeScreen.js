@@ -12,6 +12,7 @@ import {
 
 // Third-party libraries/components
 import Icon from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { SQLiteProvider } from "expo-sqlite/next";
 
 // Utility functions, constants, and other local imports
@@ -20,11 +21,13 @@ import LoadindingView from "../components/LoadingView";
 import { colors } from "../constants/Colors";
 import { dbName } from "../setupDatabase";
 import { fetchBookPreview } from "../requests";
+import FilterView from "../components/FilterView";
 
 export default function HomeScreen({ navigation }) {
   //------------------------ Variables and States------------------------
   const [allBookPreview, setAllBookPreview] = useState(null);
   const [previewsLoaded, setPreviewsLoaded] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   //------------------------ Functions ----------------------------------
 
@@ -70,6 +73,15 @@ export default function HomeScreen({ navigation }) {
     <Suspense fallback={<LoadindingView />}>
       <SQLiteProvider databaseName={dbName} useSuspense>
         <View style={styles.container}>
+          <View style={styles.header}>
+            <MaterialIcons
+              name="filter-list"
+              size={24}
+              onPress={() => {
+                setShowFilter(!showFilter);
+              }}
+            />
+          </View>
           <ScrollView style={styles.scrollView}>
             {previewsLoaded &&
               allBookPreview.map((book, index) => (
@@ -104,6 +116,8 @@ export default function HomeScreen({ navigation }) {
               <Icon name="plus" style={styles.iconPlus} />
             </TouchableWithoutFeedback>
           </View>
+          {showFilter && <View style={styles.overlay}></View>}
+          <FilterView showFilter={showFilter} setShowFilter={setShowFilter} />
         </View>
       </SQLiteProvider>
     </Suspense>
@@ -118,9 +132,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
+    zIndex: 0, // Ensure it's below the FilterView but above other content
+  },
   scrollView: {
     width: "100%",
     backgroundColor: "transparent",
+  },
+  header: {
+    height: 50,
+    backgroundColor: "red",
   },
   addBook: {
     backgroundColor: colors.secondary,
