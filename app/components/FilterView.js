@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 import { colors } from "../constants/Colors";
+import { BOOK_STATUS } from "../constants/BookStatus";
 import ButtonGroup from "./ButtonGroup";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MultiSelect } from "react-native-element-dropdown";
@@ -46,24 +47,24 @@ const sortItems = [
   },
   {
     id: "3",
-    label: "Reading date (newest)",
-    value: "readingDate",
+    label: "Reading date (descending)",
+    value: "readingEndDate",
     ...radioButtonProps,
   },
   {
     id: "4",
-    label: "Date of addition to my books (newest)",
-    value: "additionDate",
+    label: "Date of addition to my books (descending)",
+    value: "addedDate",
     ...radioButtonProps,
   },
   {
     id: "5",
-    label: "Rating (highest)",
+    label: "Rating (descending)",
     value: "rating",
     ...radioButtonProps,
   },
 ];
-const filterStatusItems = [
+const filterStatusItemsData = [
   {
     id: "1",
     label: "All",
@@ -74,37 +75,37 @@ const filterStatusItems = [
   {
     id: "2",
     label: "Read",
-    value: "read",
+    value: BOOK_STATUS.READ,
     ...checkButtonProps,
   },
   {
     id: "3",
     label: "Want to read",
-    value: "toRead",
+    value: BOOK_STATUS.TO_READ,
     ...checkButtonProps,
   },
   {
     id: "4",
     label: "Reading",
-    value: "reading",
+    value: BOOK_STATUS.READING,
     ...checkButtonProps,
   },
   {
     id: "5",
     label: "Abandoned",
-    value: "abandoned",
+    value: BOOK_STATUS.ABANDONED,
     ...checkButtonProps,
   },
   {
     id: "6",
     label: "Borrowed",
-    value: "borrowed",
+    value: BOOK_STATUS.BORROWED,
     ...checkButtonProps,
   },
   {
     id: "7",
     label: "To exchange",
-    value: "toExchange",
+    value: BOOK_STATUS.TO_EXCHANGE,
     ...checkButtonProps,
   },
 ];
@@ -167,6 +168,9 @@ export default function FilterView({
   );
   const [selectedId, setSelectedId] = useState("1");
   const [filterNoteItems, setFilterNoteItem] = useState(createFilterNoteItems);
+  const [filterStatusItems, setFilterStatusItem] = useState(
+    filterStatusItemsData
+  );
   const [selectedAuthor, setSelectedAuthor] = useState([]);
   const [selectedPublisher, setSelectedPublisher] = useState([]);
   const [selectedSeries, setSelectedSeries] = useState([]);
@@ -178,7 +182,7 @@ export default function FilterView({
   const [allSeries, setAllSeries] = useState([]);
   const [allReadYear, setAllReadYear] = useState([]);
 
-  const handlePressCheckButton = (id) => {
+  const handlePressCheckButtonNote = (id) => {
     const newFilterNoteItems = filterNoteItems.map((item) => {
       if (item.id === id) {
         return {
@@ -189,6 +193,121 @@ export default function FilterView({
       return item;
     });
     setFilterNoteItem(newFilterNoteItems);
+  };
+  const handlePressCheckButtonStatus = (id) => {
+    const newFilterStatusItems = filterStatusItems.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          selected: !item.selected,
+        };
+      }
+      return item;
+    });
+    setFilterStatusItem(newFilterStatusItems);
+  };
+
+  const onApllyPress = () => {
+    console.log("Apply pressed");
+    setShowFilter(false);
+    const { request, params } = computeDbRequest();
+    console.log("request = ", request, "params = ", params);
+  };
+
+  const computeDbRequest = () => {
+    let request = "SELECT * FROM BOOKS";
+    let params = [];
+    let where = false;
+    for (filter of [
+      { array: selectedAuthor, label: "author" },
+      { array: selectedPublisher, label: "publisher" },
+      { array: selectedSeries, label: "series" },
+    ]) {
+      if (filter.array.length > 0) {
+        request += where ? " AND " : " WHERE ";
+        where = true;
+        request += `${filter.label} IN (${filter.array
+          .map(() => "?")
+          .join(", ")})`;
+        params = params.concat(filter.array);
+      }
+    }
+    if (selectedReadYear.length > 0) {
+      request += where ? " AND " : " WHERE ";
+      where = true;
+      request += ` strftime('%Y', readingStartDate) IN (${selectedReadYear
+        .map(() => "?")
+        .join(", ")})`;
+      params = params.concat(selectedReadYear);
+    }
+
+    //Rating
+    if (!filterNoteItems[0].selected) {
+      const numberNoteSelected = filterNoteItems.filter(
+        (item) => item.selected
+      ).length;
+      let orStatement = false;
+      if (filterNoteItems[filterNoteItems.length - 1].selected) {
+        request += where ? " AND ( " : " WHERE ( ";
+        where = true;
+        orStatement = true;
+        request += ` rating IS NULL `;
+      }
+      if (
+        (filterNoteItems[filterNoteItems.length - 1].selected &&
+          numberNoteSelected > 1) ||
+        numberNoteSelected > 0
+      ) {
+        request += where ? (orStatement ? "OR" : " AND ") : " WHERE ";
+        where = true;
+        request += ` rating IN (${filterNoteItems
+          .filter((item) => item.selected && item.value !== "null")
+          .map(() => "?")
+          .join(", ")})`;
+        params = params.concat(
+          filterNoteItems
+            .filter((item) => item.selected && item.value !== "null")
+            .map((item) => item.value)
+        );
+      }
+      if (filterNoteItems[filterNoteItems.length - 1].selected) {
+        request += " ) ";
+      }
+    }
+
+    //Status
+    if (!filterStatusItems[0].selected) {
+      const statusSelected = filterStatusItems.filter(
+        (item) => item.selected && item.id > 1 && item.id < 6
+      );
+      if (statusSelected.length > 0) {
+        request += where ? " AND " : " WHERE ";
+        where = true;
+        request += ` status IN (${statusSelected.map(() => "?").join(", ")})`;
+        params = params.concat(statusSelected.map((item) => item.value));
+      }
+    }
+    if (filterStatusItems[5].selected) {
+      //Borrowed
+      request += where ? " AND " : " WHERE ";
+      where = true;
+      request += ` borrowed = 1`;
+    }
+    if (filterStatusItems[6].selected) {
+      //To exchange
+      request += where ? " AND " : " WHERE ";
+      where = true;
+      request += ` toExchange = 1`;
+    }
+
+    //Sort
+    const sort = sortItems.find((item) => item.id === selectedId);
+    request += ` ORDER BY ${sort.value} ${
+      sort.value === "title" || sort.value === "author" ? "ASC" : "DESC"
+    } `;
+
+    request += ";";
+    return { request, params };
   };
 
   useEffect(() => {
@@ -250,7 +369,7 @@ export default function FilterView({
             name="check"
             color={colors.black}
             backgroundColor="transparent"
-            onPress={() => setShowFilter(false)}
+            onPress={onApllyPress}
             iconStyle={{ marginRight: 0 }}
             underlayColor={"rgba(0,0,0,0.1)"}
           />
@@ -272,14 +391,14 @@ export default function FilterView({
           <ButtonGroup
             type={"check"}
             radioButtons={filterStatusItems}
-            onPress={handlePressCheckButton}
+            onPress={handlePressCheckButtonStatus}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             endId={4}
           />
           <ButtonGroup
             type={"check"}
             radioButtons={filterStatusItems}
-            onPress={handlePressCheckButton}
+            onPress={handlePressCheckButtonStatus}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             startId={5}
           />
@@ -289,14 +408,14 @@ export default function FilterView({
           <ButtonGroup
             type={"check"}
             radioButtons={filterNoteItems}
-            onPress={handlePressCheckButton}
+            onPress={handlePressCheckButtonNote}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             startId={6}
           />
           <ButtonGroup
             type={"check"}
             radioButtons={filterNoteItems}
-            onPress={handlePressCheckButton}
+            onPress={handlePressCheckButtonNote}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             endId={5}
           />
@@ -375,7 +494,7 @@ export default function FilterView({
           )}
         />
         <View style={styles.applyButton}>
-          <Button title="Apply" onPress={() => setShowFilter(false)} />
+          <Button title="Apply" onPress={onApllyPress} />
         </View>
         <View style={styles.marginView} />
       </ScrollView>
