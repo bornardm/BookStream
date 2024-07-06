@@ -8,11 +8,15 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Dimensions,
+  StatusBar,
+  Platform,
 } from "react-native";
 
 import { colors } from "../constants/Colors";
 import ButtonGroup from "./ButtonGroup";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MultiSelect } from "react-native-element-dropdown";
+
 const radioButtonProps = {
   selectedColor: "gold",
   unselectedColor: colors.middleLightGrey,
@@ -58,8 +62,29 @@ const sortItems = [
     ...radioButtonProps,
   },
 ];
+const data = [
+  { label: "Item 1", value: "1" },
+  { label: "Item 2", value: "2" },
+  { label: "Item 3", value: "3" },
+  { label: "Item 4", value: "4" },
+  { label: "Item 5", value: "5" },
+  { label: "Item 6", value: "6" },
+  { label: "Item 7", value: "7" },
+  { label: "Item 8", value: "8" },
+];
 
 const viewProportion = 0.9;
+const computeDeviceNavigationBarHeight = () => {
+  if (Platform.OS === "ios") {
+    return 44;
+  } else {
+    const deviceH = Dimensions.get("screen").height;
+    const viewH = Dimensions.get("window").height;
+    return deviceH - viewH - StatusBar.currentHeight;
+  }
+};
+const deviceNavigationBarHeight = computeDeviceNavigationBarHeight();
+console.log("deviceNavigationBarHeight", deviceNavigationBarHeight);
 
 const createFilterNoteItems = () => {
   let items = [
@@ -94,6 +119,10 @@ export default function FilterView({ showFilter, setShowFilter }) {
   );
   const [selectedId, setSelectedId] = useState("1");
   const [filterNoteItems, setFilterNoteItem] = useState(createFilterNoteItems);
+  const [selectedAuthor, setSelectedAuthor] = useState([]);
+  const [selectedPublisher, setSelectedPublisher] = useState([]);
+  const [selectedSeries, setSelectedSeries] = useState([]);
+  const [selectedReadDate, setSelectedReadDate] = useState([]);
   const translateY = useRef(new Animated.Value(windowsHeight)).current; // initial position outside of the screen
 
   const handlePressCheckButton = (id) => {
@@ -112,7 +141,6 @@ export default function FilterView({ showFilter, setShowFilter }) {
   // Update height when the screen dimensions change
   useEffect(() => {
     const onChange = () => {
-      console.log(Dimensions.get("window").height);
       setWindowsHeight(Dimensions.get("window").height);
     };
 
@@ -133,15 +161,11 @@ export default function FilterView({ showFilter, setShowFilter }) {
       duration: 300,
       useNativeDriver: true,
     }).start();
-    console.log("showFilter changed");
   }, [showFilter]);
 
   return (
     <Animated.View
-      style={[
-        styles.filterContainer,
-        { height: viewProportion * windowsHeight, transform: [{ translateY }] },
-      ]}
+      style={[styles.filterContainer, { transform: [{ translateY }] }]}
     >
       <View style={styles.header}>
         <Text style={styles.headerText}>Sorting and filters</Text>
@@ -182,6 +206,80 @@ export default function FilterView({ showFilter, setShowFilter }) {
             endId={5}
           />
         </View>
+        <Text style={styles.subTitle}>Other filters</Text>
+        <MultiSelect
+          {...MultiSelectProps}
+          placeholder={selectedAuthor.length > 0 ? "Authors : " : "All authors"}
+          value={selectedAuthor}
+          data={data}
+          onChange={(item) => {
+            setSelectedAuthor(item);
+          }}
+          renderLeftIcon={() => (
+            <MaterialCommunityIcons
+              style={styles.icon}
+              color="black"
+              name="account-search"
+              size={20}
+            />
+          )}
+        />
+        <MultiSelect
+          {...MultiSelectProps}
+          placeholder={
+            selectedPublisher.length > 0 ? "Publishers : " : "All publishers"
+          }
+          value={selectedPublisher}
+          data={data}
+          onChange={(item) => {
+            setSelectedPublisher(item);
+          }}
+          renderLeftIcon={() => (
+            <MaterialCommunityIcons
+              style={styles.icon}
+              color="black"
+              name="briefcase-search"
+              size={20}
+            />
+          )}
+        />
+        <MultiSelect
+          {...MultiSelectProps}
+          placeholder={selectedSeries.length > 0 ? "Series : " : "All series"}
+          value={selectedSeries}
+          data={data}
+          onChange={(item) => {
+            setSelectedSeries(item);
+          }}
+          renderLeftIcon={() => (
+            <MaterialCommunityIcons
+              style={styles.icon}
+              color="black"
+              name="book-search"
+              size={20}
+            />
+          )}
+        />
+        <MultiSelect
+          {...MultiSelectProps}
+          placeholder={
+            selectedReadDate.length > 0 ? "Reading year : " : "All reading year"
+          }
+          value={selectedReadDate}
+          data={data}
+          onChange={(item) => {
+            setSelectedReadDate(item);
+          }}
+          renderLeftIcon={() => (
+            <MaterialCommunityIcons
+              style={styles.icon}
+              color="black"
+              name="calendar-search"
+              size={20}
+            />
+          )}
+        />
+        <View style={{ height: 50 }} />
       </ScrollView>
     </Animated.View>
   );
@@ -207,6 +305,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+    bottom: deviceNavigationBarHeight,
     backgroundColor: "white",
     zIndex: 1000,
     shadowColor: "#000",
@@ -240,4 +339,47 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "flex-start",
   },
+  // MultiSelect styles
+  dropdown: {
+    height: 50,
+    backgroundColor: "transparent",
+    borderBottomColor: "gray",
+    borderBottomWidth: 0.5,
+    marginBottom: 10,
+  },
+  placeholderStyle: {
+    fontSize: 14,
+  },
+  selectedTextStyle: {
+    fontSize: 12,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  selectedStyle: {
+    borderRadius: 15,
+    backgroundColor: colors.lightGrey,
+  },
 });
+
+const MultiSelectProps = {
+  style: styles.dropdown,
+  placeholderStyle: styles.placeholderStyle,
+  selectedTextStyle: styles.selectedTextStyle,
+  inputSearchStyle: styles.inputSearchStyle,
+  iconStyle: styles.iconStyle,
+  search: true,
+  labelField: "label",
+  valueField: "value",
+  searchPlaceholder: "Search...",
+  inverted: false,
+  selectedStyle: styles.selectedStyle,
+};
