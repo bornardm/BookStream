@@ -117,7 +117,11 @@ export default function HomeScreen({ navigation }) {
             </TouchableWithoutFeedback>
           </View>
           {showFilter && <View style={styles.overlay}></View>}
-          <FilterView showFilter={showFilter} setShowFilter={setShowFilter} />
+          <FilterView
+            showFilter={showFilter}
+            setShowFilter={setShowFilter}
+            previewsLoaded={previewsLoaded}
+          />
         </View>
       </SQLiteProvider>
     </Suspense>

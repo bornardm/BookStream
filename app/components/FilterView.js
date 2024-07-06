@@ -16,6 +16,7 @@ import { colors } from "../constants/Colors";
 import ButtonGroup from "./ButtonGroup";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MultiSelect } from "react-native-element-dropdown";
+import { getDistinctDB, getDistinctYearDB } from "../requests";
 
 const radioButtonProps = {
   selectedColor: "gold",
@@ -62,15 +63,50 @@ const sortItems = [
     ...radioButtonProps,
   },
 ];
-const data = [
-  { label: "Item 1", value: "1" },
-  { label: "Item 2", value: "2" },
-  { label: "Item 3", value: "3" },
-  { label: "Item 4", value: "4" },
-  { label: "Item 5", value: "5" },
-  { label: "Item 6", value: "6" },
-  { label: "Item 7", value: "7" },
-  { label: "Item 8", value: "8" },
+const filterStatusItems = [
+  {
+    id: "1",
+    label: "All",
+    value: "all",
+    ...checkButtonProps,
+    selected: true,
+  },
+  {
+    id: "2",
+    label: "Read",
+    value: "read",
+    ...checkButtonProps,
+  },
+  {
+    id: "3",
+    label: "Want to read",
+    value: "toRead",
+    ...checkButtonProps,
+  },
+  {
+    id: "4",
+    label: "Reading",
+    value: "reading",
+    ...checkButtonProps,
+  },
+  {
+    id: "5",
+    label: "Abandoned",
+    value: "abandoned",
+    ...checkButtonProps,
+  },
+  {
+    id: "6",
+    label: "Borrowed",
+    value: "borrowed",
+    ...checkButtonProps,
+  },
+  {
+    id: "7",
+    label: "To exchange",
+    value: "toExchange",
+    ...checkButtonProps,
+  },
 ];
 
 const viewProportion = 0.9;
@@ -83,6 +119,14 @@ const computeDeviceNavigationBarHeight = () => {
     return deviceH - viewH - StatusBar.currentHeight;
   }
 };
+const computeArray = (array) => {
+  let result = [];
+  array.forEach((element) => {
+    result.push({ label: element, value: element });
+  });
+  return result;
+};
+
 const deviceNavigationBarHeight = computeDeviceNavigationBarHeight();
 console.log("deviceNavigationBarHeight", deviceNavigationBarHeight);
 
@@ -113,7 +157,11 @@ const createFilterNoteItems = () => {
   return items;
 };
 
-export default function FilterView({ showFilter, setShowFilter }) {
+export default function FilterView({
+  showFilter,
+  setShowFilter,
+  previewsLoaded,
+}) {
   const [windowsHeight, setWindowsHeight] = useState(
     Dimensions.get("window").height
   );
@@ -122,8 +170,13 @@ export default function FilterView({ showFilter, setShowFilter }) {
   const [selectedAuthor, setSelectedAuthor] = useState([]);
   const [selectedPublisher, setSelectedPublisher] = useState([]);
   const [selectedSeries, setSelectedSeries] = useState([]);
-  const [selectedReadDate, setSelectedReadDate] = useState([]);
+  const [selectedReadYear, setSelectedReadYear] = useState([]);
   const translateY = useRef(new Animated.Value(windowsHeight)).current; // initial position outside of the screen
+
+  const [allAuthors, setAllAuthors] = useState([]);
+  const [allPublishers, setAllPublishers] = useState([]);
+  const [allSeries, setAllSeries] = useState([]);
+  const [allReadYear, setAllReadYear] = useState([]);
 
   const handlePressCheckButton = (id) => {
     const newFilterNoteItems = filterNoteItems.map((item) => {
@@ -137,6 +190,19 @@ export default function FilterView({ showFilter, setShowFilter }) {
     });
     setFilterNoteItem(newFilterNoteItems);
   };
+
+  useEffect(() => {
+    if (previewsLoaded) {
+      setAllAuthors(computeArray(getDistinctDB({ field: "author" })));
+      setAllPublishers(computeArray(getDistinctDB({ field: "publisher" })));
+      setAllSeries(computeArray(getDistinctDB({ field: "series" })));
+      setAllReadYear(computeArray(getDistinctYearDB({ end: true })));
+    }
+    console.log("allAuthors", allAuthors);
+    console.log("allPublishers", allPublishers);
+    console.log("allSeries", allSeries);
+    console.log("allReadYear", allReadYear);
+  }, [previewsLoaded]);
 
   // Update height when the screen dimensions change
   useEffect(() => {
@@ -169,13 +235,24 @@ export default function FilterView({ showFilter, setShowFilter }) {
     >
       <View style={styles.header}>
         <Text style={styles.headerText}>Sorting and filters</Text>
-        <View style={styles.iconContainer}>
+        <View style={styles.cancelIconContainer}>
           <MaterialCommunityIcons.Button
             name="close"
             color={colors.black}
             backgroundColor="transparent"
             onPress={() => setShowFilter(false)}
             iconStyle={{ marginRight: 0 }}
+            underlayColor={"rgba(0,0,0,0.1)"}
+          />
+        </View>
+        <View style={styles.applyIconContainer}>
+          <MaterialCommunityIcons.Button
+            name="check"
+            color={colors.black}
+            backgroundColor="transparent"
+            onPress={() => setShowFilter(false)}
+            iconStyle={{ marginRight: 0 }}
+            underlayColor={"rgba(0,0,0,0.1)"}
           />
         </View>
       </View>
@@ -189,6 +266,24 @@ export default function FilterView({ showFilter, setShowFilter }) {
           selectedId={selectedId}
           containerStyle={styles.buttonGroupContainer}
         />
+
+        <Text style={styles.subTitle}>Filter by status</Text>
+        <View style={{ flexDirection: "row" }}>
+          <ButtonGroup
+            type={"check"}
+            radioButtons={filterStatusItems}
+            onPress={handlePressCheckButton}
+            containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
+            endId={4}
+          />
+          <ButtonGroup
+            type={"check"}
+            radioButtons={filterStatusItems}
+            onPress={handlePressCheckButton}
+            containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
+            startId={5}
+          />
+        </View>
         <Text style={styles.subTitle}>Filter by notes</Text>
         <View style={{ flexDirection: "row" }}>
           <ButtonGroup
@@ -208,10 +303,10 @@ export default function FilterView({ showFilter, setShowFilter }) {
         </View>
         <Text style={styles.subTitle}>Other filters</Text>
         <MultiSelect
-          {...MultiSelectProps}
+          {...multiSelectProps}
           placeholder={selectedAuthor.length > 0 ? "Authors : " : "All authors"}
           value={selectedAuthor}
-          data={data}
+          data={allAuthors}
           onChange={(item) => {
             setSelectedAuthor(item);
           }}
@@ -225,12 +320,12 @@ export default function FilterView({ showFilter, setShowFilter }) {
           )}
         />
         <MultiSelect
-          {...MultiSelectProps}
+          {...multiSelectProps}
           placeholder={
             selectedPublisher.length > 0 ? "Publishers : " : "All publishers"
           }
           value={selectedPublisher}
-          data={data}
+          data={allPublishers}
           onChange={(item) => {
             setSelectedPublisher(item);
           }}
@@ -244,10 +339,10 @@ export default function FilterView({ showFilter, setShowFilter }) {
           )}
         />
         <MultiSelect
-          {...MultiSelectProps}
+          {...multiSelectProps}
           placeholder={selectedSeries.length > 0 ? "Series : " : "All series"}
           value={selectedSeries}
-          data={data}
+          data={allSeries}
           onChange={(item) => {
             setSelectedSeries(item);
           }}
@@ -261,14 +356,14 @@ export default function FilterView({ showFilter, setShowFilter }) {
           )}
         />
         <MultiSelect
-          {...MultiSelectProps}
+          {...multiSelectProps}
           placeholder={
-            selectedReadDate.length > 0 ? "Reading year : " : "All reading year"
+            selectedReadYear.length > 0 ? "Reading year : " : "All reading year"
           }
-          value={selectedReadDate}
-          data={data}
+          value={selectedReadYear}
+          data={allReadYear}
           onChange={(item) => {
-            setSelectedReadDate(item);
+            setSelectedReadYear(item);
           }}
           renderLeftIcon={() => (
             <MaterialCommunityIcons
@@ -279,7 +374,10 @@ export default function FilterView({ showFilter, setShowFilter }) {
             />
           )}
         />
-        <View style={{ height: 50 }} />
+        <View style={styles.applyButton}>
+          <Button title="Apply" onPress={() => setShowFilter(false)} />
+        </View>
+        <View style={styles.marginView} />
       </ScrollView>
     </Animated.View>
   );
@@ -294,10 +392,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  iconContainer: {
+  cancelIconContainer: {
     position: "absolute",
     top: 0,
     left: 0,
+    backgroundColor: "transparent",
+  },
+  applyIconContainer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
     backgroundColor: "transparent",
   },
   filterContainer: {
@@ -338,6 +442,13 @@ const styles = StyleSheet.create({
   buttonGroupContainer: {
     flexDirection: "column",
     alignItems: "flex-start",
+    marginBottom: 15,
+  },
+  applyButton: {
+    margin: 20,
+  },
+  marginView: {
+    height: 50,
   },
   // MultiSelect styles
   dropdown: {
@@ -370,7 +481,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const MultiSelectProps = {
+const multiSelectProps = {
   style: styles.dropdown,
   placeholderStyle: styles.placeholderStyle,
   selectedTextStyle: styles.selectedTextStyle,

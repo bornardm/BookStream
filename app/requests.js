@@ -25,7 +25,7 @@ export function fetchBookInfos({ id }) {
 
     return result;
   } catch (e) {
-    console.error("error", e);
+    console.error("error in fetchBookInfos : ", e);
     return null;
   }
 }
@@ -52,7 +52,7 @@ export async function fetchBookPreview() {
     });
     return result;
   } catch (e) {
-    console.error("error", e);
+    console.error("error in fetchBookPreview", e);
     return null;
   }
 }
@@ -237,16 +237,20 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
  * @param {string} options.field - The field to retrieve distinct values from.
  * @returns {Array|null} - An array of distinct values from the specified field, or null if an error occurs.
  */
-export function getDistinctDB({ field }) {
-  //console.log("DB : start fetching distinct field: ", field);
+export function getDistinctDB({ field, query = null }) {
+  console.log("DB : start fetching distinct field: ", field);
   let result = null;
   try {
     dbConnexion.withTransactionSync(() => {
       //console.log("transaction start ");
 
-      result = dbConnexion.getAllSync(
-        `SELECT DISTINCT ${field} FROM BOOKS WHERE ${field} IS NOT NULL AND ${field} != ""`
-      );
+      if (query) {
+        result = dbConnexion.getAllSync(query);
+      } else {
+        result = dbConnexion.getAllSync(
+          `SELECT DISTINCT ${field} FROM BOOKS WHERE ${field} IS NOT NULL AND ${field} != ""`
+        );
+      }
       //console.log("Rows:", result);
       //console.log("transaction end");
 
@@ -259,4 +263,12 @@ export function getDistinctDB({ field }) {
     console.error("error in getDistinctDB", e);
     return null;
   }
+}
+
+export function getDistinctYearDB({ end = true }) {
+  const field = end ? "readingEndDate" : "readingStartDate";
+  return getDistinctDB({
+    field: "year",
+    query: `SELECT DISTINCT strftime('%Y', ${field}) AS year FROM BOOKS WHERE ${field} IS NOT NULL ;`,
+  });
 }
