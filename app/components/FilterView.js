@@ -129,7 +129,6 @@ const computeArray = (array) => {
 };
 
 const deviceNavigationBarHeight = computeDeviceNavigationBarHeight();
-console.log("deviceNavigationBarHeight", deviceNavigationBarHeight);
 
 const createFilterNoteItems = () => {
   let items = [
@@ -162,6 +161,8 @@ export default function FilterView({
   showFilter,
   setShowFilter,
   previewsLoaded,
+  setDbRequest,
+  setDbParams,
 }) {
   const [windowsHeight, setWindowsHeight] = useState(
     Dimensions.get("window").height
@@ -208,10 +209,11 @@ export default function FilterView({
   };
 
   const onApllyPress = () => {
-    console.log("Apply pressed");
     setShowFilter(false);
     const { request, params } = computeDbRequest();
-    console.log("request = ", request, "params = ", params);
+    //console.log("request = ", request, "params = ", params);
+    setDbRequest(request);
+    setDbParams(params);
   };
 
   const computeDbRequest = () => {
@@ -317,10 +319,6 @@ export default function FilterView({
       setAllSeries(computeArray(getDistinctDB({ field: "series" })));
       setAllReadYear(computeArray(getDistinctYearDB({ end: true })));
     }
-    console.log("allAuthors", allAuthors);
-    console.log("allPublishers", allPublishers);
-    console.log("allSeries", allSeries);
-    console.log("allReadYear", allReadYear);
   }, [previewsLoaded]);
 
   // Update height when the screen dimensions change

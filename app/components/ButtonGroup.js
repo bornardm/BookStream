@@ -14,13 +14,11 @@ import { colors } from "../constants/Colors";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 function RadioButton({ item, selected, onPress }) {
-  //console.log("radioButton", item);
   const size = item.size !== null && item.size !== undefined ? item.size : 15;
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         if (onPress) {
-          console.log("pressed", item.id);
           onPress(item.id);
         }
       }}
@@ -59,13 +57,11 @@ function RadioButton({ item, selected, onPress }) {
 }
 
 function CheckButton({ item, selected, onPress }) {
-  //console.log("checkButton", item);
   const size = item.size !== null && item.size !== undefined ? item.size : 15;
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         if (onPress) {
-          console.log("pressed", item.id);
           onPress(item.id);
         }
       }}

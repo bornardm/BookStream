@@ -37,16 +37,19 @@ function modifyDefaultBookInfos(book) {
   return book;
 }
 
-export async function fetchBookPreview() {
-  console.log("DB : start fetching all book preview");
+export async function fetchBookPreview({ request, params = [] }) {
+  console.log(
+    "DB : start fetching book preview, request = ",
+    request,
+    "params = ",
+    params
+  );
   let result = null;
   try {
     await dbConnexion.withTransactionAsync(async () => {
       //console.log("transaction start ");
 
-      result = await dbConnexion.getAllAsync(
-        "SELECT id, title, author, rating, status, imageName FROM BOOKS"
-      );
+      result = await dbConnexion.getAllAsync(request, params);
       //console.log("Rows:", result);
       //console.log("transaction end");
     });

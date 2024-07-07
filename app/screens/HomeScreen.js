@@ -28,6 +28,8 @@ export default function HomeScreen({ navigation }) {
   const [allBookPreview, setAllBookPreview] = useState(null);
   const [previewsLoaded, setPreviewsLoaded] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [dbRequest, setDbRequest] = useState("SELECT * FROM BOOKS;");
+  const [dbParams, setDbParams] = useState([]);
 
   //------------------------ Functions ----------------------------------
 
@@ -59,7 +61,10 @@ export default function HomeScreen({ navigation }) {
      * @returns {Promise<void>} A promise that resolves when the book previews are fetched and the state is updated.
      */
     const fetchPreviews = async () => {
-      const fetchedPreviews = await fetchBookPreview();
+      const fetchedPreviews = await fetchBookPreview({
+        request: dbRequest,
+        params: dbParams,
+      });
       setAllBookPreview(fetchedPreviews);
       if (fetchedPreviews) {
         setPreviewsLoaded(true);
@@ -67,7 +72,7 @@ export default function HomeScreen({ navigation }) {
     };
 
     fetchPreviews();
-  }, []);
+  }, [dbRequest]);
 
   return (
     <Suspense fallback={<LoadindingView />}>
@@ -121,6 +126,8 @@ export default function HomeScreen({ navigation }) {
             showFilter={showFilter}
             setShowFilter={setShowFilter}
             previewsLoaded={previewsLoaded}
+            setDbRequest={setDbRequest}
+            setDbParams={setDbParams}
           />
         </View>
       </SQLiteProvider>
