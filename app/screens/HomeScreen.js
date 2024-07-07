@@ -70,18 +70,22 @@ export default function HomeScreen({ navigation }) {
         setPreviewsLoaded(true);
       }
     };
-
+    console.log("DB : HomeScreen useEffect");
     fetchPreviews();
-  }, [dbRequest]);
+  }, [dbParams]);
 
   return (
     <Suspense fallback={<LoadindingView />}>
       <SQLiteProvider databaseName={dbName} useSuspense>
         <View style={styles.container}>
           <View style={styles.header}>
-            <MaterialIcons
+            <MaterialIcons.Button
+              style={styles.filterIcon}
               name="filter-list"
               size={24}
+              backgroundColor={"transparent"}
+              underlayColor={colors.underlayColor}
+              color={colors.middleLightGrey}
               onPress={() => {
                 setShowFilter(!showFilter);
               }}
@@ -157,8 +161,15 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   header: {
-    height: 50,
-    backgroundColor: "red",
+    width: "100%",
+    alignItems: "flex-end",
+    paddingHorizontal: 10,
+  },
+  filterIcon: {
+    paddingRight: 0,
+    borderColor: colors.middleLightGrey,
+    borderWidth: 1,
+    borderRadius: 5,
   },
   addBook: {
     backgroundColor: colors.secondary,

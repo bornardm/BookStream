@@ -171,7 +171,7 @@ export default function BookScreen({ route }) {
           size={20}
           color={colors.lightGrey}
           alignSelf="flex-start"
-          underlayColor={"transparent"}
+          underlayColor={colors.underlayColor}
           backgroundColor="transparent"
           onPress={() => {
             navigation.goBack();
@@ -197,7 +197,7 @@ export default function BookScreen({ route }) {
           size={25}
           color={colors.lightGrey}
           backgroundColor={"transparent"}
-          underlayColor={"transparent"}
+          underlayColor={colors.underlayColor}
           onPress={() =>
             navigation.navigate("BookEditScreen", {
               book: book,

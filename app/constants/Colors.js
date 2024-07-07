@@ -17,4 +17,5 @@ export const colors = {
 
   placeholderTextColor: "#B0B0B0",
   textInputBorder: "#808080",
+  underlayColor: "rgba(0, 0, 0, 0.1)",
 };

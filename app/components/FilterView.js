@@ -1,24 +1,33 @@
-import React, { useState, useRef, useEffect } from "react";
+// React and React Native components and hooks
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Button,
-  ScrollView,
-  StyleSheet,
   Animated,
-  TouchableWithoutFeedback,
+  Button,
   Dimensions,
-  StatusBar,
   Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
+// Third-party libraries/components
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MultiSelect } from "react-native-element-dropdown";
+
+// Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
 import { BOOK_STATUS } from "../constants/BookStatus";
 import ButtonGroup from "./ButtonGroup";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { MultiSelect } from "react-native-element-dropdown";
 import { getDistinctDB, getDistinctYearDB } from "../requests";
 
+// Constants
+//Prportion of the parentView that the filter view will take
+const viewProportion = 0.9;
+
+//Props for the radio and check buttons
 const radioButtonProps = {
   selectedColor: "gold",
   unselectedColor: colors.middleLightGrey,
@@ -110,26 +119,13 @@ const filterStatusItemsData = [
   },
 ];
 
-const viewProportion = 0.9;
-const computeDeviceNavigationBarHeight = () => {
-  if (Platform.OS === "ios") {
-    return 44;
-  } else {
-    const deviceH = Dimensions.get("screen").height;
-    const viewH = Dimensions.get("window").height;
-    return deviceH - viewH - StatusBar.currentHeight;
-  }
-};
-const computeArray = (array) => {
-  let result = [];
-  array.forEach((element) => {
-    result.push({ label: element, value: element });
-  });
-  return result;
-};
-
-const deviceNavigationBarHeight = computeDeviceNavigationBarHeight();
-
+/**
+ * Creates an array of filter note items. The first element is "All" and the last one is "No note".
+ * The other elements are the notes from 10 to 1.
+ * Only the first element is selected.
+ *
+ * @returns {Array} The array of filter note items.
+ */
 const createFilterNoteItems = () => {
   let items = [
     {
@@ -157,6 +153,48 @@ const createFilterNoteItems = () => {
   return items;
 };
 
+/**
+ * Computes the height of the device's navigation bar (on the bottom of the screen).
+ *
+ * @returns {number} The height of the device's navigation bar.
+ */
+const computeDeviceNavigationBarHeight = () => {
+  if (Platform.OS === "ios") {
+    return 44;
+  } else {
+    const deviceH = Dimensions.get("screen").height;
+    const viewH = Dimensions.get("window").height;
+    return deviceH - viewH - StatusBar.currentHeight;
+  }
+};
+
+/**
+ * Converts an array of elements into an array of objects with label and value properties.
+ *
+ * @param {Array} array - The array of elements to be converted.
+ * @returns {Array} - The converted array of objects.
+ */
+const computeArray = (array) => {
+  let result = [];
+  array.forEach((element) => {
+    result.push({ label: element, value: element });
+  });
+  return result;
+};
+
+const deviceNavigationBarHeight = computeDeviceNavigationBarHeight();
+
+/**
+ * Renders a filter view component.
+ *
+ * @param {Object} props - The component props.
+ * @param {boolean} props.showFilter - Indicates whether the filter view is visible or not.
+ * @param {function} props.setShowFilter - Function to set the visibility of the filter view.
+ * @param {boolean} props.previewsLoaded - Indicates whether the previews are loaded or not (if they are, that alow to fetch the data from the db).)
+ * @param {function} props.setDbRequest - Function to set the database request.
+ * @param {function} props.setDbParams - Function to set the database parameters.
+ * @returns {JSX.Element} The filter view component.
+ */
 export default function FilterView({
   showFilter,
   setShowFilter,
@@ -164,25 +202,35 @@ export default function FilterView({
   setDbRequest,
   setDbParams,
 }) {
+  //------------------------ Variables and States------------------------
   const [windowsHeight, setWindowsHeight] = useState(
     Dimensions.get("window").height
   );
-  const [selectedId, setSelectedId] = useState("1");
+  const translateY = useRef(new Animated.Value(windowsHeight)).current; // initial position outside of the screen
+
+  // Data for the check/radio buttons
+  const [sortSelectedId, setSortSelectedId] = useState("1");
   const [filterNoteItems, setFilterNoteItem] = useState(createFilterNoteItems);
   const [filterStatusItems, setFilterStatusItem] = useState(
     filterStatusItemsData
   );
-  const [selectedAuthor, setSelectedAuthor] = useState([]);
-  const [selectedPublisher, setSelectedPublisher] = useState([]);
-  const [selectedSeries, setSelectedSeries] = useState([]);
-  const [selectedReadYear, setSelectedReadYear] = useState([]);
-  const translateY = useRef(new Animated.Value(windowsHeight)).current; // initial position outside of the screen
 
+  // Data for MultiSelect
   const [allAuthors, setAllAuthors] = useState([]);
   const [allPublishers, setAllPublishers] = useState([]);
   const [allSeries, setAllSeries] = useState([]);
   const [allReadYear, setAllReadYear] = useState([]);
 
+  const [selectedAuthor, setSelectedAuthor] = useState([]);
+  const [selectedPublisher, setSelectedPublisher] = useState([]);
+  const [selectedSeries, setSelectedSeries] = useState([]);
+  const [selectedReadYear, setSelectedReadYear] = useState([]);
+
+  //------------------------ Functions ----------------------------------
+  /**
+   * Reverse the selected state of the note item with the specified ID.
+   * @param {number} id - The ID of the note item.
+   */
   const handlePressCheckButtonNote = (id) => {
     const newFilterNoteItems = filterNoteItems.map((item) => {
       if (item.id === id) {
@@ -195,6 +243,13 @@ export default function FilterView({
     });
     setFilterNoteItem(newFilterNoteItems);
   };
+  /**
+   * Handles the press event of the check button for a specific item.
+   * Toggles the selected status of the item with the given id in the filterStatusItems array.
+   * Updates the filterStatusItems state with the new selected status.
+   *
+   * @param {number} id - The id of the item to toggle the selected status for.
+   */
   const handlePressCheckButtonStatus = (id) => {
     const newFilterStatusItems = filterStatusItems.map((item) => {
       if (item.id === id) {
@@ -208,6 +263,11 @@ export default function FilterView({
     setFilterStatusItem(newFilterStatusItems);
   };
 
+  /**
+   * Handles the apply button press event.
+   * Hides the filter view, computes the database request and parameters,
+   * and updates the database request and parameters state of the HomeScreen.
+   */
   const onApllyPress = () => {
     setShowFilter(false);
     const { request, params } = computeDbRequest();
@@ -216,10 +276,15 @@ export default function FilterView({
     setDbParams(params);
   };
 
+  /**
+   * Computes the database request based on the selected filters and sort options.
+   * @returns {Object} An object containing the computed request and parameters.
+   */
   const computeDbRequest = () => {
     let request = "SELECT * FROM BOOKS";
     let params = [];
     let where = false;
+    //Multiselect filters
     for (filter of [
       { array: selectedAuthor, label: "author" },
       { array: selectedPublisher, label: "publisher" },
@@ -260,6 +325,7 @@ export default function FilterView({
           numberNoteSelected > 1) ||
         numberNoteSelected > 0
       ) {
+        console.log("here");
         request += where ? (orStatement ? "OR" : " AND ") : " WHERE ";
         where = true;
         request += ` rating IN (${filterNoteItems
@@ -278,40 +344,51 @@ export default function FilterView({
     }
 
     //Status
+    let orStatement = false;
     if (!filterStatusItems[0].selected) {
       const statusSelected = filterStatusItems.filter(
         (item) => item.selected && item.id > 1 && item.id < 6
       );
       if (statusSelected.length > 0) {
-        request += where ? " AND " : " WHERE ";
+        request += where ? " AND ( " : " WHERE ( ";
         where = true;
+        orStatement = true;
         request += ` status IN (${statusSelected.map(() => "?").join(", ")})`;
         params = params.concat(statusSelected.map((item) => item.value));
       }
     }
     if (filterStatusItems[5].selected) {
       //Borrowed
-      request += where ? " AND " : " WHERE ";
+      request += where ? (orStatement ? " OR " : " AND ( ") : " WHERE ( ";
       where = true;
+      orStatement = true;
       request += ` borrowed = 1`;
     }
     if (filterStatusItems[6].selected) {
       //To exchange
-      request += where ? " AND " : " WHERE ";
+      request += where ? (orStatement ? " OR " : " AND ( ") : " WHERE ( ";
       where = true;
+      orStatement = true;
       request += ` toExchange = 1`;
+    }
+    if (orStatement) {
+      request += " ) ";
     }
 
     //Sort
-    const sort = sortItems.find((item) => item.id === selectedId);
+    const sort = sortItems.find((item) => item.id === sortSelectedId);
     request += ` ORDER BY ${sort.value} ${
       sort.value === "title" || sort.value === "author" ? "ASC" : "DESC"
     } `;
 
     request += ";";
+    console.log("request = ", request, "params = ", params);
     return { request, params };
   };
 
+  //------------------------ UseEffects ---------------------------------
+
+  // Fetch the data for the multiselect filters only when the previews are loaded (to avoid conflicts with the db)
   useEffect(() => {
     if (previewsLoaded) {
       setAllAuthors(computeArray(getDistinctDB({ field: "author" })));
@@ -336,6 +413,7 @@ export default function FilterView({
     };
   }, []);
 
+  // Animate the filter view when the showFilter state changes
   useEffect(() => {
     Animated.timing(translateY, {
       toValue: showFilter
@@ -345,6 +423,8 @@ export default function FilterView({
       useNativeDriver: true,
     }).start();
   }, [showFilter]);
+
+  //------------------------ Render ----------------------------------
 
   return (
     <Animated.View
@@ -359,7 +439,7 @@ export default function FilterView({
             backgroundColor="transparent"
             onPress={() => setShowFilter(false)}
             iconStyle={{ marginRight: 0 }}
-            underlayColor={"rgba(0,0,0,0.1)"}
+            underlayColor={colors.underlayColor}
           />
         </View>
         <View style={styles.applyIconContainer}>
@@ -369,7 +449,7 @@ export default function FilterView({
             backgroundColor="transparent"
             onPress={onApllyPress}
             iconStyle={{ marginRight: 0 }}
-            underlayColor={"rgba(0,0,0,0.1)"}
+            underlayColor={colors.underlayColor}
           />
         </View>
       </View>
@@ -378,9 +458,9 @@ export default function FilterView({
         <Text style={styles.subTitle}>Sort by</Text>
         <ButtonGroup
           type={"radio"}
-          radioButtons={sortItems}
-          onPress={setSelectedId}
-          selectedId={selectedId}
+          buttonsData={sortItems}
+          onPress={setSortSelectedId}
+          selectedId={sortSelectedId}
           containerStyle={styles.buttonGroupContainer}
         />
 
@@ -388,14 +468,14 @@ export default function FilterView({
         <View style={{ flexDirection: "row" }}>
           <ButtonGroup
             type={"check"}
-            radioButtons={filterStatusItems}
+            buttonsData={filterStatusItems}
             onPress={handlePressCheckButtonStatus}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             endId={4}
           />
           <ButtonGroup
             type={"check"}
-            radioButtons={filterStatusItems}
+            buttonsData={filterStatusItems}
             onPress={handlePressCheckButtonStatus}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             startId={5}
@@ -405,14 +485,14 @@ export default function FilterView({
         <View style={{ flexDirection: "row" }}>
           <ButtonGroup
             type={"check"}
-            radioButtons={filterNoteItems}
+            buttonsData={filterNoteItems}
             onPress={handlePressCheckButtonNote}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             startId={6}
           />
           <ButtonGroup
             type={"check"}
-            radioButtons={filterNoteItems}
+            buttonsData={filterNoteItems}
             onPress={handlePressCheckButtonNote}
             containerStyle={[styles.buttonGroupContainer, { flex: 1 }]}
             endId={5}

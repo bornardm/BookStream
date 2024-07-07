@@ -1,18 +1,31 @@
-import React, { useState, useRef, useEffect } from "react";
+// React and React Native components and hooks
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
+  Animated,
   Button,
+  Dimensions,
   ScrollView,
   StyleSheet,
-  Animated,
+  Text,
   TouchableWithoutFeedback,
-  Dimensions,
+  View,
 } from "react-native";
 
-import { colors } from "../constants/Colors";
+// Third-party libraries/components
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
+// Utility functions, constants, and other local imports
+import { colors } from "../constants/Colors";
+
+/**
+ * Renders a radio button component.
+ *
+ * @param {Object} props - The component props.
+ * @param {Object} props.item - The radio button item object containing properties like id, label, size(optional), selectedColor(optional), and unselectedColor(optional).
+ * @param {boolean} props.selected - Indicates whether the radio button is selected.
+ * @param {Function} props.onPress - The function to be called when the radio button is pressed.
+ * @returns {JSX.Element} The rendered radio button component.
+ */
 function RadioButton({ item, selected, onPress }) {
   const size = item.size !== null && item.size !== undefined ? item.size : 15;
   return (
@@ -56,6 +69,15 @@ function RadioButton({ item, selected, onPress }) {
   );
 }
 
+/**
+ * Renders a check button component.
+ *
+ * @param {Object} props - The component props.
+ * @param {Object} props.item - The item object containing properties like id, label, size(optional), selectedColor(optional), and unselectedColor(optional).
+ * @param {boolean} props.selected - Indicates whether the button is selected or not.
+ * @param {Function} props.onPress - The function to be called when the button is pressed.
+ * @returns {JSX.Element} The check button component.
+ */
 function CheckButton({ item, selected, onPress }) {
   const size = item.size !== null && item.size !== undefined ? item.size : 15;
   return (
@@ -79,19 +101,32 @@ function CheckButton({ item, selected, onPress }) {
   );
 }
 
+/**
+ * ButtonGroup component that renders a group of buttons.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.type - The type of buttons to render. Must be "radio" or "check".
+ * @param {Array} props.buttonsData - The data for the buttons. Must include id, label, value (must also include selected for check type).
+ * @param {number} props.selectedId - The ID of the currently selected button (only for radio type).
+ * @param {function} props.onPress - The function to be called when a button is pressed.
+ * @param {Object} props.containerStyle - The style object for the container of the group of buttons.
+ * @param {number} [props.startId=0] - The starting ID for rendering buttons.
+ * @param {number} [props.endId=buttonsData.length] - The ending ID for rendering buttons.
+ * @returns {JSX.Element} The rendered ButtonGroup component.
+ * @throws {Error} If the type prop is not "radio" or "check".
+ */
 export default function ButtonGroup({
   type, // radio or check
-  radioButtons,
+  buttonsData,
   selectedId,
   onPress,
   containerStyle,
   startId = 0,
-  endId = radioButtons.length,
+  endId = buttonsData.length,
 }) {
   return (
     <View style={containerStyle}>
-      {radioButtons.map((item) => {
-        // If checkButton is true, render a modified version or a different component
+      {buttonsData.map((item) => {
         if (type === "radio") {
           if (item.id >= startId && item.id <= endId) {
             return (

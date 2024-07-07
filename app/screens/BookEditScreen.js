@@ -318,7 +318,7 @@ export default function BookEditScreen({ route }) {
           size={20}
           color={colors.lightGrey}
           alignSelf="flex-start"
-          underlayColor={"transparent"}
+          underlayColor={colors.underlayColor}
           backgroundColor="transparent"
           onPress={() => {
             navigation.goBack();
@@ -380,7 +380,7 @@ export default function BookEditScreen({ route }) {
           name="check-circle-fill"
           size={20}
           color={colors.lightGrey}
-          underlayColor={"transparent"}
+          underlayColor={colors.underlayColor}
           backgroundColor="transparent"
           onPress={async () => {
             const isSaved = await saveBookChanges();
@@ -425,7 +425,7 @@ export default function BookEditScreen({ route }) {
                       size={40}
                       color={colors.black}
                       backgroundColor={"transparent"}
-                      underlayColor="rgba(0,0,0,0.1)"
+                      underlayColor={colors.underlayColor}
                       onPress={() => {
                         takePicture();
                         setModalVisible(false);
@@ -445,7 +445,7 @@ export default function BookEditScreen({ route }) {
                       size={40}
                       color={colors.black}
                       backgroundColor={"transparent"}
-                      underlayColor="rgba(0,0,0,0.1)"
+                      underlayColor={colors.underlayColor}
                       onPress={() => {
                         pickImage();
                         setModalVisible(false);
