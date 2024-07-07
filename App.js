@@ -15,6 +15,8 @@ import ScannerScreen from "./app/screens/ScannerScreen";
 import { colors } from "./app/constants/Colors";
 import { loadDatabase, updateAllImages } from "./app/setupDatabase";
 import { LogBox } from "react-native";
+import i18next from "./app/localization/i18n";
+import { useTranslation } from "react-i18next";
 
 //ignore some warnigs
 LogBox.ignoreLogs([
@@ -25,41 +27,46 @@ LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 const HomeStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const HomeStackScreen = () => (
-  <HomeStack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
-    <HomeStack.Screen
-      name="HomeScreen"
-      component={HomeScreen}
-      options={{ headerTitle: "My Books" }}
-    />
-    <HomeStack.Screen
-      name="BookScreen"
-      component={BookScreen}
-      options={{ headerTitle: "Book" }}
-    />
-    <HomeStack.Screen
-      name="BookEditScreen"
-      component={BookEditScreen}
-      options={{ headerTitle: "Edit Book" }}
-    />
-    <HomeStack.Screen
-      name="AddScreen"
-      component={AddScreen}
-      options={{ headerTitle: "Add a book" }}
-    />
-    <HomeStack.Screen
-      name="ScannerScreen"
-      component={ScannerScreen}
-      options={{ headerTitle: "Scan a book" }}
-    />
-  </HomeStack.Navigator>
-);
+const HomeStackScreen = () => {
+  const { t, i18n } = useTranslation();
+  return (
+    <HomeStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <HomeStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{ headerTitle: t("app.navigationTitle.homeScreen") }}
+      />
+      <HomeStack.Screen
+        name="BookScreen"
+        component={BookScreen}
+        options={{ headerTitle: t("app.navigationTitle.bookScreen") }}
+      />
+      <HomeStack.Screen
+        name="BookEditScreen"
+        component={BookEditScreen}
+        options={{ headerTitle: t("app.navigationTitle.bookEditScreen") }}
+      />
+      <HomeStack.Screen
+        name="AddScreen"
+        component={AddScreen}
+        options={{ headerTitle: t("app.navigationTitle.addScreen") }}
+      />
+      <HomeStack.Screen
+        name="ScannerScreen"
+        component={ScannerScreen}
+        options={{ headerTitle: t("app.navigationTitle.scannerScreen") }}
+      />
+    </HomeStack.Navigator>
+  );
+};
 
 export default function App() {
+  const { t } = useTranslation();
+
   const [dbLoaded, setDbLoaded] = useState(false);
   useEffect(() => {
     updateAllImages().catch((e) => console.error("Failed to load Cover : ", e));
@@ -90,12 +97,12 @@ export default function App() {
         <Drawer.Screen
           name="Home"
           component={HomeStackScreen}
-          options={{ headerTitle: "My books" }}
+          options={{ headerTitle: t("app.navigationTitle.homeScreen") }}
         />
         <Drawer.Screen
           name="MenuScreen"
           component={MenuScreen}
-          options={{ headerTitle: "Menu" }}
+          options={{ headerTitle: t("app.navigationTitle.menuScreen") }}
         />
       </Drawer.Navigator>
     </NavigationContainer>

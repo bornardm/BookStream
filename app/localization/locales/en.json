@@ -1,0 +1,56 @@
+{
+    "dateFormat":"en-GB",
+    "app":{
+        "navigationTitle":{
+            "homeScreen":"My Books",
+            "bookScreen":"Book Details",
+            "bookEditScreen":"Edit Book",
+            "addScreen":"Add a Book",
+            "scannerScreen":"Scan a Book",
+            "menuScreen":"Menu"
+
+        }
+    },
+    "screens":{
+        "add":{
+            "title":"Add a book",
+            "alerts":{
+                "notFound" : "Book not found",
+                "invalidISBN" : "ISBN not valid (10 or 13 digits)"
+            },
+            "inputPlaceholder":"isbn",
+            "buttons":{
+                "addManually":"Add manually"
+            }
+        },
+        "bookEdit":{
+            "title":"Edit book",
+            "modal":{
+                "title":"Change picture",
+                "takePicture":"Take a\npicture",
+                "choosePicture" : "Choose a\npicture"
+            },
+            "inputTitle":{
+                "publicationDate":"Publication date",
+                "title":"Title",
+                "author":"Author",
+                "summary":"Summary",
+                "numberOfPages":"Number of pages",
+                "series":"Series",
+                "volume":"Volume",
+                "publisher":"Publisher",
+                "isbn":"ISBN",
+                "language":"Language",
+                "categories":"Categories"
+            },
+            "inputPlaceholder":{
+                "author":"First name Last name",
+                "series":"Series name",
+                "category":"Category"
+            }
+
+
+        }
+
+    }
+}

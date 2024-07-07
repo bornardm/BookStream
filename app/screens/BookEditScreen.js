@@ -28,6 +28,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
 import { ScrollView as VirtualizedScrollView } from "react-native-virtualized-view";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { addOrModifyBookDB, getDistinctDB } from "../requests";
@@ -42,6 +44,7 @@ import { isDigitsOnly } from "../utils";
 import { FlatList } from "react-native-gesture-handler";
 import TextInputWithSuggestions from "../components/TextInputWithSuggestions";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { t } from "i18next";
 
 /**
  * Initializes a book object with default values and optionally copies values from an initial book object.
@@ -329,6 +332,7 @@ export default function BookEditScreen({ route }) {
   }
 
   function DatePicker({ defaultDate }) {
+    const { t } = useTranslation();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [date, setDate] = useState(
       defaultDate ? new Date(defaultDate) : new Date()
@@ -346,8 +350,8 @@ export default function BookEditScreen({ route }) {
             }}
           >
             {!dateUpdated && !defaultDate
-              ? "Publication date"
-              : date.toLocaleDateString("en-GB")}
+              ? t("screens.bookEdit.inputTitle.publicationDate")
+              : date.toLocaleDateString(t("dateFormat"))}
           </Text>
           {showDatePicker && (
             <DateTimePicker
@@ -372,10 +376,11 @@ export default function BookEditScreen({ route }) {
     );
   }
   function HeaderBand() {
+    const { t } = useTranslation();
     return (
       <View style={styles.headerBand}>
         <BackArrow />
-        <Text>Edit Book</Text>
+        <Text>{t("screens.bookEdit.title")}</Text>
         <Octicons.Button
           name="check-circle-fill"
           size={20}
@@ -400,6 +405,7 @@ export default function BookEditScreen({ route }) {
   }
 
   function ModalPicker() {
+    const { t } = useTranslation();
     return (
       <Modal
         transparent={true}
@@ -417,7 +423,9 @@ export default function BookEditScreen({ route }) {
           <View style={styles.overlay}>
             <TouchableWithoutFeedback>
               <View style={styles.popup}>
-                <Text style={styles.title}>Change picture</Text>
+                <Text style={styles.title}>
+                  {t("screens.bookEdit.modal.title")}
+                </Text>
                 <View style={styles.centredViewPopup}>
                   <View style={styles.iconAndText}>
                     <MaterialCommunityIcons.Button
@@ -436,7 +444,7 @@ export default function BookEditScreen({ route }) {
                         textAlign: "center",
                       }}
                     >
-                      {"Take a\npicture"}
+                      {t("screens.bookEdit.modal.takePicture")}
                     </Text>
                   </View>
                   <View style={styles.iconAndText}>
@@ -456,7 +464,7 @@ export default function BookEditScreen({ route }) {
                         textAlign: "center",
                       }}
                     >
-                      {"Choose a\npicture"}
+                      {t("screens.bookEdit.modal.choosePicture")}
                     </Text>
                   </View>
                 </View>
@@ -491,9 +499,9 @@ export default function BookEditScreen({ route }) {
           />
         </TouchableWithoutFeedback>
         <View style={styles.row}>
-          <Text>Title :</Text>
+          <Text>{t("screens.bookEdit.inputTitle.title")} :</Text>
           <TextInput
-            placeholder="Title"
+            placeholder={t("screens.bookEdit.inputTitle.title")}
             defaultValue={book.title.value}
             style={[
               styles.textInput,
@@ -511,7 +519,7 @@ export default function BookEditScreen({ route }) {
         </View>
         <View style={styles.row}>
           <Text style={{ alignSelf: "flex-start", marginTop: 20 }}>
-            Author :
+            {t("screens.bookEdit.inputTitle.author")} :
           </Text>
           <TextInputWithSuggestions
             suggestionsArrray={authorSuggestions}
@@ -520,7 +528,7 @@ export default function BookEditScreen({ route }) {
               !book.author.isValid && styles.textInputNotValid,
             ]}
             defaultValue={book.author.value}
-            placeholder={"Firstname Lastname"}
+            placeholder={t("screens.bookEdit.inputPlaceholder.author")}
             placeholderTextColor={colors.placeholderTextColor}
             maxLength={100}
             onChangeText={(text) => {
@@ -532,9 +540,9 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Summary :</Text>
+          <Text>{t("screens.bookEdit.inputTitle.summary")} :</Text>
           <TextInput
-            placeholder="Summary"
+            placeholder={t("screens.bookEdit.inputTitle.summary")}
             defaultValue={book.summary.value}
             multiline={true}
             style={[styles.textInput, styles.textInputMultiline]}
@@ -545,9 +553,9 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Number of pages :</Text>
+          <Text>{t("screens.bookEdit.inputTitle.numberOfPages")} :</Text>
           <TextInput
-            placeholder="Number of pages"
+            placeholder={t("screens.bookEdit.inputTitle.numberOfPages")}
             defaultValue={book.pageNumber.value?.toString()}
             keyboardType="number-pad"
             style={[
@@ -571,10 +579,12 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={[styles.row, { alignItems: "flex-start" }]}>
-          <Text style={styles.alignWithInputSuggestions}>Series :</Text>
+          <Text style={styles.alignWithInputSuggestions}>
+            {t("screens.bookEdit.inputTitle.series")} :
+          </Text>
           <TextInputWithSuggestions
             suggestionsArrray={seriesSuggestions}
-            placeholder="Series name"
+            placeholder={t("screens.bookEdit.inputPlaceholder.series")}
             defaultValue={book.series.value}
             textInputStyle={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}
@@ -584,7 +594,7 @@ export default function BookEditScreen({ route }) {
             }}
           />
           <TextInput
-            placeholder="Volume"
+            placeholder={t("screens.bookEdit.inputTitle.volume")}
             defaultValue={book.volume.value?.toString()}
             keyboardType="number-pad"
             style={[
@@ -606,10 +616,12 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text style={styles.alignWithInputSuggestions}>Publisher :</Text>
+          <Text style={styles.alignWithInputSuggestions}>
+            {t("screens.bookEdit.inputTitle.publisher")} :
+          </Text>
           <TextInputWithSuggestions
             suggestionsArrray={publisherSuggestions}
-            placeholder="Publisher"
+            placeholder={t("screens.bookEdit.inputTitle.publisher")}
             defaultValue={book.publisher.value}
             textInputStyle={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}
@@ -620,13 +632,13 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Publication date :</Text>
+          <Text>{t("screens.bookEdit.inputTitle.publicationDate")} :</Text>
           <DatePicker defaultDate={book.publicationDate.value} />
         </View>
         <View style={styles.row}>
-          <Text>ISBN :</Text>
+          <Text>{t("screens.bookEdit.inputTitle.isbn")} :</Text>
           <TextInput
-            placeholder="ISBN"
+            placeholder={t("screens.bookEdit.inputTitle.isbn")}
             defaultValue={book.isbn.value?.toString()}
             keyboardType="number-pad"
             style={[
@@ -654,10 +666,12 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text style={styles.alignWithInputSuggestions}>Language :</Text>
+          <Text style={styles.alignWithInputSuggestions}>
+            {t("screens.bookEdit.inputTitle.language")} :
+          </Text>
           <TextInputWithSuggestions
             suggestionsArrray={languageSuggestions}
-            placeholder="Language"
+            placeholder={t("screens.bookEdit.inputTitle.language")}
             defaultValue={book.language.value}
             textInputStyle={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}
@@ -668,9 +682,9 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>Categories :</Text>
+          <Text>{t("screens.bookEdit.inputTitle.categories")} :</Text>
           <TextInput
-            placeholder="Category"
+            placeholder={t("screens.bookEdit.inputPlaceholder.category")}
             defaultValue={book.categories.value} //TODO change this
             style={styles.textInput}
             placeholderTextColor={colors.placeholderTextColor}

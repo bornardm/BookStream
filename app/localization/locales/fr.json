@@ -1,0 +1,14 @@
+{
+    "dateFormat":"fr-FR",
+    "app":{
+        "navigationTitle":{
+            "homeScreen":"Mes livres",
+            "bookScreen":"Détails du livre",
+            "bookEditScreen":"Modifier le livre",
+            "addScreen":"Ajouter un livre",
+            "scannerScreen":"Scanner un livre",
+            "menuScreen":"Menu"
+
+        }
+    }
+}

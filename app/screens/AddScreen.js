@@ -14,6 +14,8 @@ import {
 // Third-party libraries/components
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
@@ -23,6 +25,7 @@ import { fetchBookFromOpenLibrary } from "../apiRequests";
 
 export default function AddScreen({ route, navigation }) {
   //------------------------ Variables and States ------------------------
+  const { t } = useTranslation();
   const addBookPreviewFunc = route.params.addBookPreviewFunc;
   const functions = route.params.functions;
   const [searchText, setSearchText] = useState(null);
@@ -40,11 +43,11 @@ export default function AddScreen({ route, navigation }) {
           onGoBack: onGoBackFromBookEditScreen,
         });
       } else {
-        alert("Book not found");
+        alert(t("screens.add.alerts.notFound"));
       }
       setIsLoading(false); // Stop loading regardless of the outcome
     } else {
-      alert("ISBN not valid (10 or 13 digits)");
+      alert(t("screens.add.alerts.invalidISBN"));
     }
   };
 
@@ -81,12 +84,12 @@ export default function AddScreen({ route, navigation }) {
           color="#0000ff"
         />
       ) : null}
-      <Text>Add Screen</Text>
+      <Text>{t("screens.add.title")}</Text>
       <View style={styles.search}>
         <View style={styles.inputView}>
           <EvilIcons name="search" size={35} color={colors.textInputBorder} />
           <TextInput
-            placeholder="Title, isbn, author..."
+            placeholder={t("screens.add.inputPlaceholder")}
             value={searchText}
             onChangeText={setSearchText}
             onSubmitEditing={async (event) => {
@@ -110,7 +113,7 @@ export default function AddScreen({ route, navigation }) {
         />
       </View>
       <Button
-        title="Add manually"
+        title={t("screens.add.buttons.addManually")}
         onPress={() => {
           console.log("Add manually button pressed");
           navigation.navigate("BookEditScreen", {
