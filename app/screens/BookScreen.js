@@ -45,11 +45,14 @@ function InfoList(book) {
     {
       icon: Feather,
       name: "calendar",
-      text: new Date(book.publicationDate).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }),
+      text: new Date(book.publicationDate).toLocaleDateString(
+        i18next.t("dateFormat"),
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }
+      ),
     },
     { icon: Ionicons, name: "business-outline", text: book.publisher },
     { icon: MaterialCommunityIcons, name: "barcode-scan", text: book.isbn },

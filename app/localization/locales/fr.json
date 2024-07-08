@@ -1,14 +1,116 @@
 {
-    "dateFormat":"fr-FR",
-    "app":{
-        "navigationTitle":{
-            "homeScreen":"Mes livres",
-            "bookScreen":"Détails du livre",
-            "bookEditScreen":"Modifier le livre",
-            "addScreen":"Ajouter un livre",
-            "scannerScreen":"Scanner un livre",
-            "menuScreen":"Menu"
-
+    "dateFormat": "fr-FR",
+    "yes": "Oui",
+    "no": "Non",
+    "YES": "OUI",
+    "NO": "NON",
+    "app": {
+        "navigationTitle": {
+            "homeScreen": "Mes Livres",
+            "bookScreen": "Détails du livre",
+            "bookEditScreen": "Modifier le livre",
+            "addScreen": "Ajouter un livre",
+            "scannerScreen": "Scanner un livre",
+            "menuScreen": "Menu"
+        }
+    },
+    "constants": {
+        "bookStatus": {
+            "read": "Lu",
+            "wantToRead": "A lire",
+            "reading": "En cours",
+            "abandoned": "Abandonné",
+            "borrowed": "Emprunté",
+            "toExchange": "À échanger"
+        },
+        "languages": {
+            "english": "Anglais",
+            "french": "Français",
+            "spanish": "Espagnol",
+            "german": "Allemand",
+            "italian": "Italien"
+        }
+    },
+    "screens": {
+        "add": {
+            "title": "Ajouter un livre",
+            "alerts": {
+                "notFound": "Livre non trouvé",
+                "invalidISBN": "ISBN non valide (10 ou 13 chiffres)"
+            },
+            "inputPlaceholder": "isbn",
+            "buttons": {
+                "addManually": "Ajouter manuellement"
+            }
+        },
+        "bookEdit": {
+            "title": "Modifier le livre",
+            "modal": {
+                "title": "Changer l'image",
+                "takePicture": "Prendre une\nphoto",
+                "choosePicture": "Choisir une\nphoto"
+            },
+            "inputTitle": {
+                "publicationDate": "Date de publication",
+                "title": "Titre",
+                "author": "Auteur",
+                "summary": "Résumé",
+                "numberOfPages": "Nombre de pages",
+                "series": "Série",
+                "volume": "Volume",
+                "publisher": "Éditeur",
+                "isbn": "ISBN",
+                "language": "Langue",
+                "categories": "Catégories"
+            },
+            "inputPlaceholder": {
+                "author": "Prénom Nom",
+                "series": "Nom de la série",
+                "category": "Catégorie"
+            }
+        },
+        "book": {
+            "alerts": {
+                "deleteTitle": "Supprimer ce livre",
+                "deleteMessage": "Souhaitez-vous supprimer ce livre de votre bibliothèque ?"
+            },
+            "removeButton": "Supprimer ce livre de ma bibliothèque",
+            "readingDates": "Dates de lecture"
+        }
+    },
+    "components": {
+        "datePicker": {
+            "startReading": "Début de lecture",
+            "endReading": "Fin de lecture"
+        },
+        "filterView": {
+            "title": "Tri et filtres",
+            "subtitles": {
+                "sort": "Trier par",
+                "statusFilter": "Filtrer par statut",
+                "ratingFilter": "Filtrer par note",
+                "otherFilters": "Autres filtres"
+            },
+            "sortOptions": {
+                "title": "Titre (alphabétique)",
+                "author": "Auteur (alphabétique)",
+                "readingDate": "Date de lecture (décroissant)",
+                "additionDate": "Date d'ajout à mes livres (décroissant)",
+                "rating": "Note (décroissant)"
+            },
+            "multiselectPlaceholder": {
+                "authors": "Auteurs : ",
+                "publishers": "Éditeurs : ",
+                "series": "Séries : ",
+                "years": "Années de lecture : ",
+                "allAuthors": "Tous les auteurs",
+                "allPublishers": "Tous les éditeurs",
+                "allSeries": "Toutes les séries",
+                "allYears": "Toutes les années de lecture"
+            },
+            "all": "Tous",
+            "noRating": "Pas de notes",
+            "applyButton": "Appliquer"
         }
     }
 }

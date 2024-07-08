@@ -7,10 +7,10 @@
     "app":{
         "navigationTitle":{
             "homeScreen":"My Books",
-            "bookScreen":"Book Details",
-            "bookEditScreen":"Edit Book",
-            "addScreen":"Add a Book",
-            "scannerScreen":"Scan a Book",
+            "bookScreen":"Book details",
+            "bookEditScreen":"Edit book",
+            "addScreen":"Add a book",
+            "scannerScreen":"Scan a book",
             "menuScreen":"Menu"
 
         }

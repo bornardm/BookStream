@@ -56,7 +56,7 @@ export default function DatePicker({
 
           <Text style={styles.text}>
             {dateStart
-              ? dateStart.toLocaleDateString("en-GB", {
+              ? dateStart.toLocaleDateString(t("dateFormat"), {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -97,7 +97,7 @@ export default function DatePicker({
 
           <Text style={styles.text}>
             {dateEnd
-              ? dateEnd.toLocaleDateString("en-GB", {
+              ? dateEnd.toLocaleDateString(t("dateFormat"), {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
