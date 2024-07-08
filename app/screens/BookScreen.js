@@ -21,6 +21,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { SQLiteProvider } from "expo-sqlite/next";
 import * as FileSystem from "expo-file-system";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { BOOK_STATUS } from "../constants/BookStatus";
@@ -89,6 +91,7 @@ export default function BookScreen({ route }) {
   const [book, setBook] = useState(null);
   const [bookLoaded, setBookLoaded] = useState(false);
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
+  const { t } = useTranslation();
 
   //------------------------ Functions ----------------------------------
 
@@ -214,12 +217,12 @@ export default function BookScreen({ route }) {
       <TouchableWithoutFeedback
         onPress={() =>
           Alert.alert(
-            "Delete this book",
-            "Would you like to remove this book from your library?",
+            t("screens.book.alerts.deleteTitle"),
+            t("screens.book.alerts.deleteMessage"),
             [
-              { text: "NO" },
+              { text: t("NO") },
               {
-                text: "YES",
+                text: t("YES"),
                 onPress: () => {
                   navigation.goBack();
                   deleteBookDB({ id: bookID, imageName: book.imageName });
@@ -237,7 +240,7 @@ export default function BookScreen({ route }) {
             color={colors.darkGrey}
             backgroundColor={"transparent"}
           />
-          <Text style={styles.textTrash}>Remove this book from my library</Text>
+          <Text style={styles.textTrash}>{t("screens.book.removeButton")}</Text>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -314,7 +317,7 @@ export default function BookScreen({ route }) {
             </View>
             <View style={styles.horizontalLine} />
             <View style={styles.infosView}>
-              <Text>Reading dates</Text>
+              <Text>{t("screens.book.readingDates")}</Text>
               <DatePicker
                 bookID={bookID}
                 initialStartDate={book.readingStartDate}

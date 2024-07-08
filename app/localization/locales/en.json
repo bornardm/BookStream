@@ -1,5 +1,9 @@
 {
     "dateFormat":"en-GB",
+    "yes":"Yes",
+    "no":"No",
+    "YES":"YES",
+    "NO":"NO",
     "app":{
         "navigationTitle":{
             "homeScreen":"My Books",
@@ -9,6 +13,23 @@
             "scannerScreen":"Scan a Book",
             "menuScreen":"Menu"
 
+        }
+    },
+    "constants":{
+        "bookStatus":{
+            "read":"Read",
+            "wantToRead":"Want to read",
+            "reading":"Reading",
+            "abandoned":"Abandoned",
+            "borrowed":"Borrowed",
+            "toExchange":"To exchange"
+        },
+        "languages":{
+            "english":"English",
+            "french":"French",
+            "spanish":"Spanish",
+            "german":"German",
+            "italian":"Italian"
         }
     },
     "screens":{
@@ -50,7 +71,51 @@
             }
 
 
+        },
+        "book":{
+            "alerts":{
+                "deleteTitle" : "Delete this book",
+                "deleteMessage" : "Would you like to remove this book from your library ?"
+            },
+            "removeButton":"Remove this book from my library" ,
+            "readingDates": "Reading dates"
         }
+    },
+    "components":{
+        "datePicker":{
+            "startReading":"Start of reading",
+            "endReading":"End of reading"
+        },
+        "filterView":{
+            "title": "Sorting and filters",
+            "subtitles":{
+                "sort":"Sort by",
+                "statusFilter":"Filter by status",
+                "ratingFilter" : "Filter by rating",
+                "otherFilters" : "Other filters"
+            },
+            "sortOptions":{
+                "title":"Title (alphabetical)",
+                "author":"Author (alphabetical)",
+                "readingDate":"Reading date (descending)",
+                "additionDate":"Date of addition to my books (descending)",
+                "rating":"Rating (descending)"
+            },
+            "multiselectPlaceholder":{
+                "authors":"Authors : ",
+                "publishers":"Publishers : ",
+                "series":"Series : ",
+                "years":"Reading years : ",
+                "allAuthors":"All authors",
+                "allPublishers":"All publishers",
+                "allSeries":"All series",
+                "allYears":"All reading years"
+            },
+            "all":"All",
+            "noRating":"No rating",
+            "applyButton":"Apply"
 
+            
+        }
     }
 }

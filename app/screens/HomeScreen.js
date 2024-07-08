@@ -70,7 +70,6 @@ export default function HomeScreen({ navigation }) {
         setPreviewsLoaded(true);
       }
     };
-    console.log("DB : HomeScreen useEffect");
     fetchPreviews();
   }, [dbParams]);
 
@@ -112,7 +111,6 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.addBook}>
             <TouchableWithoutFeedback
               onPress={() => {
-                console.log("Add book button pressed");
                 navigation.navigate("AddScreen", {
                   addBookPreviewFunc: addBookPreview,
                   functions: {

@@ -5,6 +5,8 @@ import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 // Third-party libraries/components
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { BOOK_STATUS } from "../constants/BookStatus";
@@ -30,6 +32,7 @@ export default function DatePicker({
   initialEndDate,
   updateStateBookFunc,
 }) {
+  const { t } = useTranslation();
   const [dateStart, setDateStart] = useState(null);
   const [showStart, setShowStart] = useState(false);
   const [dateEnd, setDateEnd] = useState(null);
@@ -58,7 +61,7 @@ export default function DatePicker({
                   month: "short",
                   year: "numeric",
                 })
-              : " Start of reading"}
+              : t("components.datePicker.startReading")}
           </Text>
 
           {showStart && (
@@ -99,7 +102,7 @@ export default function DatePicker({
                   month: "short",
                   year: "numeric",
                 })
-              : " End of reading"}
+              : t("components.datePicker.endReading")}
           </Text>
 
           {showEnd && (

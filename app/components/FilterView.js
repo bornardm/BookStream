@@ -16,10 +16,12 @@ import {
 // Third-party libraries/components
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MultiSelect } from "react-native-element-dropdown";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
-import { BOOK_STATUS } from "../constants/BookStatus";
+import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
 import ButtonGroup from "./ButtonGroup";
 import { getDistinctDB, getDistinctYearDB } from "../requests";
 
@@ -44,31 +46,31 @@ const checkButtonProps = {
 const sortItems = [
   {
     id: "1", // acts as a key, must be unique
-    label: "Title (alphabetical)",
+    label: i18next.t("components.filterView.sortOptions.title"),
     value: "title",
     ...radioButtonProps,
   },
   {
     id: "2",
-    label: "Author (alphabetical)",
+    label: i18next.t("components.filterView.sortOptions.author"),
     value: "author",
     ...radioButtonProps,
   },
   {
     id: "3",
-    label: "Reading date (descending)",
+    label: i18next.t("components.filterView.sortOptions.readingDate"),
     value: "readingEndDate",
     ...radioButtonProps,
   },
   {
     id: "4",
-    label: "Date of addition to my books (descending)",
+    label: i18next.t("components.filterView.sortOptions.additionDate"),
     value: "addedDate",
     ...radioButtonProps,
   },
   {
     id: "5",
-    label: "Rating (descending)",
+    label: i18next.t("components.filterView.sortOptions.rating"),
     value: "rating",
     ...radioButtonProps,
   },
@@ -76,44 +78,44 @@ const sortItems = [
 const filterStatusItemsData = [
   {
     id: "1",
-    label: "All",
+    label: i18next.t("components.filterView.all"),
     value: "all",
     ...checkButtonProps,
     selected: true,
   },
   {
     id: "2",
-    label: "Read",
+    label: BOOK_STATUS_PROPS[BOOK_STATUS.READ].text,
     value: BOOK_STATUS.READ,
     ...checkButtonProps,
   },
   {
     id: "3",
-    label: "Want to read",
+    label: BOOK_STATUS_PROPS[BOOK_STATUS.TO_READ].text,
     value: BOOK_STATUS.TO_READ,
     ...checkButtonProps,
   },
   {
     id: "4",
-    label: "Reading",
+    label: BOOK_STATUS_PROPS[BOOK_STATUS.READING].text,
     value: BOOK_STATUS.READING,
     ...checkButtonProps,
   },
   {
     id: "5",
-    label: "Abandoned",
+    label: BOOK_STATUS_PROPS[BOOK_STATUS.ABANDONED].text,
     value: BOOK_STATUS.ABANDONED,
     ...checkButtonProps,
   },
   {
     id: "6",
-    label: "Borrowed",
+    label: BOOK_STATUS_PROPS[BOOK_STATUS.BORROWED].text,
     value: BOOK_STATUS.BORROWED,
     ...checkButtonProps,
   },
   {
     id: "7",
-    label: "To exchange",
+    label: BOOK_STATUS_PROPS[BOOK_STATUS.TO_EXCHANGE].text,
     value: BOOK_STATUS.TO_EXCHANGE,
     ...checkButtonProps,
   },
@@ -130,7 +132,7 @@ const createFilterNoteItems = () => {
   let items = [
     {
       id: "11",
-      label: "All",
+      label: i18next.t("components.filterView.all"),
       value: "all",
       ...checkButtonProps,
       selected: true,
@@ -146,7 +148,7 @@ const createFilterNoteItems = () => {
   }
   items.push({
     id: "0",
-    label: "No note",
+    label: i18next.t("components.filterView.noRating"),
     value: "null",
     ...checkButtonProps,
   });
@@ -203,6 +205,7 @@ export default function FilterView({
   setDbParams,
 }) {
   //------------------------ Variables and States------------------------
+  const { t } = useTranslation();
   const [windowsHeight, setWindowsHeight] = useState(
     Dimensions.get("window").height
   );
@@ -431,7 +434,9 @@ export default function FilterView({
       style={[styles.filterContainer, { transform: [{ translateY }] }]}
     >
       <View style={styles.header}>
-        <Text style={styles.headerText}>Sorting and filters</Text>
+        <Text style={styles.headerText}>
+          {t("components.filterView.title")}
+        </Text>
         <View style={styles.cancelIconContainer}>
           <MaterialCommunityIcons.Button
             name="close"
@@ -455,7 +460,9 @@ export default function FilterView({
       </View>
       <View style={styles.line} />
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.subTitle}>Sort by</Text>
+        <Text style={styles.subTitle}>
+          {t("components.filterView.subtitles.sort")}
+        </Text>
         <ButtonGroup
           type={"radio"}
           buttonsData={sortItems}
@@ -464,7 +471,9 @@ export default function FilterView({
           containerStyle={styles.buttonGroupContainer}
         />
 
-        <Text style={styles.subTitle}>Filter by status</Text>
+        <Text style={styles.subTitle}>
+          {t("components.filterView.subtitles.statusFilter")}
+        </Text>
         <View style={{ flexDirection: "row" }}>
           <ButtonGroup
             type={"check"}
@@ -481,7 +490,9 @@ export default function FilterView({
             startId={5}
           />
         </View>
-        <Text style={styles.subTitle}>Filter by notes</Text>
+        <Text style={styles.subTitle}>
+          {t("components.filterView.subtitles.ratingFilter")}
+        </Text>
         <View style={{ flexDirection: "row" }}>
           <ButtonGroup
             type={"check"}
@@ -498,10 +509,16 @@ export default function FilterView({
             endId={5}
           />
         </View>
-        <Text style={styles.subTitle}>Other filters</Text>
+        <Text style={styles.subTitle}>
+          {t("components.filterView.subtitles.otherFilters")}
+        </Text>
         <MultiSelect
           {...multiSelectProps}
-          placeholder={selectedAuthor.length > 0 ? "Authors : " : "All authors"}
+          placeholder={
+            selectedAuthor.length > 0
+              ? t("components.filterView.multiselectPlaceholder.authors")
+              : t("components.filterView.multiselectPlaceholder.allAuthors")
+          }
           value={selectedAuthor}
           data={allAuthors}
           onChange={(item) => {
@@ -519,7 +536,9 @@ export default function FilterView({
         <MultiSelect
           {...multiSelectProps}
           placeholder={
-            selectedPublisher.length > 0 ? "Publishers : " : "All publishers"
+            selectedPublisher.length > 0
+              ? t("components.filterView.multiselectPlaceholder.publishers")
+              : t("components.filterView.multiselectPlaceholder.allPublishers")
           }
           value={selectedPublisher}
           data={allPublishers}
@@ -537,7 +556,11 @@ export default function FilterView({
         />
         <MultiSelect
           {...multiSelectProps}
-          placeholder={selectedSeries.length > 0 ? "Series : " : "All series"}
+          placeholder={
+            selectedSeries.length > 0
+              ? t("components.filterView.multiselectPlaceholder.series")
+              : t("components.filterView.multiselectPlaceholder.allSeries")
+          }
           value={selectedSeries}
           data={allSeries}
           onChange={(item) => {
@@ -555,7 +578,9 @@ export default function FilterView({
         <MultiSelect
           {...multiSelectProps}
           placeholder={
-            selectedReadYear.length > 0 ? "Reading year : " : "All reading year"
+            selectedReadYear.length > 0
+              ? t("components.filterView.multiselectPlaceholder.years")
+              : t("components.filterView.multiselectPlaceholder.allYears")
           }
           value={selectedReadYear}
           data={allReadYear}
@@ -572,7 +597,10 @@ export default function FilterView({
           )}
         />
         <View style={styles.applyButton}>
-          <Button title="Apply" onPress={onApllyPress} />
+          <Button
+            title={t("components.filterView.applyButton")}
+            onPress={onApllyPress}
+          />
         </View>
         <View style={styles.marginView} />
       </ScrollView>
