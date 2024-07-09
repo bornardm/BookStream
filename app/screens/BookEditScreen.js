@@ -33,13 +33,13 @@ import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { addOrModifyBookDB, getDistinctDB } from "../requests";
+import { getDefaultBookStatus } from "../constants/BookStatus";
 import { colors } from "../constants/Colors";
 import {
   coversDir,
   downloadImageFromInternetToCovers,
   deleteImageFromCovers,
 } from "../setupDatabase";
-import { defaultStatus } from "../constants/BookStatus";
 import { isDigitsOnly } from "../utils";
 import { FlatList } from "react-native-gesture-handler";
 import TextInputWithSuggestions from "../components/TextInputWithSuggestions";
@@ -68,6 +68,7 @@ const initBook = (initialBook) => {
     comment: { value: null, isValid: true },
     categories: { value: null, isValid: true },
     language: { value: null, isValid: true },
+    status: { value: getDefaultBookStatus(), isValid: true },
   };
 
   // Copy values from initial book to default book

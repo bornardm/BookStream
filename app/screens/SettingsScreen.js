@@ -13,12 +13,17 @@ import { colors } from "../constants/Colors";
 import { Dropdown } from "react-native-element-dropdown";
 import i18next, { languageRessources } from "../localization/i18n";
 import { useTranslation } from "react-i18next";
+import {
+  getBookStatusProps,
+  setDefaultBookStatus,
+  getDefaultBookStatus,
+} from "../constants/BookStatus";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <View style={styles.language}>
+      <View style={styles.row}>
         <Text style={styles.text}>
           {t("screens.settings.changeLanguage")} :{" "}
         </Text>
@@ -44,6 +49,31 @@ export default function SettingsScreen() {
           }}
         />
       </View>
+      <View style={styles.row}>
+        <Text style={styles.text}>
+          {t("screens.settings.changeDefaultStatus")} :{" "}
+        </Text>
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          data={getBookStatusProps()
+            .slice(0, 4)
+            .map((status, index) => ({
+              label: status.text,
+              value: index,
+            }))}
+          search
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder="Select item"
+          searchPlaceholder={t("screens.settings.searchPlaceholder")}
+          value={getDefaultBookStatus()}
+          onChange={(item) => setDefaultBookStatus(item.value)}
+        />
+      </View>
     </View>
   );
 }
@@ -63,7 +93,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
   },
-  language: {
+  row: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

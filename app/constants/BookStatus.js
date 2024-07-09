@@ -16,7 +16,16 @@ export const BOOK_STATUS = {
   TO_EXCHANGE: 5,
 };
 
-export const defaultStatus = BOOK_STATUS.TO_READ;
+let defaultBookStatus = BOOK_STATUS.TO_READ;
+
+export const getDefaultBookStatus = () => {
+  console.log(defaultBookStatus);
+  return defaultBookStatus;
+};
+
+export const setDefaultBookStatus = (newStatus) => {
+  defaultBookStatus = newStatus;
+};
 
 //props of the status
 const setBookStatusProps = () => {
@@ -59,5 +68,11 @@ const setBookStatusProps = () => {
     },
   ];
 };
+let BOOK_STATUS_PROPS = setBookStatusProps();
 
-export let BOOK_STATUS_PROPS = setBookStatusProps();
+// Listen for language changes
+i18next.on("languageChanged", () => {
+  BOOK_STATUS_PROPS = setBookStatusProps(); // Update BOOK_STATUS_PROPS on language change
+});
+
+export const getBookStatusProps = () => BOOK_STATUS_PROPS;

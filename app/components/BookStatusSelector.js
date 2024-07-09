@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 // Utility functions, constants, and other local imports
-import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+import { BOOK_STATUS, getBookStatusProps } from "../constants/BookStatus";
 import { colors } from "../constants/Colors";
 import {
   updateBookBorrowedDB,
@@ -90,7 +90,7 @@ export function BookStatusSelector({
       horizontal={true}
       showsHorizontalScrollIndicator={false}
     >
-      {BOOK_STATUS_PROPS.map((value, index) => {
+      {getBookStatusProps().map((value, index) => {
         const IconComponent = value.iconLibrary;
         const isSelected = selectedStatus[index];
         return (

@@ -81,7 +81,9 @@
 
         "settings":{
             "searchPlaceholder":"Rechercher...",
-            "changeLanguage":"Changer de langue"
+            "changeLanguage":"Langue",
+            "changeDefaultStatus":"Status par défaut \ndes livres ajoutés"
+
         }
     },
     "components": {

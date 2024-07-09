@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
-import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+import { BOOK_STATUS, getBookStatusProps } from "../constants/BookStatus";
 import ButtonGroup from "./ButtonGroup";
 import { getDistinctDB, getDistinctYearDB } from "../requests";
 
@@ -85,37 +85,37 @@ const filterStatusItemsData = [
   },
   {
     id: "2",
-    label: BOOK_STATUS_PROPS[BOOK_STATUS.READ].text,
+    label: getBookStatusProps()[BOOK_STATUS.READ].text,
     value: BOOK_STATUS.READ,
     ...checkButtonProps,
   },
   {
     id: "3",
-    label: BOOK_STATUS_PROPS[BOOK_STATUS.TO_READ].text,
+    label: getBookStatusProps()[BOOK_STATUS.TO_READ].text,
     value: BOOK_STATUS.TO_READ,
     ...checkButtonProps,
   },
   {
     id: "4",
-    label: BOOK_STATUS_PROPS[BOOK_STATUS.READING].text,
+    label: getBookStatusProps()[BOOK_STATUS.READING].text,
     value: BOOK_STATUS.READING,
     ...checkButtonProps,
   },
   {
     id: "5",
-    label: BOOK_STATUS_PROPS[BOOK_STATUS.ABANDONED].text,
+    label: getBookStatusProps()[BOOK_STATUS.ABANDONED].text,
     value: BOOK_STATUS.ABANDONED,
     ...checkButtonProps,
   },
   {
     id: "6",
-    label: BOOK_STATUS_PROPS[BOOK_STATUS.BORROWED].text,
+    label: getBookStatusProps()[BOOK_STATUS.BORROWED].text,
     value: BOOK_STATUS.BORROWED,
     ...checkButtonProps,
   },
   {
     id: "7",
-    label: BOOK_STATUS_PROPS[BOOK_STATUS.TO_EXCHANGE].text,
+    label: getBookStatusProps()[BOOK_STATUS.TO_EXCHANGE].text,
     value: BOOK_STATUS.TO_EXCHANGE,
     ...checkButtonProps,
   },

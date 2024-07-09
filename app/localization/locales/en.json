@@ -83,7 +83,8 @@
         },
         "settings":{
             "searchPlaceholder":"Search...",
-            "changeLanguage":"Change language"
+            "changeLanguage":"Language",
+            "changeDefaultStatus":"Default status \nfor added books"
         }
     },
     "components":{

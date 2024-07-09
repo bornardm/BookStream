@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS BOOKS (
   pageNumber INTEGER ,
   isbn TEXT,
   summary TEXT,
-  status INTEGER NOT NULL DEFAULT 1,
+  status INTEGER NOT NULL,
   borrowed BOOLEAN  ,
   toExchange BOOLEAN ,
   rating INTEGER ,

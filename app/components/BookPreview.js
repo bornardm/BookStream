@@ -13,12 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
-import { BOOK_STATUS, BOOK_STATUS_PROPS } from "../constants/BookStatus";
+import { BOOK_STATUS, getBookStatusProps } from "../constants/BookStatus";
 import { coversDir } from "../setupDatabase";
 import { FiveStarsDisplay } from "./Stars";
 
 function BadgeStatus({ status }) {
-  const statusProps = BOOK_STATUS_PROPS[status];
+  const statusProps = getBookStatusProps()[status];
   const IconComponent = statusProps.iconLibrary;
   return (
     <View style={[styles.badge, { backgroundColor: statusProps.color }]}>

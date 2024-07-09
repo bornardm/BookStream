@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
-import { defaultStatus } from "../constants/BookStatus";
+import { getDefaultBookStatus } from "../constants/BookStatus";
 import { isDigitsOnly } from "../utils";
 import { fetchBookFromOpenLibrary } from "../apiRequests";
 
@@ -64,7 +64,7 @@ export default function AddScreen({ route, navigation }) {
       title: title,
       author: author,
       rating: null,
-      status: defaultStatus,
+      status: getDefaultBookStatus(),
       imageName: imageName,
     };
     console.log("PREVIEW : ", preview);
