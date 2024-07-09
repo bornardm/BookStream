@@ -11,7 +11,8 @@
             "bookEditScreen":"Edit book",
             "addScreen":"Add a book",
             "scannerScreen":"Scan a book",
-            "menuScreen":"Menu"
+            "menuScreen":"Menu",
+            "settingsScreen":"Settings"
 
         }
     },
@@ -79,6 +80,10 @@
             },
             "removeButton":"Remove this book from my library" ,
             "readingDates": "Reading dates"
+        },
+        "settings":{
+            "searchPlaceholder":"Search...",
+            "changeLanguage":"Change language"
         }
     },
     "components":{
@@ -113,7 +118,8 @@
             },
             "all":"All",
             "noRating":"No rating",
-            "applyButton":"Apply"
+            "applyButton":"Apply",
+            "searchPlaceholder":"Search..."
 
             
         }

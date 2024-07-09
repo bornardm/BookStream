@@ -12,6 +12,7 @@ import MenuScreen from "./app/screens/MenuScreen";
 import LoadindingView from "./app/components/LoadingView";
 import AddScreen from "./app/screens/AddScreen";
 import ScannerScreen from "./app/screens/ScannerScreen";
+import SettingsScreen from "./app/screens/SettingsScreen";
 import { colors } from "./app/constants/Colors";
 import { loadDatabase, updateAllImages } from "./app/setupDatabase";
 import { LogBox } from "react-native";
@@ -97,12 +98,17 @@ export default function App() {
         <Drawer.Screen
           name="Home"
           component={HomeStackScreen}
-          options={{ headerTitle: t("app.navigationTitle.homeScreen") }}
+          options={{ title: t("app.navigationTitle.homeScreen") }}
         />
         <Drawer.Screen
           name="MenuScreen"
           component={MenuScreen}
-          options={{ headerTitle: t("app.navigationTitle.menuScreen") }}
+          options={{ title: t("app.navigationTitle.menuScreen") }}
+        />
+        <Drawer.Screen
+          name="SettingsScreen"
+          component={SettingsScreen}
+          options={{ title: t("app.navigationTitle.settingsScreen") }}
         />
       </Drawer.Navigator>
     </NavigationContainer>

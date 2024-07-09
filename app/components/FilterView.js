@@ -715,7 +715,7 @@ const multiSelectProps = {
   search: true,
   labelField: "label",
   valueField: "value",
-  searchPlaceholder: "Search...",
+  searchPlaceholder: i18next.t("components.filterView.searchPlaceholder"),
   inverted: false,
   selectedStyle: styles.selectedStyle,
 };

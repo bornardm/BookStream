@@ -11,7 +11,8 @@
             "bookEditScreen": "Modifier le livre",
             "addScreen": "Ajouter un livre",
             "scannerScreen": "Scanner un livre",
-            "menuScreen": "Menu"
+            "menuScreen": "Menu",
+            "settingsScreen":"Paramètres"
         }
     },
     "constants": {
@@ -76,6 +77,11 @@
             },
             "removeButton": "Supprimer ce livre de ma bibliothèque",
             "readingDates": "Dates de lecture"
+        },
+
+        "settings":{
+            "searchPlaceholder":"Rechercher...",
+            "changeLanguage":"Changer de langue"
         }
     },
     "components": {
