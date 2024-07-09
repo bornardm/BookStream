@@ -84,7 +84,20 @@
         "settings":{
             "searchPlaceholder":"Search...",
             "changeLanguage":"Language",
-            "changeDefaultStatus":"Default status \nfor added books"
+            "changeDefaultStatus":"Default status \nfor added books",
+            "deleteLibrary":{
+                "buttonTitle":"Delete library",
+                "alertTitle":"CAUTION",
+                "alertMessage":"This action will erase all your library with no hope of recovery. Are you sure you want to do this?"
+            },
+            "exportLibrary":{
+                "buttonTitle":"Export library"
+            },
+            "importLibrary":{
+                "buttonTitle":"Import library"
+            }
+            
+
         }
     },
     "components":{
