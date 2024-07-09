@@ -1,5 +1,5 @@
 // React and React Native components and hooks
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, useContext } from "react";
 import {
   Alert,
   Image,
@@ -20,9 +20,13 @@ import {
   setDefaultBookStatus,
   getDefaultBookStatus,
 } from "../constants/BookStatus";
+import { deleteAllLibraryDB } from "../requests";
+import { deleteAllFilesFromCovers } from "../setupDatabase";
+import ReloadContext from "../reloadContext";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
+  const { reloadApp } = useContext(ReloadContext);
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -49,6 +53,7 @@ export default function SettingsScreen() {
             value={i18next.language}
             onChange={(item) => {
               i18next.changeLanguage(item.value);
+              reloadApp();
             }}
           />
         </View>
@@ -125,8 +130,11 @@ export default function SettingsScreen() {
                   { text: t("NO") },
                   {
                     text: t("YES"),
-                    onPress: () => {
-                      console.log("TODO : Erasing library"); //TODO
+                    onPress: async () => {
+                      console.log("Erasing library and all covers ");
+                      deleteAllLibraryDB();
+                      await deleteAllFilesFromCovers();
+                      reloadApp();
                     },
                   },
                 ]

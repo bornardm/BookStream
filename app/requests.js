@@ -275,3 +275,11 @@ export function getDistinctYearDB({ end = true }) {
     query: `SELECT DISTINCT strftime('%Y', ${field}) AS year FROM BOOKS WHERE ${field} IS NOT NULL ;`,
   });
 }
+
+export function deleteAllLibraryDB() {
+  console.log("DB : start deleting all library");
+  return updateDB({
+    request: "DELETE FROM BOOKS",
+    params: [],
+  });
+}

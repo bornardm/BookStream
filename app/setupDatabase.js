@@ -135,7 +135,7 @@ const listAllFilesFromCovers = async () => {
   console.log("Files in covers directory: ", files);
 };
 
-const deleteAllFilesFromCovers = async () => {
+export const deleteAllFilesFromCovers = async () => {
   const files = await FileSystem.readDirectoryAsync(coversDir);
   for (const file of files) {
     await FileSystem.deleteAsync(`${coversDir}${file}`);

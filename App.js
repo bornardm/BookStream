@@ -1,9 +1,12 @@
 import "react-native-gesture-handler";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Button, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { LogBox } from "react-native";
+import i18next from "./app/localization/i18n";
+import { useTranslation } from "react-i18next";
 
 import HomeScreen from "./app/screens/HomeScreen";
 import BookScreen from "./app/screens/BookScreen";
@@ -15,9 +18,7 @@ import ScannerScreen from "./app/screens/ScannerScreen";
 import SettingsScreen from "./app/screens/SettingsScreen";
 import { colors } from "./app/constants/Colors";
 import { loadDatabase, updateAllImages } from "./app/setupDatabase";
-import { LogBox } from "react-native";
-import i18next from "./app/localization/i18n";
-import { useTranslation } from "react-i18next";
+import ReloadContext from "./app/reloadContext";
 
 //ignore some warnigs
 LogBox.ignoreLogs([
@@ -68,7 +69,15 @@ const HomeStackScreen = () => {
 export default function App() {
   const { t } = useTranslation();
 
+  //for reloading the app
+  const [key, setKey] = useState(0);
+  const reloadApp = useCallback(() => {
+    console.log("Reloading App");
+    setKey((prevKey) => prevKey + 1);
+  }, []);
+
   const [dbLoaded, setDbLoaded] = useState(false);
+
   useEffect(() => {
     updateAllImages().catch((e) => console.error("Failed to load Cover : ", e));
     loadDatabase()
@@ -81,36 +90,38 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Drawer.Navigator
-        initialRouteName="=HomeScreen"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: colors.white,
-          },
-          headerShown: true,
-          headerTintColor: colors.black, //color of the title
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-        }}
-      >
-        <Drawer.Screen
-          name="Home"
-          component={HomeStackScreen}
-          options={{ title: t("app.navigationTitle.homeScreen") }}
-        />
-        <Drawer.Screen
-          name="MenuScreen"
-          component={MenuScreen}
-          options={{ title: t("app.navigationTitle.menuScreen") }}
-        />
-        <Drawer.Screen
-          name="SettingsScreen"
-          component={SettingsScreen}
-          options={{ title: t("app.navigationTitle.settingsScreen") }}
-        />
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <ReloadContext.Provider value={{ reloadApp }}>
+      <NavigationContainer key={key}>
+        <Drawer.Navigator
+          initialRouteName="=HomeScreen"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: colors.white,
+            },
+            headerShown: true,
+            headerTintColor: colors.black, //color of the title
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+          }}
+        >
+          <Drawer.Screen
+            name="Home"
+            component={HomeStackScreen}
+            options={{ title: t("app.navigationTitle.homeScreen") }}
+          />
+          <Drawer.Screen
+            name="MenuScreen"
+            component={MenuScreen}
+            options={{ title: t("app.navigationTitle.menuScreen") }}
+          />
+          <Drawer.Screen
+            name="SettingsScreen"
+            component={SettingsScreen}
+            options={{ title: t("app.navigationTitle.settingsScreen") }}
+          />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    </ReloadContext.Provider>
   );
 }
