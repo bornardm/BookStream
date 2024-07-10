@@ -23,7 +23,11 @@ import { useTranslation } from "react-i18next";
 import { colors } from "../constants/Colors";
 import { BOOK_STATUS, getBookStatusProps } from "../constants/BookStatus";
 import ButtonGroup from "./ButtonGroup";
-import { getDistinctDB, getDistinctYearDB } from "../requests";
+import {
+  updateSettingSort,
+  getDistinctDB,
+  getDistinctYearDB,
+} from "../requests";
 
 // Constants
 //Prportion of the parentView that the filter view will take
@@ -195,6 +199,7 @@ const deviceNavigationBarHeight = computeDeviceNavigationBarHeight();
  * @param {boolean} props.previewsLoaded - Indicates whether the previews are loaded or not (if they are, that alow to fetch the data from the db).)
  * @param {function} props.setDbRequest - Function to set the database request.
  * @param {function} props.setDbParams - Function to set the database parameters.
+ * @param {string} props.selectedSortItem - The selected sort item in (title, author, readingEndDate, addedDate, rating).
  * @returns {JSX.Element} The filter view component.
  */
 export default function FilterView({
@@ -203,6 +208,7 @@ export default function FilterView({
   previewsLoaded,
   setDbRequest,
   setDbParams,
+  selectedSortItem,
 }) {
   //------------------------ Variables and States------------------------
   const { t } = useTranslation();
@@ -212,7 +218,9 @@ export default function FilterView({
   const translateY = useRef(new Animated.Value(windowsHeight)).current; // initial position outside of the screen
 
   // Data for the check/radio buttons
-  const [sortSelectedId, setSortSelectedId] = useState("1");
+  const [sortSelectedId, setSortSelectedId] = useState(
+    sortItems.find((item) => item.value === selectedSortItem).id
+  );
   const [filterNoteItems, setFilterNoteItem] = useState(createFilterNoteItems);
   const [filterStatusItems, setFilterStatusItem] = useState(
     filterStatusItemsData
@@ -277,6 +285,9 @@ export default function FilterView({
     //console.log("request = ", request, "params = ", params);
     setDbRequest(request);
     setDbParams(params);
+    updateSettingSort({
+      sortValue: sortItems.find((item) => item.id === sortSelectedId).value,
+    });
   };
 
   /**

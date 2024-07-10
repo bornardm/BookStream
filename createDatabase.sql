@@ -23,6 +23,16 @@ CREATE TABLE IF NOT EXISTS BOOKS (
   CONSTRAINT ck_status CHECK (status >= 0 AND status <= 3),
   CONSTRAINT ck_rating CHECK (rating >= 0 AND rating <= 10)
 );
+CREATE TABLE IF NOT EXISTS SETTINGS (
+  id INTEGER PRIMARY KEY,
+  language TEXT,
+  sort TEXT,
+  defaulfBookStatus INTEGER
+);
+
+INSERT INTO SETTINGS (id, language, sort, defaulfBookStatus)
+VALUES
+(0, null, null, null);
 
 
 INSERT INTO BOOKS (title, author, publicationDate, publisher, pageNumber, isbn, summary, status, borrowed, toExchange, rating, readingStartDate, readingEndDate, imageName, series, volume, comment, categories, language, addedDate)

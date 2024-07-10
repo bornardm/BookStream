@@ -19,6 +19,7 @@ import SettingsScreen from "./app/screens/SettingsScreen";
 import { colors } from "./app/constants/Colors";
 import { loadDatabase, updateAllImages } from "./app/setupDatabase";
 import ReloadContext from "./app/reloadContext";
+import { fetchSettings } from "./app/settingsRequestDB";
 
 //ignore some warnigs
 LogBox.ignoreLogs([
@@ -81,7 +82,10 @@ export default function App() {
   useEffect(() => {
     updateAllImages().catch((e) => console.error("Failed to load Cover : ", e));
     loadDatabase()
-      .then(() => setDbLoaded(true))
+      .then(() => {
+        setDbLoaded(true); //load user settings from the database
+        fetchSettings();
+      })
       .catch((e) => console.error(e));
   }, []);
   if (!dbLoaded) {

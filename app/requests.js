@@ -67,7 +67,7 @@ export async function fetchBookPreview({ request, params = [] }) {
  * @param {Array} options.params - The parameters to be passed to the SQL request.
  * @returns {boolean} - Returns true if the update was successful, false otherwise.
  */
-function updateDB({ request, params }) {
+export function updateDB({ request, params }) {
   let res = null;
   try {
     dbConnexion.withTransactionSync(() => {
@@ -281,5 +281,14 @@ export function deleteAllLibraryDB() {
   return updateDB({
     request: "DELETE FROM BOOKS",
     params: [],
+  });
+}
+
+//settings :
+export function updateSettingSort({ sortValue }) {
+  console.log("DB : start updating Setting Sort: sortValue = ", sortValue);
+  return updateDB({
+    request: "UPDATE SETTINGS SET sort = ? WHERE id = 0",
+    params: [sortValue],
   });
 }

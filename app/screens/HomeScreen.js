@@ -23,13 +23,21 @@ import { dbName } from "../setupDatabase";
 import { fetchBookPreview } from "../requests";
 import FilterView from "../components/FilterView";
 
+let selectedSortItem = "readingEndDate"; //useful only at the beginning to set the default sort option or the saved one from the DB
+let selectedSortSet = false;
+export const setSelectedSortItem = (value) => {
+  console.log("setSelectedSortItem : ", value);
+  selectedSortItem = value;
+  selectedSortSet = true;
+};
+
 export default function HomeScreen({ navigation }) {
   //------------------------ Variables and States------------------------
   const [allBookPreview, setAllBookPreview] = useState(null);
   const [previewsLoaded, setPreviewsLoaded] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [dbRequest, setDbRequest] = useState("SELECT * FROM BOOKS;");
-  const [dbParams, setDbParams] = useState([]);
+  const [dbRequest, setDbRequest] = useState("");
+  const [dbParams, setDbParams] = useState(null);
 
   //------------------------ Functions ----------------------------------
 
@@ -70,8 +78,21 @@ export default function HomeScreen({ navigation }) {
         setPreviewsLoaded(true);
       }
     };
-    fetchPreviews();
-  }, [dbParams]);
+    if (selectedSortSet) {
+      if (dbParams != null) {
+        fetchPreviews();
+      } else {
+        setDbParams([]);
+        setDbRequest(
+          `SELECT * FROM BOOKS ORDER BY ${selectedSortItem} ${
+            selectedSortItem === "title" || selectedSortItem === "author"
+              ? "ASC"
+              : "DESC"
+          } ;`
+        );
+      }
+    }
+  }, [dbParams, selectedSortSet]);
 
   return (
     <Suspense fallback={<LoadindingView />}>
@@ -130,6 +151,7 @@ export default function HomeScreen({ navigation }) {
             previewsLoaded={previewsLoaded}
             setDbRequest={setDbRequest}
             setDbParams={setDbParams}
+            selectedSortItem={selectedSortItem}
           />
         </View>
       </SQLiteProvider>
