@@ -26,6 +26,8 @@ export function fetchSettings() {
         }
         if (settings.sort != null) {
           setSelectedSortItem(settings.sort);
+        } else {
+          setSelectedSortItem("addedDate");
         }
       }
       //console.log("transaction end");

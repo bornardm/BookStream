@@ -20,10 +20,7 @@ import {
   setDefaultBookStatus,
   getDefaultBookStatus,
 } from "../constants/BookStatus";
-import {
-  deleteAllLibraryDB,
-  updateSettingDefaultBookStatus,
-} from "../requests";
+import { deleteAllLibraryDB, updateSettingDB } from "../requests";
 import { deleteAllFilesFromCovers } from "../setupDatabase";
 import ReloadContext from "../reloadContext";
 
@@ -84,7 +81,10 @@ export default function SettingsScreen() {
             value={getDefaultBookStatus()}
             onChange={(item) => {
               setDefaultBookStatus(item.value);
-              updateSettingDefaultBookStatus({ statusValue: item.value });
+              updateSettingDB({
+                field: "defaulfBookStatus",
+                value: item.value,
+              });
             }}
           />
         </View>

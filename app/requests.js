@@ -285,21 +285,10 @@ export function deleteAllLibraryDB() {
 }
 
 //settings :
-export function updateSettingSort({ sortValue }) {
-  console.log("DB : start updating Setting Sort: sortValue = ", sortValue);
+export function updateSettingDB({ field, value }) {
+  console.log("DB : start updating Setting ", field, " : value = ", value);
   return updateDB({
-    request: "UPDATE SETTINGS SET sort = ? WHERE id = 0",
-    params: [sortValue],
-  });
-}
-
-export function updateSettingDefaultBookStatus({ statusValue }) {
-  console.log(
-    "DB : start updating Setting Default Book Status: statusValue = ",
-    statusValue
-  );
-  return updateDB({
-    request: "UPDATE SETTINGS SET defaulfBookStatus = ? WHERE id = 0",
-    params: [statusValue],
+    request: `UPDATE SETTINGS SET ${field} = ? WHERE id = 0`,
+    params: [value],
   });
 }

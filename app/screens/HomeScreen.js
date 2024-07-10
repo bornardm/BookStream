@@ -23,7 +23,7 @@ import { dbName } from "../setupDatabase";
 import { fetchBookPreview } from "../requests";
 import FilterView from "../components/FilterView";
 
-let selectedSortItem = "readingEndDate"; //useful only at the beginning to set the default sort option or the saved one from the DB
+let selectedSortItem = ""; //useful only at the beginning to set the default sort option or the saved one from the DB
 let selectedSortSet = false;
 export const setSelectedSortItem = (value) => {
   console.log("setSelectedSortItem : ", value);
@@ -92,6 +92,7 @@ export default function HomeScreen({ navigation }) {
         );
       }
     }
+    console.log(dbParams, selectedSortSet);
   }, [dbParams, selectedSortSet]);
 
   return (

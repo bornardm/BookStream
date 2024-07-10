@@ -23,11 +23,7 @@ import { useTranslation } from "react-i18next";
 import { colors } from "../constants/Colors";
 import { BOOK_STATUS, getBookStatusProps } from "../constants/BookStatus";
 import ButtonGroup from "./ButtonGroup";
-import {
-  updateSettingSort,
-  getDistinctDB,
-  getDistinctYearDB,
-} from "../requests";
+import { updateSettingDB, getDistinctDB, getDistinctYearDB } from "../requests";
 
 // Constants
 //Prportion of the parentView that the filter view will take
@@ -285,8 +281,9 @@ export default function FilterView({
     //console.log("request = ", request, "params = ", params);
     setDbRequest(request);
     setDbParams(params);
-    updateSettingSort({
-      sortValue: sortItems.find((item) => item.id === sortSelectedId).value,
+    updateSettingDB({
+      field: "sort",
+      value: sortItems.find((item) => item.id === sortSelectedId).value,
     });
   };
 
