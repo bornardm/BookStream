@@ -292,3 +292,14 @@ export function updateSettingSort({ sortValue }) {
     params: [sortValue],
   });
 }
+
+export function updateSettingDefaultBookStatus({ statusValue }) {
+  console.log(
+    "DB : start updating Setting Default Book Status: statusValue = ",
+    statusValue
+  );
+  return updateDB({
+    request: "UPDATE SETTINGS SET defaulfBookStatus = ? WHERE id = 0",
+    params: [statusValue],
+  });
+}

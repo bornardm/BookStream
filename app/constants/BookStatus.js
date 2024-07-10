@@ -19,7 +19,6 @@ export const BOOK_STATUS = {
 let defaultBookStatus = BOOK_STATUS.TO_READ;
 
 export const getDefaultBookStatus = () => {
-  console.log(defaultBookStatus);
   return defaultBookStatus;
 };
 

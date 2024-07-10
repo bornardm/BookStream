@@ -16,8 +16,8 @@ export function fetchSettings() {
       );
       console.log("Row:", settings);
       if (settings) {
-        if (settings.defaultStatus != null) {
-          setDefaultBookStatus(settings.defaultStatus);
+        if (settings.defaulfBookStatus != null) {
+          setDefaultBookStatus(settings.defaulfBookStatus);
         }
         if (settings.language != null) {
           i18next.changeLanguage(settings.language);

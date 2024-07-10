@@ -20,7 +20,10 @@ import {
   setDefaultBookStatus,
   getDefaultBookStatus,
 } from "../constants/BookStatus";
-import { deleteAllLibraryDB } from "../requests";
+import {
+  deleteAllLibraryDB,
+  updateSettingDefaultBookStatus,
+} from "../requests";
 import { deleteAllFilesFromCovers } from "../setupDatabase";
 import ReloadContext from "../reloadContext";
 
@@ -79,7 +82,10 @@ export default function SettingsScreen() {
             placeholder="Select item"
             searchPlaceholder={t("screens.settings.searchPlaceholder")}
             value={getDefaultBookStatus()}
-            onChange={(item) => setDefaultBookStatus(item.value)}
+            onChange={(item) => {
+              setDefaultBookStatus(item.value);
+              updateSettingDefaultBookStatus({ statusValue: item.value });
+            }}
           />
         </View>
         <View style={styles.row}>
