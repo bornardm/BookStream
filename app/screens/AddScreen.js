@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -86,20 +87,6 @@ export default function AddScreen({ route, navigation }) {
       ) : null}
       <Text>{t("screens.add.title")}</Text>
       <View style={styles.search}>
-        <View style={styles.inputView}>
-          <EvilIcons name="search" size={35} color={colors.textInputBorder} />
-          <TextInput
-            placeholder={t("screens.add.inputPlaceholder")}
-            value={searchText}
-            onChangeText={setSearchText}
-            onSubmitEditing={async (event) => {
-              await searchBookByISBN(event.nativeEvent.text);
-            }}
-            style={styles.textInput}
-            placeholderTextColor={colors.placeholderTextColor}
-            maxLength={200}
-          />
-        </View>
         <MaterialCommunityIcons.Button
           name="barcode-scan"
           style={styles.scanButton}
@@ -111,6 +98,24 @@ export default function AddScreen({ route, navigation }) {
             });
           }}
         />
+        <View style={styles.inputView}>
+          <TextInput
+            placeholder={t("screens.add.inputPlaceholder")}
+            value={searchText}
+            onChangeText={setSearchText}
+            onSubmitEditing={async (event) => {
+              await searchBookByISBN(event.nativeEvent.text);
+            }}
+            style={styles.textInput}
+            placeholderTextColor={colors.placeholderTextColor}
+            maxLength={200}
+          />
+          <TouchableOpacity
+            onPress={async () => await searchBookByISBN(searchText)}
+          >
+            <EvilIcons name="search" size={35} color={colors.textInputBorder} />
+          </TouchableOpacity>
+        </View>
       </View>
       <Button
         title={t("screens.add.buttons.addManually")}
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: colors.textInputBorder,
     borderWidth: 1,
-    marginRight: 10,
+    marginLeft: 10,
   },
   textInput: {
     padding: 10,
