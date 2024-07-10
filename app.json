@@ -27,7 +27,8 @@
         {
           "cameraPermission": "Allow the app to access your camera"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "web": {
       "favicon": "./assets/favicon.png"

@@ -2,7 +2,7 @@ import { dbName, dbConnexion } from "./setupDatabase";
 import * as SQLite from "expo-sqlite";
 import { setDefaultBookStatus } from "./constants/BookStatus";
 import { setSelectedSortItem } from "./screens/HomeScreen";
-import i18next from "./localization/i18n";
+import i18next, { deviceLanguageDetector } from "./localization/i18n";
 
 export function fetchSettings() {
   console.log("DB : start fetching settings");
@@ -22,7 +22,8 @@ export function fetchSettings() {
         if (settings.language != null) {
           i18next.changeLanguage(settings.language);
         } else {
-          //TODO get the default language from the device
+          //set the language to the default language from the device
+          deviceLanguageDetector();
         }
         if (settings.sort != null) {
           setSelectedSortItem(settings.sort);

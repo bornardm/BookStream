@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
-//import * as RNLocalize from "react-native-localize";
+import * as Localization from "expo-localization";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
 
@@ -13,14 +13,22 @@ export const languageResources = {
     translation: fr,
   },
 };
-// // Find the best available language from the device
-// const bestAvailableLanguage = RNLocalize.findBestAvailableLanguage(
-//   Object.keys(languageResources)
-// );
+//without region code
+const languageCodes = {
+  en: "english",
+  fr: "français",
+};
 
-// const initialLanguage = bestAvailableLanguage
-//   ? bestAvailableLanguage.languageTag
-//   : "english";
+/**
+ * Detects the device language and changes the language of the app accordingly.
+ */
+export const deviceLanguageDetector = () => {
+  const deviceLanguage = Localization.getLocales()[0].languageCode;
+  if (deviceLanguage && languageCodes[deviceLanguage]) {
+    console.log("Detected device language : ", languageCodes[deviceLanguage]);
+    i18next.changeLanguage(languageCodes[deviceLanguage]);
+  }
+};
 
 i18next.use(initReactI18next).init({
   compatibilityJSON: "v3",
