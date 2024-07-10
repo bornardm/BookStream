@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { colors } from "../constants/Colors";
 import { Dropdown } from "react-native-element-dropdown";
-import i18next, { languageRessources } from "../localization/i18n";
+import i18next, { languageResources } from "../localization/i18n";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useTranslation } from "react-i18next";
@@ -40,7 +40,7 @@ export default function SettingsScreen() {
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
-            data={Object.keys(languageRessources).map((key) => ({
+            data={Object.keys(languageResources).map((key) => ({
               label: key,
               value: key,
             }))}
