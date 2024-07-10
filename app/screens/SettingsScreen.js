@@ -53,6 +53,10 @@ export default function SettingsScreen() {
             value={i18next.language}
             onChange={(item) => {
               i18next.changeLanguage(item.value);
+              updateSettingDB({
+                field: "language",
+                value: item.value,
+              });
               reloadApp();
             }}
           />

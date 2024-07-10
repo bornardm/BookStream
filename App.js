@@ -83,8 +83,8 @@ export default function App() {
     updateAllImages().catch((e) => console.error("Failed to load Cover : ", e));
     loadDatabase()
       .then(() => {
-        setDbLoaded(true); //load user settings from the database
         fetchSettings();
+        setDbLoaded(true); //load user settings from the database
       })
       .catch((e) => console.error(e));
   }, []);
