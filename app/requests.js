@@ -119,6 +119,19 @@ export function updateBookStatusDB({ id, status }) {
   });
 }
 
+export function updateBookCommentDB({ id, comment }) {
+  console.log(
+    "DB : start updating book comment: id = ",
+    id,
+    "comment = ",
+    comment
+  );
+  return updateDB({
+    request: "UPDATE BOOKS SET comment = ? WHERE id = ?",
+    params: [comment, id],
+  });
+}
+
 export function updateBookBorrowedDB({ id, borrowed }) {
   console.log(
     "DB : start updating book borrowed: id = ",

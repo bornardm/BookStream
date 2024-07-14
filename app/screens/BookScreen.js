@@ -6,6 +6,8 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableHighlight,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -16,6 +18,7 @@ import DatePicker from "../components/DatePicker";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Octicons from "react-native-vector-icons/Octicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
@@ -28,7 +31,7 @@ import { useTranslation } from "react-i18next";
 import { BOOK_STATUS } from "../constants/BookStatus";
 import { colors } from "../constants/Colors";
 import { coversDir, dbName } from "../setupDatabase";
-import { deleteBookDB, fetchBookInfos } from "../requests";
+import { deleteBookDB, fetchBookInfos, updateBookCommentDB } from "../requests";
 import LoadingView from "../components/LoadingView";
 import { BookStatusSelector } from "../components/BookStatusSelector";
 import { TenStarsTouchable } from "../components/Stars";
@@ -98,11 +101,12 @@ export default function BookScreen({ route }) {
 
   //------------------------ Functions ----------------------------------
 
-  function modifyStateBook({ rating, status }) {
+  function modifyStateBook({ rating, status, comment }) {
     setBook({
       ...book,
       rating: rating === undefined ? book.rating : rating,
       status: status === undefined ? book.status : status,
+      comment: comment === undefined ? book.comment : comment,
     });
   }
 
@@ -249,6 +253,92 @@ export default function BookScreen({ route }) {
     );
   }
 
+  function CommentDisplayAndEdit() {
+    const [editComment, setEditComment] = useState(false);
+    const [comment, setComment] = useState(book.comment);
+
+    const { t } = useTranslation();
+
+    const saveComment = () => {
+      setEditComment(!editComment);
+      if (comment != null && comment != undefined && comment !== book.comment) {
+        modifyStateBook({ comment });
+        updateBookCommentDB({ id: bookID, comment });
+      }
+    };
+    return (
+      <>
+        {editComment ? (
+          <View>
+            <Text style={styles.textSubtitle}>
+              {t("screens.book.comment") + " :"}
+            </Text>
+            <TextInput
+              style={styles.commentInput}
+              value={comment}
+              onChangeText={setComment}
+              placeholder={t("screens.book.addComment")}
+              onBlur={saveComment}
+              multiline={true}
+            />
+            <TouchableHighlight
+              underlayColor={colors.underlayColor}
+              onPress={saveComment}
+              style={{ position: "absolute", right: 5, bottom: 3 }}
+            >
+              <Octicons
+                name="check"
+                size={25}
+                color={colors.middleLightGrey}
+                backgroundColor={"transparent"}
+              />
+            </TouchableHighlight>
+          </View>
+        ) : (
+          <View>
+            {comment != null && comment != undefined && (
+              <Text style={styles.textSubtitle}>
+                {t("screens.book.comment") + " :"}
+              </Text>
+            )}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  maxWidth: "80%",
+                  color:
+                    comment != null && comment != undefined
+                      ? colors.black
+                      : colors.placeholderTextColor,
+                }}
+              >
+                {comment != null && comment != undefined
+                  ? comment
+                  : t("screens.book.addComment")}
+              </Text>
+              <View style={{ paddingRight: 0 }}>
+                <MaterialIcons.Button
+                  name="edit"
+                  size={25}
+                  style={{ paddingRight: 0 }}
+                  color={colors.lightGrey}
+                  backgroundColor={"transparent"}
+                  underlayColor={colors.underlayColor}
+                  onPress={() => setEditComment(!editComment)}
+                />
+              </View>
+            </View>
+          </View>
+        )}
+      </>
+    );
+  }
+
   if (!bookLoaded) {
     return <LoadingView />;
   }
@@ -340,7 +430,7 @@ export default function BookScreen({ route }) {
             </View>
             <View style={styles.horizontalLine} />
             <View style={styles.infosView}>
-              <Text>{book.comment}</Text>
+              <CommentDisplayAndEdit />
             </View>
             <View style={styles.horizontalLine} />
 
@@ -414,6 +504,16 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     marginVertical: 4,
   },
+  commentInput: {
+    backgroundColor: colors.lightGrey,
+    borderColor: colors.middleLightGrey,
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    flex: 1,
+  },
   textTile: {
     fontSize: 20,
     fontWeight: "bold",
@@ -444,5 +544,11 @@ const styles = StyleSheet.create({
     color: colors.darkGrey,
     fontWeight: "bold",
     marginLeft: 10,
+  },
+  textSubtitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: colors.black,
+    marginBottom: 5,
   },
 });

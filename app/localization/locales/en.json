@@ -79,7 +79,9 @@
                 "deleteMessage" : "Would you like to remove this book from your library ?"
             },
             "removeButton":"Remove this book from my library" ,
-            "readingDates": "Reading dates"
+            "readingDates": "Reading dates",
+            "comment": "Comment",
+            "addComment":"Add a comment"
         },
         "settings":{
             "searchPlaceholder":"Search...",
