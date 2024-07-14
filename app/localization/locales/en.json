@@ -125,10 +125,12 @@
                 "publishers":"Publishers : ",
                 "series":"Series : ",
                 "years":"Reading years : ",
+                "languages":"Languages : ",
                 "allAuthors":"All authors",
                 "allPublishers":"All publishers",
                 "allSeries":"All series",
-                "allYears":"All reading years"
+                "allYears":"All reading years",
+                "allLanguages":"All languages"
             },
             "all":"All",
             "noRating":"No rating",

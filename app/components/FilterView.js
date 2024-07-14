@@ -15,6 +15,7 @@ import {
 
 // Third-party libraries/components
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { MultiSelect } from "react-native-element-dropdown";
 import i18next from "../localization/i18n";
 import { useTranslation } from "react-i18next";
@@ -227,11 +228,13 @@ export default function FilterView({
   const [allPublishers, setAllPublishers] = useState([]);
   const [allSeries, setAllSeries] = useState([]);
   const [allReadYear, setAllReadYear] = useState([]);
+  const [allLanguages, setAllLanguages] = useState([]);
 
   const [selectedAuthor, setSelectedAuthor] = useState([]);
   const [selectedPublisher, setSelectedPublisher] = useState([]);
   const [selectedSeries, setSelectedSeries] = useState([]);
   const [selectedReadYear, setSelectedReadYear] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
 
   //------------------------ Functions ----------------------------------
   /**
@@ -300,6 +303,7 @@ export default function FilterView({
       { array: selectedAuthor, label: "author" },
       { array: selectedPublisher, label: "publisher" },
       { array: selectedSeries, label: "series" },
+      { array: selectedLanguages, label: "language" },
     ]) {
       if (filter.array.length > 0) {
         request += where ? " AND " : " WHERE ";
@@ -406,6 +410,7 @@ export default function FilterView({
       setAllPublishers(computeArray(getDistinctDB({ field: "publisher" })));
       setAllSeries(computeArray(getDistinctDB({ field: "series" })));
       setAllReadYear(computeArray(getDistinctYearDB({ end: true })));
+      setAllLanguages(computeArray(getDistinctDB({ field: "language" })));
     }
   }, [previewsLoaded]);
 
@@ -600,6 +605,27 @@ export default function FilterView({
               style={styles.icon}
               color="black"
               name="calendar-search"
+              size={20}
+            />
+          )}
+        />
+        <MultiSelect
+          {...multiSelectProps}
+          placeholder={
+            selectedLanguages.length > 0
+              ? t("components.filterView.multiselectPlaceholder.languages")
+              : t("components.filterView.multiselectPlaceholder.allLanguages")
+          }
+          value={selectedLanguages}
+          data={allLanguages}
+          onChange={(item) => {
+            setSelectedLanguages(item);
+          }}
+          renderLeftIcon={() => (
+            <Ionicons
+              style={styles.icon}
+              color="black"
+              name="language-outline"
               size={20}
             />
           )}
