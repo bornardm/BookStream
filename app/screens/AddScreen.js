@@ -35,7 +35,11 @@ export default function AddScreen({ route, navigation }) {
   //------------------------ Functions ----------------------------------
 
   const searchBookByISBN = async (text) => {
-    if ((text.length === 10 || text.length === 13) && isDigitsOnly(text)) {
+    if (
+      text &&
+      (text.length === 10 || text.length === 13) &&
+      isDigitsOnly(text)
+    ) {
       setIsLoading(true); // Start loading
       const book = await fetchBookFromOpenLibrary(text); //("9780140328721");
       if (book) {
