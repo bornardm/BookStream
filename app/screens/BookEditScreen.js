@@ -2,6 +2,7 @@
 import React, {
   useState,
   useEffect,
+  useMemo,
   Suspense,
   useCallback,
   useRef,
@@ -26,6 +27,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
+import Entypo from "react-native-vector-icons/Entypo";
 import { ScrollView as VirtualizedScrollView } from "react-native-virtualized-view";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import i18next from "../localization/i18n";
@@ -44,7 +46,7 @@ import { isDigitsOnly } from "../utils";
 import { FlatList } from "react-native-gesture-handler";
 import TextInputWithSuggestions from "../components/TextInputWithSuggestions";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-import { t } from "i18next";
+import { t, use } from "i18next";
 
 /**
  * Initializes a book object with default values and optionally copies values from an initial book object.
@@ -100,6 +102,7 @@ export default function BookEditScreen({ route }) {
   const apiImageUrlRef = useRef(apiImageUrl); //Reference to the apiImageUrl
   const [layoutImagePath, setLayoutImagePath] = useState(null); // Path to the image which is displayed (different from apiImageUrl to handel image layout errror whithout change unintentionally the db)
   const [book, setBook] = useState(initBook(route.params?.book));
+  const [categoriesList, setCategoriesList] = useState([""]);
   const [aspectRatio, setAspectRatio] = useState(1); // Initialize aspect ratio to 1
   const [modalVisible, setModalVisible] = useState(false);
   const [imageUri, setImageUri] = useState(
@@ -110,12 +113,44 @@ export default function BookEditScreen({ route }) {
   let bookIdAfterRequest = null;
 
   // Suggestions for the TextInputWithSuggestions components (get from the DB)
-  const authorSuggestions = getDistinctDB({ field: "author" });
-  const publisherSuggestions = getDistinctDB({ field: "publisher" });
-  const seriesSuggestions = getDistinctDB({ field: "series" });
-  const languageSuggestions = getDistinctDB({ field: "language" });
+  const authorSuggestions = useMemo(
+    () => getDistinctDB({ field: "author" }),
+    []
+  );
+  const publisherSuggestions = useMemo(
+    () => getDistinctDB({ field: "publisher" }),
+    []
+  );
+  const seriesSuggestions = useMemo(
+    () => getDistinctDB({ field: "series" }),
+    []
+  );
+  const languageSuggestions = useMemo(
+    () => getDistinctDB({ field: "language" }),
+    []
+  );
+  const categoriesSuggestions = useMemo(() => extractCategories(), []);
 
   //------------------------ Functions ------------------------
+
+  /**
+   * Extracts and returns all unique categories from the database.
+   *
+   * @returns {string[]} An array of unique categories.
+   */
+  function extractCategories() {
+    let allCategories = [];
+    const allCategoriesLists = getDistinctDB({ field: "categories" });
+    allCategoriesLists.forEach((list) => {
+      list.split("#").forEach((category) => {
+        if (!(category in allCategories)) {
+          allCategories.push(category);
+        }
+      });
+    });
+    console.log("All categories = ", allCategories);
+    return allCategories;
+  }
 
   /**
    * Saves the changes made to the book.
@@ -124,19 +159,36 @@ export default function BookEditScreen({ route }) {
   const saveBookChanges = async () => {
     // Check if all fields are valid
     const allValid = Object.values(book).every((field) => field.isValid);
+
     if (allValid) {
       let returnedId = null; //Id of the book in the DB after the request
+      let bookObject = book;
+
+      //Save categories :
+      const categoriesString = categoriesList
+        .filter((category) => category !== "")
+        .join("#");
+      setBook((prevState) => ({
+        ...prevState,
+        categories: {
+          value: categoriesString,
+          isValid: prevState.categories.isValid,
+        },
+      }));
+      bookObject.categories.value =
+        categoriesString == "" ? null : categoriesString;
+
       if (newImageFormat) {
         //A new image heve been selected
         returnedId = await addOrModifyBookDB({
-          book: book,
+          book: bookObject,
           newImageURI: apiImageUrl || imageUri,
           newImageFormat: newImageFormat,
         });
       } else {
         // the image has not been changed
         returnedId = await addOrModifyBookDB({
-          book: book,
+          book: bookObject,
           newImageURI: null,
           newImageFormat: null,
         });
@@ -312,6 +364,17 @@ export default function BookEditScreen({ route }) {
     setLayoutImagePath(apiImageUrl || imageUri);
   }, [apiImageUrl, imageUri]);
 
+  /**
+   * Update the categories list when the book's categories change.
+   */
+  useEffect(() => {
+    let categories = book?.categories?.value;
+
+    if (categories) {
+      setCategoriesList(categories.split("#"));
+    }
+  }, [book?.categories?.value]);
+
   //------------------------ Components ------------------------
 
   function BackArrow() {
@@ -474,6 +537,51 @@ export default function BookEditScreen({ route }) {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+    );
+  }
+
+  function CategoryInput({ index }) {
+    return (
+      <View style={{ flex: 1 }}>
+        <TextInputWithSuggestions
+          suggestionsArrray={categoriesSuggestions} //TODO
+          textInputStyle={styles.textInput}
+          defaultValue={categoriesList[index]}
+          placeholder={t("screens.bookEdit.inputPlaceholder.category")}
+          placeholderTextColor={colors.placeholderTextColor}
+          maxLength={100}
+          onEndEditing={(event) => {
+            const updatedCategories = [...categoriesList];
+            updatedCategories[index] = event.nativeEvent.text
+              .trim()
+              .replace(/#/g, ""); // ensure that the category does not contain the separator character
+            setCategoriesList(updatedCategories);
+          }}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            console.log("Add category");
+            if (index == 0) {
+              //Add a new category
+              setCategoriesList([...categoriesList, ""]);
+            } else {
+              //Remove the category
+              const updatedCategories = [...categoriesList];
+              updatedCategories.splice(index, 1);
+              setCategoriesList(updatedCategories);
+            }
+          }}
+          underlayColor={colors.underlayColor}
+          style={styles.categoryAddIcon}
+        >
+          <Entypo
+            name={index == 0 ? "plus" : "minus"}
+            size={30}
+            color={colors.middleLightGrey}
+            backgroundColor="transparent"
+          />
+        </TouchableOpacity>
+      </View>
     );
   }
 
@@ -683,17 +791,14 @@ export default function BookEditScreen({ route }) {
           />
         </View>
         <View style={styles.row}>
-          <Text>{t("screens.bookEdit.inputTitle.categories")} :</Text>
-          <TextInput
-            placeholder={t("screens.bookEdit.inputPlaceholder.category")}
-            defaultValue={book.categories.value} //TODO change this
-            style={styles.textInput}
-            placeholderTextColor={colors.placeholderTextColor}
-            maxLength={100}
-            onEndEditing={(event) => {
-              updateBookField("categories", event.nativeEvent.text.trim());
-            }}
-          />
+          <Text style={styles.alignWithInputSuggestions}>
+            {t("screens.bookEdit.inputTitle.categories")} :
+          </Text>
+          <View style={{ flexDirection: "column", flex: 1 }}>
+            {categoriesList.map((category, index) => (
+              <CategoryInput key={index} index={index} />
+            ))}
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -769,4 +874,5 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginTop: 20,
   },
+  categoryAddIcon: { position: "absolute", right: 10, top: 15 },
 });

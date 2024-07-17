@@ -425,10 +425,17 @@ export default function BookScreen({ route }) {
             <View style={styles.horizontalLine} />
             <InfoList {...book} />
             <View style={styles.horizontalLine} />
-            <View style={styles.infosView}>
-              <Text>{book.categories}</Text>
-            </View>
-            <View style={styles.horizontalLine} />
+            {book.categories && (
+              <>
+                <View style={styles.infosView}>
+                  <Text style={styles.textSubtitle}>
+                    {t("screens.book.categories") + " :"}
+                  </Text>
+                  <Text>{book.categories.replace(/#/g, "\n")}</Text>
+                </View>
+                <View style={styles.horizontalLine} />
+              </>
+            )}
             <View style={styles.infosView}>
               <CommentDisplayAndEdit />
             </View>
