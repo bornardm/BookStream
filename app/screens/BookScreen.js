@@ -48,14 +48,16 @@ function InfoList(book) {
     {
       icon: Feather,
       name: "calendar",
-      text: new Date(book.publicationDate).toLocaleDateString(
-        i18next.t("dateFormat"),
-        {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }
-      ),
+      text: book.publicationDate
+        ? new Date(book.publicationDate).toLocaleDateString(
+            i18next.t("dateFormat"),
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }
+          )
+        : null,
     },
     { icon: Ionicons, name: "business-outline", text: book.publisher },
     { icon: MaterialCommunityIcons, name: "barcode-scan", text: book.isbn },
@@ -66,24 +68,32 @@ function InfoList(book) {
     },
     { icon: Ionicons, name: "language-outline", text: book.language },
   ];
+  //Check if there is at least one info to display
+  const displayInfo = infoProps.some((info) => info.text);
+  if (!displayInfo) {
+    return null;
+  }
   return (
-    <View style={styles.infosView}>
-      {infoProps.map(
-        (info, index) =>
-          info.text && (
-            <View key={index} style={styles.infoRow}>
-              <info.icon
-                name={info.name}
-                size={20}
-                color={colors.secondary}
-                alignSelf="flex-start"
-                backgroundColor="transparent"
-              />
-              <Text style={styles.textInfos}>{info.text}</Text>
-            </View>
-          )
-      )}
-    </View>
+    <>
+      <View style={styles.infosView}>
+        {infoProps.map(
+          (info, index) =>
+            info.text && (
+              <View key={index} style={styles.infoRow}>
+                <info.icon
+                  name={info.name}
+                  size={20}
+                  color={colors.secondary}
+                  alignSelf="flex-start"
+                  backgroundColor="transparent"
+                />
+                <Text style={styles.textInfos}>{info.text}</Text>
+              </View>
+            )
+        )}
+      </View>
+      <View style={styles.horizontalLine} />
+    </>
   );
 }
 
@@ -410,7 +420,9 @@ export default function BookScreen({ route }) {
             </View>
             <View style={styles.horizontalLine} />
             <View style={styles.infosView}>
-              <Text>{t("screens.book.readingDates")}</Text>
+              <Text style={styles.textSubtitle}>
+                {t("screens.book.readingDates") + " : "}
+              </Text>
               <DatePicker
                 bookID={bookID}
                 initialStartDate={book.readingStartDate}
@@ -419,12 +431,15 @@ export default function BookScreen({ route }) {
               />
             </View>
             <View style={styles.horizontalLine} />
-            <View style={styles.infosView}>
-              <Text>{book.summary}</Text>
-            </View>
-            <View style={styles.horizontalLine} />
+            {book.summary && (
+              <>
+                <View style={styles.infosView}>
+                  <Text>{book.summary}</Text>
+                </View>
+                <View style={styles.horizontalLine} />
+              </>
+            )}
             <InfoList {...book} />
-            <View style={styles.horizontalLine} />
             {book.categories && (
               <>
                 <View style={styles.infosView}>

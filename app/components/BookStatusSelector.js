@@ -52,18 +52,20 @@ export function BookStatusSelector({
   const [selectedStatus, setSelectedStatus] = useState(initSelectedStatus);
 
   function handleSelectorPress(index) {
-    setSelectedStatus((prevStatuses) => {
-      const newStatuses = [...prevStatuses]; // create a copy of the array
-      const newValue = newStatuses[index] === 0 ? 1 : 0;
-      //At most one from the 4 first statuses can be selected
-      if (index < 4) {
-        newStatuses.fill(0, 0, 4); // set the first four elements to 0
-      }
-      newStatuses[index] = newValue;
-      return newStatuses; // return the updated array
-    });
+    if (!(index < 4 && selectedStatus[index] === 1)) {
+      setSelectedStatus((prevStatuses) => {
+        const newStatuses = [...prevStatuses]; // create a copy of the array
+        const newValue = newStatuses[index] === 0 ? 1 : 0;
+        //At most one from the 4 first statuses can be selected
+        if (index < 4) {
+          newStatuses.fill(0, 0, 4); // set the first four elements to 0
+        }
+        newStatuses[index] = newValue;
+        return newStatuses; // return the updated array
+      });
 
-    updateDBCalls(index); //here the state selectedStatus is not yet updated. We must wait a rerender
+      updateDBCalls(index); //here the state selectedStatus is not yet updated. We must wait a rerender
+    }
   }
 
   function updateDBCalls(index) {
