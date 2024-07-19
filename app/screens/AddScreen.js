@@ -23,9 +23,11 @@ import { colors } from "../constants/Colors";
 import { getDefaultBookStatus } from "../constants/BookStatus";
 import { isDigitsOnly } from "../utils";
 import { fetchBookFromOpenLibrary } from "../apiRequests";
+import KeyWordBookSearch from "../components/KeyWordBookSearch";
 
 export default function AddScreen({ route, navigation }) {
   //------------------------ Variables and States ------------------------
+
   const { t } = useTranslation();
   const addBookPreviewFunc = route.params.addBookPreviewFunc;
   const functions = route.params.functions;
@@ -41,7 +43,7 @@ export default function AddScreen({ route, navigation }) {
       isDigitsOnly(text)
     ) {
       setIsLoading(true); // Start loading
-      const book = await fetchBookFromOpenLibrary(text); //("9780140328721");
+      const book = await fetchBookFromOpenLibrary(text); // Fetch the book infos from the API
       if (book) {
         navigation.navigate("BookEditScreen", {
           book: book,
@@ -130,6 +132,11 @@ export default function AddScreen({ route, navigation }) {
             onGoBack: onGoBackFromBookEditScreen,
           });
         }}
+      />
+      <KeyWordBookSearch
+        setIsLoading={setIsLoading}
+        addBookPreviewFunc={addBookPreviewFunc}
+        functions={functions}
       />
     </View>
   );

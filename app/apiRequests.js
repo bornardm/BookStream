@@ -20,7 +20,6 @@ const monthNames = [
 const headers = new Headers({
   "User-Agent": `${APP_NAME}/${APP_VERSION} (${contactEmail})`,
 });
-console.log("Headers : ", headers);
 const options = {
   method: "GET",
   headers: headers,
@@ -304,4 +303,43 @@ const getBookTranslatedLanguage = async (languageKey) => {
       return languageKey;
     }
   }
+};
+
+export const searchBooksByKeyword = async ({ userQuery, resultLimit = 50 }) => {
+  console.log("Search books by keyword : ", userQuery);
+  try {
+    const query = userQuery.replace(/ /g, "+"); // Replace spaces with "+" for URL
+    const response = await fetch(
+      `https://openlibrary.org/search.json?q=${query}&limit=${resultLimit}`,
+      options
+    );
+    if (response.ok == true && response.status == 200) {
+      const data = await response.json();
+      if (data.numFound > 0 && data.docs?.length > 0) {
+        let bookPreviews = [];
+        for (const book of data.docs) {
+          let bookPreview = {
+            title: book.title,
+            author: book.author_name ? book.author_name[0] : "",
+            coverURL: book.cover_i
+              ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+              : null,
+            isbn: book.isbn ? book.isbn[0] : null,
+            firstPublishYear: book.first_publish_year || null,
+            pages: book.number_of_pages_median || null,
+          };
+          if (bookPreview.isbn) {
+            bookPreviews.push(bookPreview);
+          }
+        }
+        console.log("Books found : ", bookPreviews);
+        return bookPreviews;
+      }
+    } else {
+      throw new Error("Error HTTP : " + response.status);
+    }
+  } catch (error) {
+    console.error("Error fetching language from Open Library:", error);
+  }
+  return null;
 };

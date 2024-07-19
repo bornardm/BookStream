@@ -64,7 +64,9 @@ function InfoList(book) {
     {
       icon: Feather,
       name: "book",
-      text: book.pageNumber ? book.pageNumber + " pages" : null,
+      text: book.pageNumber
+        ? book.pageNumber + " " + i18next.t("screens.book.pages")
+        : null,
     },
     { icon: Ionicons, name: "language-outline", text: book.language },
   ];

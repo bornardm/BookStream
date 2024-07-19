@@ -82,7 +82,8 @@
             "readingDates": "Reading dates",
             "categories": "Categories",
             "comment": "Comment",
-            "addComment":"Add a comment"
+            "addComment":"Add a comment",
+            "pages": "pages"
         },
         "settings":{
             "searchPlaceholder":"Search...",
@@ -139,8 +140,10 @@
             "noRating":"No rating",
             "applyButton":"Apply",
             "searchPlaceholder":"Search..."
-
-            
+        },
+        "keyWordSearch":{
+            "inputPlaceholder":"Title, author...",
+            "pages" : "pages"
         }
     }
 }
