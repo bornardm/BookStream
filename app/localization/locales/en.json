@@ -143,7 +143,16 @@
         },
         "keyWordSearch":{
             "inputPlaceholder":"Title, author...",
-            "pages" : "pages"
+            "pages" : "pages",
+            "noResults" : "No books found",
+            "advancedSearch" :{
+                "header" : "Advanced search",
+                "title" : "Title",
+                "author" : "Author",
+                "publisher" : "Publisher",
+                "searchButton" : "Search"
+            }
+
         }
     }
 }

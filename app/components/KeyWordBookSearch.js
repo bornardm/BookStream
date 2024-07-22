@@ -8,18 +8,120 @@ import {
   Image,
   View,
   FlatList,
+  Button,
+  TouchableHighlight,
 } from "react-native";
 
 // Third-party libraries/components
 import { useNavigation } from "@react-navigation/native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import i18next from "../localization/i18n";
 import { useTranslation } from "react-i18next";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
-import { searchBooksByKeyword, fetchBookFromOpenLibrary } from "../apiRequests";
+import {
+  searchBooksByKeyword,
+  fetchBookFromOpenLibrary,
+  searchBooksAdvanced,
+} from "../apiRequests";
 import { getDefaultBookStatus } from "../constants/BookStatus";
+import { use } from "i18next";
+
+function AdvancedSearch({ setIsLoading, setBookPreviews, setFirstSearchDone }) {
+  const { t } = useTranslation();
+  const [isStretched, setIsStretched] = useState(false);
+  const [title, setTitle] = useState(null);
+  const [author, setAuthor] = useState(null);
+  const [publisher, setPublisher] = useState(null);
+
+  const advancedSerch = async () => {
+    if (title || author || publisher) {
+      setIsLoading(true);
+      result = await searchBooksAdvanced({ title, author, publisher });
+      setBookPreviews(result);
+
+      setIsLoading(false);
+      setFirstSearchDone(true);
+    }
+  };
+
+  return (
+    <View style={styles.advancedSearchContainer}>
+      <TouchableHighlight
+        underlayColor="rgba(0, 0, 0, 0.05)"
+        onPress={() => setIsStretched(!isStretched)}
+        style={{ borderRadius: 5 }}
+      >
+        <View style={styles.advanceSearchHeader}>
+          <Text>{t("components.keyWordSearch.advancedSearch.header")}</Text>
+          <SimpleLineIcons
+            name={isStretched ? "arrow-up" : "arrow-down"}
+            size={20}
+            color={colors.middleLightGrey}
+            backgroundColor={"transparent"}
+          />
+        </View>
+      </TouchableHighlight>
+      {isStretched && (
+        <View>
+          <View style={styles.rowInput}>
+            <Text>
+              {t("components.keyWordSearch.advancedSearch.title") + " :"}
+            </Text>
+            <TextInput
+              style={[
+                styles.inputView,
+                styles.textInput,
+                styles.advancedSearchTextInput,
+              ]}
+              placeholder={t("components.keyWordSearch.advancedSearch.title")}
+              value={title}
+              onChangeText={(text) => setTitle(text)}
+            />
+          </View>
+          <View style={styles.rowInput}>
+            <Text>
+              {t("components.keyWordSearch.advancedSearch.author") + " :"}
+            </Text>
+            <TextInput
+              style={[
+                styles.inputView,
+                styles.textInput,
+                styles.advancedSearchTextInput,
+              ]}
+              placeholder={t("components.keyWordSearch.advancedSearch.author")}
+              onChangeText={(text) => setAuthor(text)}
+              value={author}
+            />
+          </View>
+          <View style={styles.rowInput}>
+            <Text>
+              {t("components.keyWordSearch.advancedSearch.publisher") + " :"}
+            </Text>
+            <TextInput
+              style={[
+                styles.inputView,
+                styles.textInput,
+                styles.advancedSearchTextInput,
+              ]}
+              placeholder={t(
+                "components.keyWordSearch.advancedSearch.publisher"
+              )}
+              onChangeText={(text) => setPublisher(text)}
+              value={publisher}
+            />
+          </View>
+          <Button
+            title={t("components.keyWordSearch.advancedSearch.searchButton")}
+            onPress={advancedSerch}
+          />
+        </View>
+      )}
+    </View>
+  );
+}
 
 export default function KeyWordBookSearch({
   setIsLoading,
@@ -29,16 +131,17 @@ export default function KeyWordBookSearch({
   const navigation = useNavigation();
   const [searchText, setSearchText] = useState(null);
   const [bookPreviews, setBookPreviews] = useState([]);
+  const [firstSearchDone, setFirstSearchDone] = useState(false);
   const { t } = useTranslation();
 
   const search = async () => {
     if (searchText && searchText.length > 0) {
       setIsLoading(true);
       result = await searchBooksByKeyword({ userQuery: searchText });
-      if (result) {
-        setBookPreviews(result);
-      }
+      setBookPreviews(result);
+
       setIsLoading(false);
+      setFirstSearchDone(true);
     }
   };
 
@@ -120,10 +223,23 @@ export default function KeyWordBookSearch({
           <EvilIcons name="search" size={35} color={colors.textInputBorder} />
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={bookPreviews}
-        renderItem={({ item }) => <BookPreview infos={item} />}
+      <AdvancedSearch
+        setIsLoading={setIsLoading}
+        setBookPreviews={setBookPreviews}
+        setFirstSearchDone={setFirstSearchDone}
       />
+      {bookPreviews === null || bookPreviews.length === 0 ? (
+        firstSearchDone && (
+          <Text style={{ alignSelf: "center", margin: 10 }}>
+            {t("components.keyWordSearch.noResults")}
+          </Text>
+        )
+      ) : (
+        <FlatList
+          data={bookPreviews}
+          renderItem={({ item }) => <BookPreview infos={item} />}
+        />
+      )}
     </View>
   );
 }
@@ -140,7 +256,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: colors.textInputBorder,
     borderWidth: 1,
-    marginLeft: 10,
   },
   textInput: {
     padding: 10,
@@ -166,5 +281,29 @@ const styles = StyleSheet.create({
   previewTitle: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  advancedSearchContainer: {
+    backgroundColor: colors.lightGrey,
+    margin: 5,
+
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+
+  advanceSearchHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 5,
+  },
+  rowInput: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  advancedSearchTextInput: {
+    marginLeft: 10,
   },
 });

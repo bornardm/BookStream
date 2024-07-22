@@ -305,12 +305,17 @@ const getBookTranslatedLanguage = async (languageKey) => {
   }
 };
 
-export const searchBooksByKeyword = async ({ userQuery, resultLimit = 50 }) => {
-  console.log("Search books by keyword : ", userQuery);
+const searchBooksByQuery = async ({
+  query,
+  resultLimit = 50,
+  advancedQuery = false,
+}) => {
+  console.log("Search books, query: ", query);
   try {
-    const query = userQuery.replace(/ /g, "+"); // Replace spaces with "+" for URL
     const response = await fetch(
-      `https://openlibrary.org/search.json?q=${query}&limit=${resultLimit}`,
+      `https://openlibrary.org/search.json?${
+        advancedQuery ? "" : "q="
+      }${query}&limit=${resultLimit}`,
       options
     );
     if (response.ok == true && response.status == 200) {
@@ -342,4 +347,31 @@ export const searchBooksByKeyword = async ({ userQuery, resultLimit = 50 }) => {
     console.error("Error fetching language from Open Library:", error);
   }
   return null;
+};
+
+export const searchBooksByKeyword = async ({ userQuery, resultLimit = 50 }) => {
+  const query = userQuery.replace(/ /g, "+"); // Replace spaces with "+" for URL
+  return searchBooksByQuery({ query, resultLimit });
+};
+
+export const searchBooksAdvanced = async ({
+  title,
+  author,
+  publisher,
+  resultLimit,
+}) => {
+  console.log("Search books advanced : ", title, author, publisher);
+  let params = [];
+  if (title) {
+    params.push(`title=${title}`);
+  }
+  if (author) {
+    params.push(`author=${author}`);
+  }
+  if (publisher) {
+    params.push(`publisher=${publisher}`);
+  }
+  let query = params.join("&");
+  query = query.trim().replace(/ /g, "+"); // Replace spaces with "+" for URL
+  return searchBooksByQuery({ query, resultLimit, advancedQuery: true });
 };
