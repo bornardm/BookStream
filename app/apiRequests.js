@@ -337,7 +337,7 @@ const searchBooksByQuery = async ({
             bookPreviews.push(bookPreview);
           }
         }
-        console.log("Books found : ", bookPreviews);
+        //console.log("Books found : ", bookPreviews);
         return bookPreviews;
       }
     } else {

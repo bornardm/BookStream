@@ -33,6 +33,8 @@ export default function AddScreen({ route, navigation }) {
   const functions = route.params.functions;
   const [searchText, setSearchText] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // for display loading spinner
+  const [keywordSearchVisible, setKeywordSearchVisible] = useState(false);
+  const [keyWordSearchKey, setKeyWordSearchKey] = useState(0);
 
   //------------------------ Functions ----------------------------------
 
@@ -82,6 +84,12 @@ export default function AddScreen({ route, navigation }) {
     });
   };
 
+  useEffect(() => {
+    if (keywordSearchVisible) {
+      setKeyWordSearchKey((prevKey) => prevKey + 1); // Increment the key to get a new value
+    }
+  }, [keywordSearchVisible]);
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -126,18 +134,27 @@ export default function AddScreen({ route, navigation }) {
       <Button
         title={t("screens.add.buttons.addManually")}
         onPress={() => {
-          console.log("Add manually button pressed");
           navigation.navigate("BookEditScreen", {
             book: null,
             onGoBack: onGoBackFromBookEditScreen,
           });
         }}
       />
-      <KeyWordBookSearch
-        setIsLoading={setIsLoading}
-        addBookPreviewFunc={addBookPreviewFunc}
-        functions={functions}
+      <Button
+        title={t("screens.add.buttons.searchByKeyword")}
+        onPress={() => {
+          setKeywordSearchVisible(true);
+        }}
       />
+      {keywordSearchVisible && (
+        <KeyWordBookSearch
+          visible={keywordSearchVisible}
+          key={keyWordSearchKey}
+          setIsVisible={setKeywordSearchVisible}
+          addBookPreviewFunc={addBookPreviewFunc}
+          functions={functions}
+        />
+      )}
     </View>
   );
 }

@@ -1,15 +1,19 @@
 // React and React Native components and hooks
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   TextInput,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Image,
   View,
   FlatList,
   Button,
   TouchableHighlight,
+  Modal,
+  Keyboard,
 } from "react-native";
 
 // Third-party libraries/components
@@ -39,9 +43,10 @@ function AdvancedSearch({ setIsLoading, setBookPreviews, setFirstSearchDone }) {
   const advancedSerch = async () => {
     if (title || author || publisher) {
       setIsLoading(true);
+      setIsStretched(false);
+      Keyboard.dismiss();
       result = await searchBooksAdvanced({ title, author, publisher });
       setBookPreviews(result);
-
       setIsLoading(false);
       setFirstSearchDone(true);
     }
@@ -124,7 +129,8 @@ function AdvancedSearch({ setIsLoading, setBookPreviews, setFirstSearchDone }) {
 }
 
 export default function KeyWordBookSearch({
-  setIsLoading,
+  visible,
+  setIsVisible,
   addBookPreviewFunc,
   functions,
 }) {
@@ -132,14 +138,15 @@ export default function KeyWordBookSearch({
   const [searchText, setSearchText] = useState(null);
   const [bookPreviews, setBookPreviews] = useState([]);
   const [firstSearchDone, setFirstSearchDone] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
   const search = async () => {
     if (searchText && searchText.length > 0) {
       setIsLoading(true);
+      Keyboard.dismiss();
       result = await searchBooksByKeyword({ userQuery: searchText });
       setBookPreviews(result);
-
       setIsLoading(false);
       setFirstSearchDone(true);
     }
@@ -208,47 +215,74 @@ export default function KeyWordBookSearch({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputView}>
-        <TextInput
-          placeholder={t("components.keyWordSearch.inputPlaceholder")}
-          value={searchText}
-          onChangeText={(text) => setSearchText(text)}
-          onSubmitEditing={search}
-          style={styles.textInput}
-          placeholderTextColor={colors.placeholderTextColor}
-          maxLength={200}
-        />
-        <TouchableOpacity onPress={search}>
-          <EvilIcons name="search" size={35} color={colors.textInputBorder} />
-        </TouchableOpacity>
-      </View>
-      <AdvancedSearch
-        setIsLoading={setIsLoading}
-        setBookPreviews={setBookPreviews}
-        setFirstSearchDone={setFirstSearchDone}
-      />
-      {bookPreviews === null || bookPreviews.length === 0 ? (
-        firstSearchDone && (
-          <Text style={{ alignSelf: "center", margin: 10 }}>
-            {t("components.keyWordSearch.noResults")}
-          </Text>
-        )
-      ) : (
-        <FlatList
-          data={bookPreviews}
-          renderItem={({ item }) => <BookPreview infos={item} />}
-        />
-      )}
-    </View>
+    <Modal
+      transparent={true}
+      visible={visible}
+      animationType="fade"
+      onRequestClose={() => {
+        setIsVisible(false);
+      }}
+    >
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setIsVisible(false);
+        }}
+      >
+        <View style={styles.overlay}>
+          <TouchableWithoutFeedback>
+            <View style={styles.popup}>
+              {isLoading ? (
+                <ActivityIndicator
+                  style={styles.activityIndicator}
+                  size="large"
+                  color="#0000ff"
+                />
+              ) : null}
+              <View style={styles.inputView}>
+                <TextInput
+                  placeholder={t("components.keyWordSearch.inputPlaceholder")}
+                  value={searchText}
+                  onChangeText={(text) => setSearchText(text)}
+                  onSubmitEditing={search}
+                  style={styles.textInput}
+                  placeholderTextColor={colors.placeholderTextColor}
+                  maxLength={200}
+                />
+                <TouchableOpacity onPress={search}>
+                  <EvilIcons
+                    name="search"
+                    size={35}
+                    color={colors.textInputBorder}
+                  />
+                </TouchableOpacity>
+              </View>
+              <AdvancedSearch
+                setIsLoading={setIsLoading}
+                setBookPreviews={setBookPreviews}
+                setFirstSearchDone={setFirstSearchDone}
+              />
+              {bookPreviews === null || bookPreviews.length === 0 ? (
+                firstSearchDone && (
+                  <Text style={{ alignSelf: "center", margin: 10 }}>
+                    {t("components.keyWordSearch.noResults")}
+                  </Text>
+                )
+              ) : (
+                <FlatList
+                  style={styles.flatList}
+                  data={bookPreviews}
+                  renderItem={({ item }) => <BookPreview infos={item} />}
+                />
+              )}
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
   inputView: {
     flexDirection: "row",
     alignItems: "center",
@@ -285,10 +319,11 @@ const styles = StyleSheet.create({
   advancedSearchContainer: {
     backgroundColor: colors.lightGrey,
     margin: 5,
-
+    width: "100%",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
+    marginVertical: 5,
   },
 
   advanceSearchHeader: {
@@ -305,5 +340,29 @@ const styles = StyleSheet.create({
   },
   advancedSearchTextInput: {
     marginLeft: 10,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  popup: {
+    width: "90%",
+    height: "85%",
+    padding: 10,
+    paddingVertical: 30,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  flatList: {
+    width: "100%",
+  },
+  activityIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    zIndex: 1,
   },
 });

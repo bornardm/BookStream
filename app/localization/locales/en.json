@@ -42,7 +42,8 @@
             },
             "inputPlaceholder":"isbn",
             "buttons":{
-                "addManually":"Add manually"
+                "addManually":"Add manually",
+                "searchByKeyword":"Search by keyword"
             }
         },
         "bookEdit":{
