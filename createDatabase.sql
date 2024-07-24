@@ -27,12 +27,13 @@ CREATE TABLE IF NOT EXISTS SETTINGS (
   id INTEGER PRIMARY KEY,
   language TEXT,
   sort TEXT,
-  defaulfBookStatus INTEGER
+  defaulfBookStatus INTEGER,
+  dbVersion INTEGER
 );
 
-INSERT INTO SETTINGS (id, language, sort, defaulfBookStatus)
+INSERT INTO SETTINGS (id, language, sort, defaulfBookStatus, dbVersion)
 VALUES
-(0, null, null, null);
+(0, null, null, null, 1);
 
 
 INSERT INTO BOOKS (title, author, publicationDate, publisher, pageNumber, isbn, summary, status, borrowed, toExchange, rating, readingStartDate, readingEndDate, imageName, series, volume, comment, categories, language, addedDate)

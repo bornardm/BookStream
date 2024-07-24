@@ -23,10 +23,13 @@ import {
 import { deleteAllLibraryDB, updateSettingDB } from "../requests";
 import { deleteAllFilesFromCovers } from "../setupDatabase";
 import ReloadContext from "../reloadContext";
+//import ExportLibrary from "../components/ExportLibrary";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const { reloadApp } = useContext(ReloadContext);
+  const [exportModalVisible, setExportModalVisible] = useState(false);
+  const [importModalVisible, setImportModalVisible] = useState(false);
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -92,7 +95,7 @@ export default function SettingsScreen() {
             }}
           />
         </View>
-        <View style={styles.row}>
+        {/* <View style={styles.row}>
           <TouchableOpacity
             onPress={() => {
               console.log("TODO : Import library"); //TODO
@@ -115,6 +118,7 @@ export default function SettingsScreen() {
           <TouchableOpacity
             onPress={() => {
               console.log("TODO : Export library"); //TODO
+              setExportModalVisible(true);
             }}
           >
             <View style={styles.iconWithText}>
@@ -129,7 +133,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View style={styles.row}>
           <TouchableOpacity
             onPress={() =>
@@ -165,6 +169,12 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      {exportModalVisible && (
+        <ExportLibrary
+          visibility={exportModalVisible}
+          setIsVisible={setExportModalVisible}
+        />
+      )}
     </ScrollView>
   );
 }
