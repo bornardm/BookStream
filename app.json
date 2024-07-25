@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my_books",
-    "slug": "my_books",
+    "name": "BookStream",
+    "slug": "bookstream",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -24,7 +24,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.mael_b.my_books"
+      "package": "com.mael_b.bookstream"
     },
     "plugins": [
       "expo-asset",

@@ -1,5 +1,5 @@
 {
-  "name": "my_books",
+  "name": "bookstream",
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
