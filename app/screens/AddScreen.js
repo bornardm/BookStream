@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -99,7 +98,7 @@ export default function AddScreen({ route, navigation }) {
           color="#0000ff"
         />
       ) : null}
-      <Text>{t("screens.add.title")}</Text>
+      <Text style={styles.title}>{t("screens.add.title")}</Text>
       <View style={styles.search}>
         <MaterialCommunityIcons.Button
           name="barcode-scan"
@@ -127,25 +126,40 @@ export default function AddScreen({ route, navigation }) {
           <TouchableOpacity
             onPress={async () => await searchBookByISBN(searchText)}
           >
-            <EvilIcons name="search" size={35} color={colors.textInputBorder} />
+            <EvilIcons
+              name="search"
+              size={35}
+              color={colors.textInputBorder}
+              style={styles.searchIcon}
+            />
           </TouchableOpacity>
         </View>
       </View>
-      <Button
-        title={t("screens.add.buttons.addManually")}
-        onPress={() => {
-          navigation.navigate("BookEditScreen", {
-            book: null,
-            onGoBack: onGoBackFromBookEditScreen,
-          });
-        }}
-      />
-      <Button
-        title={t("screens.add.buttons.searchByKeyword")}
-        onPress={() => {
-          setKeywordSearchVisible(true);
-        }}
-      />
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("BookEditScreen", {
+              book: null,
+              onGoBack: onGoBackFromBookEditScreen,
+            });
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>
+            {t("screens.add.buttons.addManually")}{" "}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setKeywordSearchVisible(true);
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>
+            {t("screens.add.buttons.searchByKeyword")}
+          </Text>
+        </TouchableOpacity>
+      </View>
       {keywordSearchVisible && (
         <KeyWordBookSearch
           visible={keywordSearchVisible}
@@ -178,6 +192,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderColor: colors.textInputBorder,
     borderWidth: 1,
+    borderRadius: 20,
   },
   search: {
     flexDirection: "row",
@@ -188,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     height: 40,
-    borderRadius: 5,
+    borderRadius: 20,
     borderColor: colors.textInputBorder,
     borderWidth: 1,
     marginLeft: 10,
@@ -196,5 +211,36 @@ const styles = StyleSheet.create({
   textInput: {
     padding: 10,
     flex: 1,
+  },
+  searchIcon: {
+    paddingRight: 8,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: colors.secondary,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginVertical: 25,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

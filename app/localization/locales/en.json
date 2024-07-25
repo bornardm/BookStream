@@ -41,7 +41,7 @@
                 "notFound" : "Book not found",
                 "invalidISBN" : "ISBN not valid (10 or 13 digits)"
             },
-            "inputPlaceholder":"isbn",
+            "inputPlaceholder":"Isbn",
             "buttons":{
                 "addManually":"Add manually",
                 "searchByKeyword":"Search by keyword"
