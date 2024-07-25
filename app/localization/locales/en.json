@@ -4,6 +4,7 @@
     "no":"No",
     "YES":"YES",
     "NO":"NO",
+    "loading":"Loading",
     "app":{
         "navigationTitle":{
             "homeScreen":"My Books",

@@ -352,7 +352,7 @@ export default function BookScreen({ route }) {
   }
 
   if (!bookLoaded) {
-    return <LoadingView />;
+    return <LoadingView white={true} />;
   }
   return (
     <Suspense fallback={<LoadingView />}>
