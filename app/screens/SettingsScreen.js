@@ -3,6 +3,7 @@ import React, { useEffect, useState, Suspense, useContext } from "react";
 import {
   Alert,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -135,6 +136,17 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View> */}
         <View style={styles.row}>
+          <Text style={styles.text}>
+            {t("screens.settings.openLibrary") + " : "}
+            <Text
+              style={styles.link}
+              onPress={() => Linking.openURL("https://openlibrary.org/")}
+            >
+              https://openlibrary.org/
+            </Text>
+          </Text>
+        </View>
+        <View style={styles.row}>
           <TouchableOpacity
             onPress={() =>
               Alert.alert(
@@ -202,6 +214,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.middleLightGrey,
     width: "100%",
+  },
+  link: {
+    color: "blue",
+    textDecorationLine: "underline",
   },
   iconWithText: {
     flex: 1,

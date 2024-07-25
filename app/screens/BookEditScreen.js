@@ -544,7 +544,7 @@ export default function BookEditScreen({ route }) {
     return (
       <View style={{ flex: 1 }}>
         <TextInputWithSuggestions
-          suggestionsArrray={categoriesSuggestions} //TODO
+          suggestionsArrray={categoriesSuggestions}
           textInputStyle={styles.textInput}
           defaultValue={categoriesList[index]}
           placeholder={t("screens.bookEdit.inputPlaceholder.category")}

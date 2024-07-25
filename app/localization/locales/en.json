@@ -91,6 +91,7 @@
             "searchPlaceholder":"Search...",
             "changeLanguage":"Language",
             "changeDefaultStatus":"Default status \nfor added books",
+            "openLibrary":"This application uses the Open Library API to obtain information about books. This is an open source project, and you can find more information on the official website",
             "deleteLibrary":{
                 "buttonTitle":"Delete library",
                 "alertTitle":"CAUTION",
