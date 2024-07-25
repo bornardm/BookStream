@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -187,47 +188,38 @@ export default function BookScreen({ route }) {
   function BackArrow() {
     const navigation = useNavigation();
     return (
-      <View style={styles.backArrow}>
-        <SimpleLineIcons.Button
-          name="arrow-left"
-          size={20}
-          color={colors.lightGrey}
-          alignSelf="flex-start"
-          underlayColor={colors.underlayColor}
-          backgroundColor="transparent"
-          onPress={() => {
-            navigation.goBack();
-            functions.updateBookPreviewFunc({
-              id: book.id,
-              title: book.title,
-              author: book.author,
-              rating: book.rating,
-              status: book.status,
-              imageName: book.imageName,
-            });
-          }}
-        />
-      </View>
+      <TouchableOpacity
+        style={[styles.headerButton, styles.backArrow]}
+        onPress={() => {
+          navigation.goBack();
+          functions.updateBookPreviewFunc({
+            id: book.id,
+            title: book.title,
+            author: book.author,
+            rating: book.rating,
+            status: book.status,
+            imageName: book.imageName,
+          });
+        }}
+      >
+        <SimpleLineIcons name="arrow-left" size={20} color={colors.lightGrey} />
+      </TouchableOpacity>
     );
   }
   function EditButton() {
     const navigation = useNavigation();
     return (
-      <View style={styles.editButton}>
-        <MaterialIcons.Button
-          name="edit"
-          size={25}
-          color={colors.lightGrey}
-          backgroundColor={"transparent"}
-          underlayColor={colors.underlayColor}
-          onPress={() =>
-            navigation.navigate("BookEditScreen", {
-              book: book,
-              onGoBack: onGoBack,
-            })
-          }
-        />
-      </View>
+      <TouchableOpacity
+        style={[styles.headerButton, styles.editButton]}
+        onPress={() =>
+          navigation.navigate("BookEditScreen", {
+            book: book,
+            onGoBack: onGoBack,
+          })
+        }
+      >
+        <MaterialIcons name="edit" size={25} color={colors.lightGrey} />
+      </TouchableOpacity>
     );
   }
   function Trash() {
@@ -459,9 +451,11 @@ export default function BookScreen({ route }) {
             <View style={styles.horizontalLine} />
 
             <Trash />
-            <EditButton />
+            <View style={styles.headerBand}>
+              <BackArrow />
+              <EditButton />
+            </View>
           </ScrollView>
-          <BackArrow />
         </View>
       </SQLiteProvider>
     </Suspense>
@@ -474,17 +468,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
-  },
-  backArrow: {
-    backgroundColor: "transparent",
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  editButton: {
-    position: "absolute",
-    top: 0,
-    right: 0,
   },
   ScrollView: {
     width: "100%",
@@ -574,5 +557,37 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.black,
     marginBottom: 5,
+  },
+
+  headerBand: {
+    height: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    marginTop: 5,
+  },
+  headerButton: {
+    backgroundColor: colors.secondary,
+    padding: 7,
+    height: "100%",
+    width: 45,
+    justifyContent: "center",
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  editButton: {
+    borderBottomStartRadius: 25,
+    borderTopStartRadius: 25,
+  },
+  backArrow: {
+    borderBottomEndRadius: 25,
+    borderTopEndRadius: 25,
   },
 });

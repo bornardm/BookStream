@@ -379,19 +379,19 @@ export default function BookEditScreen({ route }) {
 
   function BackArrow() {
     return (
-      <View style={styles.backArrow}>
-        <SimpleLineIcons.Button
+      <TouchableOpacity
+        style={[styles.headerButton, styles.backArrow]}
+        onPress={() => {
+          navigation.goBack();
+        }}
+      >
+        <SimpleLineIcons
           name="arrow-left"
           size={20}
           color={colors.lightGrey}
           alignSelf="flex-start"
-          underlayColor={colors.underlayColor}
-          backgroundColor="transparent"
-          onPress={() => {
-            navigation.goBack();
-          }}
         />
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -444,13 +444,9 @@ export default function BookEditScreen({ route }) {
     return (
       <View style={styles.headerBand}>
         <BackArrow />
-        <Text>{t("screens.bookEdit.title")}</Text>
-        <Octicons.Button
-          name="check-circle-fill"
-          size={20}
-          color={colors.lightGrey}
-          underlayColor={colors.underlayColor}
-          backgroundColor="transparent"
+        <Text style={styles.screenTitle}>{t("screens.bookEdit.title")}</Text>
+        <TouchableOpacity
+          style={[styles.headerButton, styles.checkButton]}
           onPress={async () => {
             const isSaved = await saveBookChanges();
             if (isSaved) {
@@ -463,7 +459,14 @@ export default function BookEditScreen({ route }) {
               });
             }
           }}
-        />
+        >
+          <Octicons
+            name="check-circle-fill"
+            size={25}
+            color={colors.lightGrey}
+            backgroundColor="transparent"
+          />
+        </TouchableOpacity>
       </View>
     );
   }
@@ -807,8 +810,8 @@ export default function BookEditScreen({ route }) {
 const styles = StyleSheet.create({
   container: {},
   headerBand: {
-    backgroundColor: colors.secondary,
     marginBottom: 10,
+    marginTop: 5,
     height: 40,
     flexDirection: "row",
     alignItems: "center",
@@ -875,4 +878,31 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   categoryAddIcon: { position: "absolute", right: 10, top: 15 },
+  backArrow: {
+    backgroundColor: colors.secondary,
+    borderBottomEndRadius: 25,
+    borderTopEndRadius: 25,
+  },
+  headerButton: {
+    backgroundColor: colors.secondary,
+    padding: 7,
+    height: "100%",
+    width: 45,
+    justifyContent: "center",
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  checkButton: {
+    borderBottomStartRadius: 25,
+    borderTopStartRadius: 25,
+  },
+  screenTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    flex: 1,
+    textAlign: "center",
+  },
 });
