@@ -1,12 +1,6 @@
 // React and React Native components and hooks
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Third-party libraries/components
 import { useNavigation } from "@react-navigation/native";
@@ -23,9 +17,7 @@ function BadgeStatus({ status }) {
   return (
     <View style={[styles.badge, { backgroundColor: statusProps.color }]}>
       <IconComponent name={statusProps.iconName} style={styles.badgeIcon} />
-      <Text style={[styles.badgeText, { backgroundColor: statusProps.color }]}>
-        {statusProps.text}
-      </Text>
+      <Text style={styles.badgeText}>{statusProps.text}</Text>
     </View>
   );
 }
@@ -61,7 +53,7 @@ export default function BookPreview({
   }, [imageName]);
 
   return (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       onPress={() =>
         navigation.navigate("BookScreen", {
           bookID: bookID,
@@ -80,15 +72,17 @@ export default function BookPreview({
           style={styles.image}
         />
         <View style={styles.info}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.author}>{author}</Text>
+          <View style={styles.titleAuthorContainer}>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.author}>{author}</Text>
+          </View>
           <View style={styles.stars}>
             <FiveStarsDisplay rating={rating} size={20} />
           </View>
         </View>
         <BadgeStatus status={status} />
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 }
 
@@ -115,6 +109,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  titleAuthorContainer: {
+    flex: 1,
+    marginBottom: 25,
+  },
+
   stars: {
     position: "absolute",
     bottom: 0,

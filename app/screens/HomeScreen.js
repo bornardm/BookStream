@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
+  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -99,19 +101,6 @@ export default function HomeScreen({ navigation }) {
     <Suspense fallback={<LoadindingView />}>
       <SQLiteProvider databaseName={dbName} useSuspense>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <MaterialIcons.Button
-              style={styles.filterIcon}
-              name="filter-list"
-              size={24}
-              backgroundColor={"transparent"}
-              underlayColor={colors.underlayColor}
-              color={colors.middleLightGrey}
-              onPress={() => {
-                setShowFilter(!showFilter);
-              }}
-            />
-          </View>
           <ScrollView style={styles.scrollView}>
             {previewsLoaded &&
               allBookPreview.map((book, index) => (
@@ -130,8 +119,17 @@ export default function HomeScreen({ navigation }) {
                 />
               ))}
           </ScrollView>
-          <View style={styles.addBook}>
-            <TouchableWithoutFeedback
+          <View style={[styles.circleButton, styles.filterButton]}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowFilter(!showFilter);
+              }}
+            >
+              <MaterialIcons style={styles.iconFilter} name="filter-list" />
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.circleButton, styles.plusButton]}>
+            <TouchableOpacity
               onPress={() => {
                 navigation.navigate("AddScreen", {
                   addBookPreviewFunc: addBookPreview,
@@ -143,7 +141,7 @@ export default function HomeScreen({ navigation }) {
               }}
             >
               <Icon name="plus" style={styles.iconPlus} />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </View>
           {showFilter && <View style={styles.overlay}></View>}
           <FilterView
@@ -160,7 +158,7 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-const addBookButtonRadius = 100;
+const circleButtonRadius = 100;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -181,33 +179,44 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
   },
-  header: {
-    width: "100%",
-    alignItems: "flex-end",
-    paddingHorizontal: 10,
+  filterButton: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
   },
   filterIcon: {
     paddingRight: 0,
-    borderColor: colors.middleLightGrey,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  addBook: {
+    borderRadius: 24,
     backgroundColor: colors.secondary,
-
+  },
+  plusButton: {
     position: "absolute",
     bottom: 0,
     right: 0,
+  },
+  circleButton: {
+    backgroundColor: colors.secondary,
     margin: 20,
-    width: addBookButtonRadius / 2,
-    height: addBookButtonRadius / 2,
-    borderRadius: addBookButtonRadius,
-    fontSize: addBookButtonRadius * 2,
+    width: circleButtonRadius / 2,
+    height: circleButtonRadius / 2,
+    borderRadius: circleButtonRadius,
+    fontSize: circleButtonRadius * 2,
     alignItems: "center",
     justifyContent: "center",
+
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
   iconPlus: {
-    fontSize: addBookButtonRadius / 2,
+    fontSize: circleButtonRadius / 2,
+    color: colors.white,
+    backgroundColor: "transparent",
+  },
+  iconFilter: {
+    fontSize: circleButtonRadius / 3,
     color: colors.white,
     backgroundColor: "transparent",
   },
