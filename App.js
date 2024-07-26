@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import HomeScreen from "./app/screens/HomeScreen";
 import BookScreen from "./app/screens/BookScreen";
 import BookEditScreen from "./app/screens/BookEditScreen";
-import MenuScreen from "./app/screens/MenuScreen";
+import StatisiticsScreen from "./app/screens/StatisticsScreen";
 import LoadindingView from "./app/components/LoadingView";
 import AddScreen from "./app/screens/AddScreen";
 import ScannerScreen from "./app/screens/ScannerScreen";
@@ -115,9 +115,9 @@ export default function App() {
             options={{ title: t("app.navigationTitle.homeScreen") }}
           />
           <Drawer.Screen
-            name="MenuScreen"
-            component={MenuScreen}
-            options={{ title: t("app.navigationTitle.menuScreen") }}
+            name="StatisticsScreen"
+            component={StatisiticsScreen}
+            options={{ title: t("app.navigationTitle.statisticsScreen") }}
           />
           <Drawer.Screen
             name="SettingsScreen"

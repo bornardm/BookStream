@@ -225,7 +225,7 @@ export default function BookScreen({ route }) {
   function Trash() {
     const navigation = useNavigation();
     return (
-      <TouchableWithoutFeedback
+      <TouchableOpacity
         onPress={() =>
           Alert.alert(
             t("screens.book.alerts.deleteTitle"),
@@ -253,7 +253,7 @@ export default function BookScreen({ route }) {
           />
           <Text style={styles.textTrash}>{t("screens.book.removeButton")}</Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     );
   }
 

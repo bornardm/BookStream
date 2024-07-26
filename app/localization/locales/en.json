@@ -12,7 +12,7 @@
             "bookEditScreen":"Edit book",
             "addScreen":"Add a book",
             "scannerScreen":"Scan a book",
-            "menuScreen":"Menu",
+            "statisticsScreen":"Statistics",
             "settingsScreen":"Settings"
 
         }
