@@ -1,3 +1,4 @@
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import {
   dbName,
   dbConnexion,
@@ -5,6 +6,7 @@ import {
   deleteImageFromCovers,
 } from "./setupDatabase";
 import * as SQLite from "expo-sqlite";
+import { BOOK_STATUS } from "./constants/BookStatus";
 
 export function fetchBookInfos({ id }) {
   console.log("DB : start fetching book infos: id = ", id);
@@ -304,4 +306,78 @@ export function updateSettingDB({ field, value }) {
     request: `UPDATE SETTINGS SET ${field} = ? WHERE id = 0`,
     params: [value],
   });
+}
+
+//Statistics
+
+function getExecSyncDB({ request, params = [] }) {
+  console.log("DB : start fetching execSync");
+  let result = null;
+  try {
+    dbConnexion.withTransactionSync(() => {
+      //console.log("transaction start ");
+      //console.log("request:", request, " ; params:", params);
+      result = dbConnexion.getAllSync(request, params);
+      //console.log("Rows:", result);
+      //console.log("transaction end");
+    });
+    return result;
+  } catch (e) {
+    console.error("error in getExecSyncDB", e);
+    return null;
+  }
+}
+
+export function getStatsStatusDB() {
+  console.log("DB : start fetching status stats");
+  const request = "SELECT status, COUNT(*) as count FROM BOOKS GROUP BY status";
+  return getExecSyncDB({ request });
+}
+
+export function getStatsAuthorsDB() {
+  console.log("DB : start fetching authors stats");
+  const request =
+    "SELECT author, COUNT(*) as count FROM BOOKS GROUP BY author ORDER BY count DESC";
+  return getExecSyncDB({ request });
+}
+
+function getNumbersDB({ countString, year = null }) {
+  let yearCondition = "";
+  let params = [BOOK_STATUS.READ];
+
+  if (year !== null) {
+    yearCondition = `AND strftime('%Y', readingEndDate) = ?`;
+    params.push(year.toString());
+  }
+
+  console.log("DB : start fetching numbers ", countString);
+  const request = `SELECT ${countString} as number FROM BOOKS WHERE status = ? ${yearCondition}`;
+  const result = getExecSyncDB({ request, params });
+
+  if (result) {
+    return result[0].number;
+  }
+  return null;
+}
+export function getNumberPagesReadDB({ year = null }) {
+  return getNumbersDB({ countString: "SUM(pageNumber)", year: year });
+}
+
+export function getNumberBooksReadDB() {
+  return getNumbersDB({ countString: "COUNT(*)" });
+}
+
+export function getNumberBooksReadByMonthDB({ year }) {
+  console.log("DB : start fetching number books read by month");
+  const request = `SELECT strftime('%m', readingEndDate) as month, COUNT(*) as count FROM BOOKS WHERE status = ? AND month IS NOT NULL AND strftime('%Y', readingEndDate) = ? GROUP BY month ORDER BY month ASC`;
+  return getExecSyncDB({
+    request,
+    params: [BOOK_STATUS.READ, year.toString()],
+  });
+}
+
+export function getNumberBooksReadByYearDB() {
+  console.log("DB : start fetching number books read by year");
+  const request = `SELECT strftime('%Y', readingEndDate) as year, COUNT(*) as count FROM BOOKS WHERE status = ? AND year IS NOT NULL GROUP BY year ORDER BY year ASC`;
+  return getExecSyncDB({ request, params: [BOOK_STATUS.READ] });
 }
