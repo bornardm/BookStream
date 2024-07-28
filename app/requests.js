@@ -18,7 +18,7 @@ export function fetchBookInfos({ id }) {
       result = dbConnexion.getFirstSync("SELECT * FROM BOOKS where id = ?", [
         id,
       ]);
-      console.log("Row:", result);
+      //console.log("Row:", result);
       if (result) {
         result = modifyDefaultBookInfos(result);
       }
@@ -40,12 +40,12 @@ function modifyDefaultBookInfos(book) {
 }
 
 export async function fetchBookPreview({ request, params = [] }) {
-  console.log(
-    "DB : start fetching book preview, request = ",
-    request,
-    "params = ",
-    params
-  );
+  // console.log(
+  //   "DB : start fetching book preview, request = ",
+  //   request,
+  //   "params = ",
+  //   params
+  // );
   let result = null;
   try {
     await dbConnexion.withTransactionAsync(async () => {
@@ -96,12 +96,12 @@ export function updateDB({ request, params }) {
         
 */
 export function updateBookRatingDB({ id, rating }) {
-  console.log(
-    "DB : start updating book rating: id = ",
-    id,
-    "rating = ",
-    rating
-  );
+  // console.log(
+  //   "DB : start updating book rating: id = ",
+  //   id,
+  //   "rating = ",
+  //   rating
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET rating = ? WHERE id = ?",
     params: [rating, id],
@@ -109,12 +109,12 @@ export function updateBookRatingDB({ id, rating }) {
 }
 
 export function updateBookStatusDB({ id, status }) {
-  console.log(
-    "DB : start updating book status: id = ",
-    id,
-    "status = ",
-    status
-  );
+  // console.log(
+  //   "DB : start updating book status: id = ",
+  //   id,
+  //   "status = ",
+  //   status
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET status = ? WHERE id = ?",
     params: [status, id],
@@ -122,12 +122,12 @@ export function updateBookStatusDB({ id, status }) {
 }
 
 export function updateBookCommentDB({ id, comment }) {
-  console.log(
-    "DB : start updating book comment: id = ",
-    id,
-    "comment = ",
-    comment
-  );
+  // console.log(
+  //   "DB : start updating book comment: id = ",
+  //   id,
+  //   "comment = ",
+  //   comment
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET comment = ? WHERE id = ?",
     params: [comment, id],
@@ -135,12 +135,12 @@ export function updateBookCommentDB({ id, comment }) {
 }
 
 export function updateBookBorrowedDB({ id, borrowed }) {
-  console.log(
-    "DB : start updating book borrowed: id = ",
-    id,
-    "borrowed = ",
-    borrowed
-  );
+  // console.log(
+  //   "DB : start updating book borrowed: id = ",
+  //   id,
+  //   "borrowed = ",
+  //   borrowed
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET borrowed = ? WHERE id = ?",
     params: [borrowed, id],
@@ -148,12 +148,12 @@ export function updateBookBorrowedDB({ id, borrowed }) {
 }
 
 export function updateBookToExchangeDB({ id, toExchange }) {
-  console.log(
-    "DB : start updating book toExchange: id = ",
-    id,
-    "toExchange = ",
-    toExchange
-  );
+  // console.log(
+  //   "DB : start updating book toExchange: id = ",
+  //   id,
+  //   "toExchange = ",
+  //   toExchange
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET toExchange = ? WHERE id = ?",
     params: [toExchange, id],
@@ -161,12 +161,12 @@ export function updateBookToExchangeDB({ id, toExchange }) {
 }
 
 export function updateBookStartDateDB({ id, startDate }) {
-  console.log(
-    "DB : start updating book startDate: id = ",
-    id,
-    "startDate = ",
-    startDate
-  );
+  // console.log(
+  //   "DB : start updating book startDate: id = ",
+  //   id,
+  //   "startDate = ",
+  //   startDate
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET readingStartDate = ? WHERE id = ?",
     params: [startDate, id],
@@ -174,12 +174,12 @@ export function updateBookStartDateDB({ id, startDate }) {
 }
 
 export function updateBookEndDateDB({ id, endDate }) {
-  console.log(
-    "DB : start updating book endDate: id = ",
-    id,
-    "endDate = ",
-    endDate
-  );
+  // console.log(
+  //   "DB : start updating book endDate: id = ",
+  //   id,
+  //   "endDate = ",
+  //   endDate
+  // );
   return updateDB({
     request: "UPDATE BOOKS SET readingEndDate = ? WHERE id = ?",
     params: [endDate, id],
@@ -198,7 +198,6 @@ export function deleteBookDB({ id, imageName }) {
 }
 
 export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
-  console.log("DB : start adding book ");
   let dbRequest;
   let fieldsName = [];
   let params = [];
@@ -212,7 +211,7 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
     if (newImageName !== null) {
       book.imageName.value = newImageName;
     }
-    console.log("Image name = ", book.imageName.value);
+    //console.log("Image name = ", book.imageName.value);
     //fields
     for (const field in book) {
       if (field !== "id") {
@@ -234,13 +233,11 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
         .map((field) => `${field}`)
         .join(", ")}) VALUES(${params.map(() => "?").join(", ")})`;
     }
-    console.log("DB  : request = ", dbRequest, "params = ", params);
     const res = updateDB({
       request: dbRequest,
       params: params,
     });
     const bookID = book.id.value ? book.id.value : res.lastInsertRowId;
-    console.log("Book ID = ", res, bookID);
     return res ? bookID : false;
   } catch (error) {
     console.error("Error in editing book in db ", error);
@@ -256,7 +253,6 @@ export async function addOrModifyBookDB({ book, newImageURI, newImageFormat }) {
  * @returns {Array|null} - An array of distinct values from the specified field, or null if an error occurs.
  */
 export function getDistinctDB({ field, query = null }) {
-  console.log("DB : start fetching distinct field: ", field);
   let result = null;
   try {
     dbConnexion.withTransactionSync(() => {
@@ -310,6 +306,14 @@ export function updateSettingDB({ field, value }) {
 
 //Statistics
 
+/**
+ * Executes a synchronous database query and returns the result.
+ *
+ * @param {Object} options - The options for the query.
+ * @param {string} options.request - The SQL query to execute.
+ * @param {Array} [options.params=[]] - The parameters for the query.
+ * @returns {Array|null} - The result of the query, or null if an error occurred.
+ */
 function getExecSyncDB({ request, params = [] }) {
   //console.log("DB : start fetching execSync");
   let result = null;
@@ -328,19 +332,35 @@ function getExecSyncDB({ request, params = [] }) {
   }
 }
 
+/**
+ * Retrieves the status statistics from the database.
+ * @returns {Promise<Array<{status: string, count: number}>>} The status statistics.
+ */
 export function getStatsStatusDB() {
-  console.log("DB : start fetching status stats");
+  //console.log("DB : start fetching status stats");
   const request = "SELECT status, COUNT(*) as count FROM BOOKS GROUP BY status";
   return getExecSyncDB({ request });
 }
 
-export function getStatsAuthorsDB() {
-  console.log("DB : start fetching authors stats");
+/**
+ * Retrieves the statistics of the top 10 authors from the database.
+ * @returns {Promise<Array<Object>>} A promise that resolves to an array of objects containing author and count properties.
+ */
+export function getStats10AuthorsDB() {
+  //console.log("DB : start fetching authors stats");
   const request =
-    "SELECT author, COUNT(*) as count FROM BOOKS GROUP BY author ORDER BY count DESC";
+    "SELECT author, COUNT(*) as count FROM BOOKS GROUP BY author ORDER BY count DESC LIMIT 10";
   return getExecSyncDB({ request });
 }
 
+/**
+ * Retrieves the number of books from the database based on the provided parameters.
+ *
+ * @param {Object} options - The options for retrieving the numbers from the database.
+ * @param {string} options.countString - The count string to be used in the SELECT statement.
+ * @param {number|null} options.year - The year to filter the results by. If null, no year filter will be applied.
+ * @returns {number|null} The number of books matching the provided parameters, or null if no result is found.
+ */
 function getNumbersDB({ countString, year = null }) {
   let yearCondition = "";
   let params = [BOOK_STATUS.READ];
@@ -350,7 +370,7 @@ function getNumbersDB({ countString, year = null }) {
     params.push(year.toString());
   }
 
-  console.log("DB : start fetching numbers ", countString);
+  //console.log("DB : start fetching numbers ", countString);
   const request = `SELECT ${countString} as number FROM BOOKS WHERE status = ? ${yearCondition}`;
   const result = getExecSyncDB({ request, params });
 
@@ -359,16 +379,35 @@ function getNumbersDB({ countString, year = null }) {
   }
   return null;
 }
+/**
+ * Retrieves the number of pages read from the database.
+ * @param {Object} options - The options for retrieving the number of pages read.
+ * @param {number} options.year - The year for which to retrieve the number of pages read.
+ * @returns {Promise<number>} - A promise that resolves to the number of pages read.
+ */
 export function getNumberPagesReadDB({ year = null }) {
   return getNumbersDB({ countString: "SUM(pageNumber)", year: year });
 }
 
+/**
+ * Retrieves the number of books read from the database.
+ * @param {Object} options - The options for retrieving the number of books read.
+ * @param {number} options.year - The year for which to retrieve the number of books read.
+ * @returns {Promise<number>} - A promise that resolves to the number of books read.
+ */
 export function getNumberBooksReadDB({ year = null }) {
   return getNumbersDB({ countString: "COUNT(*)", year: year });
 }
 
+/**
+ * Retrieves the number of books read by month from the database.
+ *
+ * @param {Object} options - The options for retrieving the number of books read by month.
+ * @param {number} options.year - The year for which to retrieve the data.
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of objects containing the month and count of books read.
+ */
 export function getNumberBooksReadByMonthDB({ year }) {
-  console.log("DB : start fetching number books read by month");
+  //console.log("DB : start fetching number books read by month");
   const request = `SELECT strftime('%m', readingEndDate) as month, COUNT(*) as count FROM BOOKS WHERE status = ? AND month IS NOT NULL AND strftime('%Y', readingEndDate) = ? GROUP BY month ORDER BY month ASC`;
   return getExecSyncDB({
     request,
@@ -376,13 +415,24 @@ export function getNumberBooksReadByMonthDB({ year }) {
   });
 }
 
+/**
+ * Retrieves the number of books read by year from the database.
+ * @returns {Array} An array of objects containing the year and the count of books read for each year.
+ */
 export function getNumberBooksReadByYearDB() {
-  console.log("DB : start fetching number books read by year");
+  //console.log("DB : start fetching number books read by year");
   const request = `SELECT strftime('%Y', readingEndDate) as year, COUNT(*) as count FROM BOOKS WHERE status = ? AND year IS NOT NULL GROUP BY year ORDER BY year ASC`;
   return getExecSyncDB({ request, params: [BOOK_STATUS.READ] });
 }
+
+/**
+ * Retrieves the average number of days it takes to read a book from the database.
+ * @param {Object} options - The options for filtering the results.
+ * @param {number} options.year - The year to filter the results by. If not provided, all years will be considered.
+ * @returns {number|null} - The average number of days to read a book, rounded to the nearest whole number. Returns null if no result is found.
+ */
 export function getAverageNumberOfDaystoReadDB({ year = null }) {
-  console.log("DB : start fetching average number of days to read");
+  //console.log("DB : start fetching average number of days to read");
   let yearCondition = "";
   let params = [BOOK_STATUS.READ];
 
@@ -398,8 +448,15 @@ export function getAverageNumberOfDaystoReadDB({ year = null }) {
   return null;
 }
 
+/**
+ * Retrieves the top rated books from the database.
+ * @param {Object} options - The options for retrieving the top rated books.
+ * @param {number} [options.year=null] - The year to filter the books by. If not provided, all years will be considered.
+ * @param {number} [options.limit=5] - The maximum number of books to retrieve.
+ * @returns {Array<Object>|null} - An array of book objects representing the top rated books, or null if no books are found.
+ */
 export function getTopRatedBooksDB({ year = null, limit = 5 }) {
-  console.log("DB : start fetching top rated books");
+  //console.log("DB : start fetching top rated books");
   let yearCondition = "";
   let params = [];
 

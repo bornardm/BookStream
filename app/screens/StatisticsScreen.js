@@ -1,19 +1,24 @@
+// React and React Native components and hooks
 import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Button,
   ScrollView,
   RefreshControl,
 } from "react-native";
+
+// Third-party libraries/components
 import { BarChart, PieChart } from "react-native-chart-kit";
 import { Dropdown } from "react-native-element-dropdown";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
+// Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
 import {
   getStatsStatusDB,
-  getStatsAuthorsDB,
+  getStats10AuthorsDB,
   getNumberBooksReadDB,
   getNumberPagesReadDB,
   getNumberBooksReadByMonthDB,
@@ -25,8 +30,6 @@ import {
 import { getBookStatusProps } from "../constants/BookStatus";
 import LoadingView from "../components/LoadingView";
 import BookPreview from "../components/BookPreview";
-import i18next from "../localization/i18n";
-import { useTranslation } from "react-i18next";
 
 const chartConfig = {
   backgroundGradientFrom: "#03DAC6",
@@ -41,44 +44,12 @@ const chartConfig = {
 const legendFontColor = "#7F7F7F";
 const legendFontSize = 15;
 
-const data = [
-  {
-    name: "Seoul",
-    population: 21500000,
-    color: "rgba(131, 167, 234, 1)",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15,
-  },
-  {
-    name: "Toronto",
-    population: 2800000,
-    color: "#F00",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15,
-  },
-  {
-    name: "Beijing",
-    population: 527612,
-    color: "red",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15,
-  },
-  {
-    name: "New York",
-    population: 8538000,
-    color: "#ffffff",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15,
-  },
-  {
-    name: "Moscow",
-    population: 11920000,
-    color: "rgb(0, 0, 255)",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15,
-  },
-];
-
+/**
+ * Computes the statistics for book statuses.
+ *
+ * @param {Array} statusStats - The array of status statistics.
+ * @returns {Array} - The computed statistics data.
+ */
 const computeStatusStats = (statusStats) => {
   if (!statusStats) {
     return [];
@@ -124,6 +95,10 @@ const RowAuthor = ({ rank, author, count }) => {
   );
 };
 
+/**
+ * Represents the Statistics screen of the application.
+ * This screen displays various statistics related to books, such as the number of books read, number of pages read, average number of days to read, top rated books, book status distribution, and top 10 authors.
+ */
 export default function StatisiticsScreen() {
   const { t } = useTranslation();
   const months = [
@@ -142,12 +117,12 @@ export default function StatisiticsScreen() {
   ];
 
   const [barChartData, setBarChartData] = useState(null);
-  const [period, setPeriod] = useState(null);
+  const [period, setPeriod] = useState(null); //period for fetching data year number or null for all years
   const [statsLoaded, setStatsLoaded] = useState(false);
 
   const [distinctYear, setDistinctYear] = useState(
     getDistinctYearDB({ end: true })
-  );
+  ); // distinct readEnd year from the database
   const [dropdownData, setDropdownData] = useState([]);
   const [dropdownValue, setDropdownValue] = useState("");
   const [statusStats, setStatusStats] = useState([]);
@@ -158,7 +133,7 @@ export default function StatisiticsScreen() {
   const [averageNumberOfDaystoRead, setAverageNumberOfDaystoRead] = useState(0);
   const [topRatedBooks, setTopRatedBooks] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [refreshIndex, setRefreshIndex] = useState(0);
+  const [refreshIndex, setRefreshIndex] = useState(0); //Increment at each refresh
 
   const onRefresh = useCallback(() => {
     setRefreshIndex(refreshIndex + 1);
@@ -168,9 +143,14 @@ export default function StatisiticsScreen() {
     }, 1000);
   }, [refreshIndex]);
 
+  /**
+   * Computes the data for the bar chart based on the selected period.
+   * @returns {Object} The computed bar chart data.
+   */
   function computeBarChartData() {
     let data = {};
     if (period === null) {
+      // all years
       let years = [];
       for (
         let i = distinctYear[distinctYear.length - 1];
@@ -190,6 +170,7 @@ export default function StatisiticsScreen() {
         data.datasets[0].data[element.year - years[0]] = element.count;
       });
     } else {
+      // for a specific year
       data.labels = months;
       data.datasets = [
         {
@@ -201,11 +182,15 @@ export default function StatisiticsScreen() {
         data.datasets[0].data[parseInt(element.month) - 1] = element.count;
       });
     }
-    console.log("BarChartData = ", data, data.datasets[0].data);
     return data;
   }
-  useEffect(() => {}, [refreshIndex]);
+
   useEffect(() => {
+    /**
+     * Fetches data for the Statistics screen.
+     * This function retrieves distinct years from the database, sets the dropdown data,
+     * computes status statistics, and retrieves author statistics.
+     */
     const fetchData = async () => {
       const distinctYearData = getDistinctYearDB({ end: true });
       setDistinctYear(distinctYearData);
@@ -222,7 +207,7 @@ export default function StatisiticsScreen() {
       const statusStatsData = computeStatusStats(getStatsStatusDB());
       setStatusStats(statusStatsData);
 
-      const authorsStatsData = getStatsAuthorsDB().slice(0, 10);
+      const authorsStatsData = getStats10AuthorsDB();
       setAuthorsStats(authorsStatsData);
     };
 
