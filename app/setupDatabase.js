@@ -93,61 +93,38 @@ export const downloadImageFromInternetToCovers = async (
 };
 
 //For tests
-const covers = [
-  {
-    imageName: "Lemon-M.jpg",
-    imageAsset: require("../assetForTest/Lemon-M.jpg"),
-  },
-  {
-    imageName: "Pandemie-M.jpg",
-    imageAsset: require("../assetForTest/Pandemie-M.jpg"),
-  },
-  {
-    imageName: "poter_cover-M.jpg",
-    imageAsset: require("../assetForTest/poter_cover-M.jpg"),
-  },
-  {
-    imageName: "rider-M.jpg",
-    imageAsset: require("../assetForTest/rider-M.jpg"),
-  },
-  {
-    imageName: "rider2-M.jpg",
-    imageAsset: require("../assetForTest/rider2-M.jpg"),
-  },
-];
+// export const updateImage = async (imageAsset, imageName) => {
+//   const imageUri = Asset.fromModule(imageAsset).uri;
+//   const imageFilePath = `${coversDir}${imageName}`;
 
-export const updateImage = async (imageAsset, imageName) => {
-  const imageUri = Asset.fromModule(imageAsset).uri;
-  const imageFilePath = `${coversDir}${imageName}`;
+//   const imageInfo = await FileSystem.getInfoAsync(imageFilePath);
+//   if (!imageInfo.exists) {
+//     console.log("Downloading image to cache");
+//     await FileSystem.makeDirectoryAsync(coversDir.slice(0, -1), {
+//       intermediates: true,
+//     });
+//     await FileSystem.downloadAsync(imageUri, imageFilePath);
+//   }
+// };
 
-  const imageInfo = await FileSystem.getInfoAsync(imageFilePath);
-  if (!imageInfo.exists) {
-    console.log("Downloading image to cache");
-    await FileSystem.makeDirectoryAsync(coversDir.slice(0, -1), {
-      intermediates: true,
-    });
-    await FileSystem.downloadAsync(imageUri, imageFilePath);
-  }
-};
+// const listAllFilesFromCovers = async () => {
+//   const files = await FileSystem.readDirectoryAsync(coversDir);
+//   console.log("Files in covers directory: ", files);
+// };
 
-const listAllFilesFromCovers = async () => {
-  const files = await FileSystem.readDirectoryAsync(coversDir);
-  console.log("Files in covers directory: ", files);
-};
+// export const deleteAllFilesFromCovers = async () => {
+//   const files = await FileSystem.readDirectoryAsync(coversDir);
+//   for (const file of files) {
+//     await FileSystem.deleteAsync(`${coversDir}${file}`);
+//   }
+// };
 
-export const deleteAllFilesFromCovers = async () => {
-  const files = await FileSystem.readDirectoryAsync(coversDir);
-  for (const file of files) {
-    await FileSystem.deleteAsync(`${coversDir}${file}`);
-  }
-};
-
-export const updateAllImages = async () => {
-  console.log("Updating all images");
-  // await listAllFilesFromCovers();
-  //await deleteAllFilesFromCovers();
-  await listAllFilesFromCovers();
-  for (const cover of covers) {
-    await updateImage(cover.imageAsset, cover.imageName);
-  }
-};
+// export const updateAllImages = async () => {
+//   console.log("Updating all images");
+//   // await listAllFilesFromCovers();
+//   //await deleteAllFilesFromCovers();
+//   await listAllFilesFromCovers();
+//   for (const cover of covers) {
+//     await updateImage(cover.imageAsset, cover.imageName);
+//   }
+// };

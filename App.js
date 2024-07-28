@@ -17,7 +17,7 @@ import AddScreen from "./app/screens/AddScreen";
 import ScannerScreen from "./app/screens/ScannerScreen";
 import SettingsScreen from "./app/screens/SettingsScreen";
 import { colors } from "./app/constants/Colors";
-import { loadDatabase, updateAllImages } from "./app/setupDatabase";
+import { loadDatabase } from "./app/setupDatabase";
 import ReloadContext from "./app/reloadContext";
 import { fetchSettings } from "./app/settingsRequestDB";
 
@@ -80,7 +80,6 @@ export default function App() {
   const [dbLoaded, setDbLoaded] = useState(false);
 
   useEffect(() => {
-    updateAllImages().catch((e) => console.error("Failed to load Cover : ", e));
     loadDatabase()
       .then(() => {
         fetchSettings();
@@ -89,7 +88,6 @@ export default function App() {
       .catch((e) => console.error(e));
   }, []);
   if (!dbLoaded) {
-    console.log("Loading database...");
     return <LoadindingView />;
   }
 
