@@ -1,0 +1,3 @@
+To build the project : 
+- In the gitignore : comment the lines related to ignore files in the app folder
+- Command : eas build -p android --profile preview
