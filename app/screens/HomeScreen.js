@@ -81,7 +81,7 @@ export default function HomeScreen({ navigation }) {
       }
     };
     if (selectedSortSet) {
-      if (dbParams != null) {
+      if (dbParams !== null) {
         fetchPreviews();
       } else {
         setDbParams([]);

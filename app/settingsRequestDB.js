@@ -16,16 +16,16 @@ export function fetchSettings() {
       );
       console.log("Row:", settings);
       if (settings) {
-        if (settings.defaulfBookStatus != null) {
+        if (settings.defaulfBookStatus !== null) {
           setDefaultBookStatus(settings.defaulfBookStatus);
         }
-        if (settings.language != null) {
+        if (settings.language !== null) {
           i18next.changeLanguage(settings.language);
         } else {
           //set the language to the default language from the device
           deviceLanguageDetector();
         }
-        if (settings.sort != null) {
+        if (settings.sort !== null) {
           setSelectedSortItem(settings.sort);
         } else {
           setSelectedSortItem("addedDate");

@@ -176,7 +176,7 @@ export default function BookEditScreen({ route }) {
         },
       }));
       bookObject.categories.value =
-        categoriesString == "" ? null : categoriesString;
+        categoriesString === "" ? null : categoriesString;
 
       if (newImageFormat) {
         //A new image heve been selected
@@ -245,7 +245,7 @@ export default function BookEditScreen({ route }) {
    * @param {any} value - The new value for the field.
    */
   const updateBookField = (field, value) => {
-    if (value != book[field].value) {
+    if (value !== book[field].value) {
       if (value === "") {
         value = null;
       }
@@ -564,7 +564,7 @@ export default function BookEditScreen({ route }) {
         <TouchableOpacity
           onPress={() => {
             console.log("Add category");
-            if (index == 0) {
+            if (index === 0) {
               //Add a new category
               setCategoriesList([...categoriesList, ""]);
             } else {
@@ -578,7 +578,7 @@ export default function BookEditScreen({ route }) {
           style={styles.categoryAddIcon}
         >
           <Entypo
-            name={index == 0 ? "plus" : "minus"}
+            name={index === 0 ? "plus" : "minus"}
             size={30}
             color={colors.middleLightGrey}
             backgroundColor="transparent"

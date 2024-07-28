@@ -315,6 +315,7 @@ export default function StatisiticsScreen() {
               chartConfig={chartConfig}
               verticalLabelRotation={90}
               style={styles.barChart}
+              fromZero={true}
             />
           </ScrollView>
           <View style={styles.statsContainer}>

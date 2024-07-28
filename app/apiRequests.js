@@ -36,7 +36,7 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
    */
   const processResponse = async (response, requestType) => {
     console.log(`@${requestType}-- Response : `, response);
-    if (response.ok == true && response.status == 200) {
+    if (response.ok === true && response.status === 200) {
       let book = {};
       const data = await response.json();
       if (requestType === "work") {
@@ -285,7 +285,7 @@ const getBookTranslatedLanguage = async (languageKey) => {
         `https://openlibrary.org/languages/${languageKey}.json`,
         options
       );
-      if (response.ok == true && response.status == 200) {
+      if (response.ok === true && response.status === 200) {
         const data = await response.json();
         let translatedLanguage = data.name_translated[currentLanguage.code];
         if (translatedLanguage) {
@@ -318,7 +318,7 @@ const searchBooksByQuery = async ({
       }${query}&limit=${resultLimit}`,
       options
     );
-    if (response.ok == true && response.status == 200) {
+    if (response.ok === true && response.status === 200) {
       const data = await response.json();
       if (data.numFound > 0 && data.docs?.length > 0) {
         let bookPreviews = [];

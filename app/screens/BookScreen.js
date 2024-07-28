@@ -265,7 +265,11 @@ export default function BookScreen({ route }) {
 
     const saveComment = () => {
       setEditComment(!editComment);
-      if (comment != null && comment != undefined && comment !== book.comment) {
+      if (
+        comment !== null &&
+        comment !== undefined &&
+        comment !== book.comment
+      ) {
         modifyStateBook({ comment });
         updateBookCommentDB({ id: bookID, comment });
       }
@@ -300,7 +304,7 @@ export default function BookScreen({ route }) {
           </View>
         ) : (
           <View>
-            {comment != null && comment != undefined && (
+            {comment !== null && comment !== undefined && (
               <Text style={styles.textSubtitle}>
                 {t("screens.book.comment") + " :"}
               </Text>
@@ -316,12 +320,12 @@ export default function BookScreen({ route }) {
                 style={{
                   maxWidth: "80%",
                   color:
-                    comment != null && comment != undefined
+                    comment !== null && comment !== undefined
                       ? colors.black
                       : colors.placeholderTextColor,
                 }}
               >
-                {comment != null && comment != undefined
+                {comment !== null && comment !== undefined
                   ? comment
                   : t("screens.book.addComment")}
               </Text>
