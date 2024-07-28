@@ -266,7 +266,7 @@ export function getDistinctDB({ field, query = null }) {
         result = dbConnexion.getAllSync(query);
       } else {
         result = dbConnexion.getAllSync(
-          `SELECT DISTINCT ${field} FROM BOOKS WHERE ${field} IS NOT NULL AND ${field} != ""`
+          `SELECT DISTINCT ${field} FROM BOOKS WHERE ${field} IS NOT NULL AND ${field} != "" ORDER BY ${field} ASC`
         );
       }
       //console.log("Rows:", result);
@@ -287,7 +287,7 @@ export function getDistinctYearDB({ end = true }) {
   const field = end ? "readingEndDate" : "readingStartDate";
   return getDistinctDB({
     field: "year",
-    query: `SELECT DISTINCT strftime('%Y', ${field}) AS year FROM BOOKS WHERE ${field} IS NOT NULL ;`,
+    query: `SELECT DISTINCT strftime('%Y', ${field}) AS year FROM BOOKS WHERE ${field} IS NOT NULL ORDER BY year DESC ;`,
   });
 }
 
@@ -311,7 +311,7 @@ export function updateSettingDB({ field, value }) {
 //Statistics
 
 function getExecSyncDB({ request, params = [] }) {
-  console.log("DB : start fetching execSync");
+  //console.log("DB : start fetching execSync");
   let result = null;
   try {
     dbConnexion.withTransactionSync(() => {
@@ -363,8 +363,8 @@ export function getNumberPagesReadDB({ year = null }) {
   return getNumbersDB({ countString: "SUM(pageNumber)", year: year });
 }
 
-export function getNumberBooksReadDB() {
-  return getNumbersDB({ countString: "COUNT(*)" });
+export function getNumberBooksReadDB({ year = null }) {
+  return getNumbersDB({ countString: "COUNT(*)", year: year });
 }
 
 export function getNumberBooksReadByMonthDB({ year }) {
@@ -380,4 +380,20 @@ export function getNumberBooksReadByYearDB() {
   console.log("DB : start fetching number books read by year");
   const request = `SELECT strftime('%Y', readingEndDate) as year, COUNT(*) as count FROM BOOKS WHERE status = ? AND year IS NOT NULL GROUP BY year ORDER BY year ASC`;
   return getExecSyncDB({ request, params: [BOOK_STATUS.READ] });
+}
+export function getAverageNumberOfDaystoReadDB({ year = null }) {
+  console.log("DB : start fetching average number of days to read");
+  let yearCondition = "";
+  let params = [BOOK_STATUS.READ];
+
+  if (year !== null) {
+    yearCondition = `AND strftime('%Y', readingEndDate) = ?`;
+    params.push(year.toString());
+  }
+  const request = `SELECT AVG(julianday(readingEndDate) - julianday(readingStartDate)) as avgDays FROM BOOKS WHERE status = ? AND readingStartDate IS NOT NULL AND readingEndDate IS NOT NULL ${yearCondition}`;
+  const result = getExecSyncDB({ request, params: params });
+  if (result) {
+    return Math.round(result[0].avgDays);
+  }
+  return null;
 }

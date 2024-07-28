@@ -1,13 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button, ScrollView } from "react-native";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from "react-native-chart-kit";
+import { BarChart, PieChart } from "react-native-chart-kit";
+import { Dropdown } from "react-native-element-dropdown";
 
 import { colors } from "../constants/Colors";
 import {
@@ -17,15 +11,18 @@ import {
   getNumberPagesReadDB,
   getNumberBooksReadByMonthDB,
   getNumberBooksReadByYearDB,
+  getAverageNumberOfDaystoReadDB,
+  getDistinctYearDB,
 } from "../requests";
 import { getBookStatusProps } from "../constants/BookStatus";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import LoadingView from "../components/LoadingView";
+
 const chartConfig = {
-  backgroundGradientFrom: "#1E2923",
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: "#08130D",
-  backgroundGradientToOpacity: 0.5,
-  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+  backgroundGradientFrom: "#03DAC6",
+  backgroundGradientFromOpacity: 0.3,
+  backgroundGradientTo: "#03DAC6",
+  backgroundGradientToOpacity: 1,
+  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
   useShadowColorFromDataset: false, // optional
@@ -77,9 +74,7 @@ const computeStatusStats = (statusStats) => {
   }
   let data = [];
   const bookStatusProps = getBookStatusProps();
-  console.log(statusStats);
   statusStats.forEach((statElement) => {
-    console.log("Element = ", statElement);
     data.push({
       name: bookStatusProps[statElement.status].text,
       number: statElement.count,
@@ -119,21 +114,158 @@ const RowAuthor = ({ rank, author, count }) => {
 };
 
 export default function StatisiticsScreen() {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]; //TODo use transaltion
+
+  const [barChartData, setBarChartData] = useState(null);
+  const [period, setPeriod] = useState(null);
+
+  const distinctYear = getDistinctYearDB({ end: true });
+  const dropdownData = [
+    { label: "all years", value: "all years" },
+    ...distinctYear.map((year) => {
+      return { label: year, value: year };
+    }),
+  ];
+  const [dropdownValue, setDropdownValue] = useState(dropdownData[0].label);
+
+  const [statsLoaded, setStatsLoaded] = useState(false);
+
   const statusStats = computeStatusStats(getStatsStatusDB());
-  console.log("StatusStats = ", statusStats);
   const authorsStats = getStatsAuthorsDB().slice(0, 10);
-  console.log("AuthorsStats = ", authorsStats);
-  const numberBooksRead = getNumberBooksReadDB();
-  console.log("NumberBooksRead = ", numberBooksRead);
-  const numberPagesRead = getNumberPagesReadDB({ year: 2024 });
-  console.log("NumberPagesRead = ", numberPagesRead);
-  const numberBooksReadByMonth = getNumberBooksReadByMonthDB({ year: 2024 });
-  console.log("NumberBooksReadByMonth = ", numberBooksReadByMonth);
-  const numberBooksReadByYear = getNumberBooksReadByYearDB();
-  console.log("NumberBooksReadByYear = ", numberBooksReadByYear);
+
+  const [numberBooksRead, setNumberBooksRead] = useState(0);
+  const [numberPagesRead, setNumberPagesRead] = useState(0);
+  const [averageNumberOfDaystoRead, setAverageNumberOfDaystoRead] = useState(0);
+
+  function computeBarChartData() {
+    let data = {};
+    if (period === null) {
+      let years = [];
+      for (
+        let i = distinctYear[distinctYear.length - 1];
+        i <= distinctYear[0];
+        i++
+      ) {
+        years.push(i);
+      }
+      data.labels = years;
+      data.datasets = [
+        {
+          data: Array(years.length).fill(0),
+        },
+      ];
+      const dbData = getNumberBooksReadByYearDB();
+      dbData.forEach((element) => {
+        data.datasets[0].data[element.year - years[0]] = element.count;
+      });
+    } else {
+      data.labels = months;
+      data.datasets = [
+        {
+          data: Array(12).fill(0),
+        },
+      ];
+      const dbData = getNumberBooksReadByMonthDB({ year: period });
+      dbData.forEach((element) => {
+        data.datasets[0].data[parseInt(element.month) - 1] = element.count;
+      });
+    }
+    console.log("BarChartData = ", data, data.datasets[0].data);
+    return data;
+  }
+  useEffect(() => {
+    setBarChartData(computeBarChartData());
+    setNumberBooksRead(getNumberBooksReadDB({ year: period }));
+    setNumberPagesRead(getNumberPagesReadDB({ year: period }));
+    setAverageNumberOfDaystoRead(
+      getAverageNumberOfDaystoReadDB({ year: period })
+    );
+    setStatsLoaded(true);
+  }, [period]);
+
+  if (!statsLoaded) {
+    return <LoadingView white={true} />;
+  }
+
   return (
     <ScrollView>
       <View style={styles.container}>
+        <View
+          style={[
+            styles.statsContainer,
+            { backgroundColor: "rgba(3,218,198, 0.3)" },
+          ]}
+        >
+          <View style={styles.dropdownContainer}>
+            <Text style={styles.statsTitle}>Statistics of </Text>
+            <Dropdown
+              style={styles.dropdown}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={[
+                styles.statsTitle,
+                { marginBottom: 0, marginLeft: 5 },
+              ]}
+              data={dropdownData}
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              value={dropdownValue}
+              onChange={(item) => {
+                if (item.value === "all years") {
+                  setPeriod(null);
+                } else {
+                  setPeriod(item.value);
+                }
+                setDropdownValue(item.label);
+              }}
+            />
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <View style={[styles.smallStatsContainer, { marginLeft: 0 }]}>
+              <Text style={styles.statsImportantInfos}>{numberBooksRead}</Text>
+              <Text style={styles.statsImportantInfos}>books read</Text>
+            </View>
+            <View style={[styles.smallStatsContainer, { marginRight: 0 }]}>
+              <Text style={styles.statsImportantInfos}>{numberPagesRead}</Text>
+              <Text style={styles.statsImportantInfos}>pages read</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <View style={[styles.smallStatsContainer, { marginHorizontal: 0 }]}>
+              <Text style={styles.statsImportantInfos}>
+                {averageNumberOfDaystoRead}
+              </Text>
+              <Text style={styles.statsImportantInfos}>
+                days to read a book
+              </Text>
+            </View>
+          </View>
+          <ScrollView horizontal={true}>
+            <BarChart
+              data={barChartData}
+              width={400}
+              height={420}
+              chartConfig={chartConfig}
+              verticalLabelRotation={90}
+              style={styles.barChart}
+            />
+          </ScrollView>
+
+          <Text>Your best book</Text>
+        </View>
         <View style={styles.statsContainer}>
           <Text style={[styles.statsTitle, { marginBottom: 0 }]}>
             Books status
@@ -171,9 +303,6 @@ export default function StatisiticsScreen() {
             />
           ))}
         </View>
-        <Text>Nombre de pages lues</Text>
-        <Text>Nombre de livres lus</Text>
-        <Text>Nombre de jours moyens pour lire un livres</Text>
       </View>
     </ScrollView>
   );
@@ -194,6 +323,20 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+  smallStatsContainer: {
+    backgroundColor: colors.secondary,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "space-around",
+    margin: 5,
+    flex: 1,
+  },
+  barChart: {
+    borderRadius: 10,
+    margin: 5,
+    alignSelf: "center",
+  },
   pieChart: {
     flexDirection: "row",
     alignItems: "center",
@@ -207,6 +350,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
+  },
+  statsImportantInfos: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   rowAuthor: {
     flexDirection: "row",
@@ -232,5 +380,28 @@ const styles = StyleSheet.create({
   count: {
     flex: 1,
     textAlign: "center",
+  },
+
+  // MultiSelect styles
+  dropdownContainer: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "center",
+    marginBottom: 5,
+    height: 50,
+  },
+  dropdown: {
+    height: 40,
+    backgroundColor: colors.white,
+    width: 120,
+    borderRadius: 10,
+    padding: 5,
+    margin: 0,
+  },
+  placeholderStyle: {
+    fontSize: 14,
+  },
+  selectedTextStyle: {
+    fontSize: 12,
   },
 });
