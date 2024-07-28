@@ -28,7 +28,6 @@ import FilterView from "../components/FilterView";
 let selectedSortItem = ""; //useful only at the beginning to set the default sort option or the saved one from the DB
 let selectedSortSet = false;
 export const setSelectedSortItem = (value) => {
-  console.log("setSelectedSortItem : ", value);
   selectedSortItem = value;
   selectedSortSet = true;
 };
@@ -94,7 +93,6 @@ export default function HomeScreen({ navigation }) {
         );
       }
     }
-    console.log(dbParams, selectedSortSet);
   }, [dbParams, selectedSortSet]);
 
   return (

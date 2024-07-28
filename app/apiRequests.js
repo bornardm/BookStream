@@ -35,26 +35,21 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
    * @throws {Error} - Throws an error if the API request fails.
    */
   const processResponse = async (response, requestType) => {
-    console.log(`@${requestType}-- Response : `, response);
     if (response.ok === true && response.status === 200) {
       let book = {};
       const data = await response.json();
       if (requestType === "work") {
         const book = getBookFromRequestWork(data);
-        console.log(`@${requestType}--`, book);
         return book;
       } else {
-        //console.log(`@${requestType}-- Data`, data);
         const bookKey = `ISBN:${isbn}`;
         if (data[bookKey]) {
           const jsonBook = data[bookKey];
-          console.log(`@${requestType}-- jsonBook`, jsonBook);
           if (requestType === "data") {
             book = getBookFromRequestData(jsonBook);
           } else if (requestType === "details") {
             book = getBookFromRequestDetails(jsonBook);
           }
-          console.log(`@${requestType}--`, book);
           return book;
         } else {
           console.log(
@@ -99,12 +94,10 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
       ...(dataResponse ? dataResponse : {}),
       ...(detailsResponse ? detailsResponse : {}),
     };
-    console.log("Combined result book : ", combinedResultBook);
 
     //get summary if it's null :
     if (combinedResultBook.hasOwnProperty("work")) {
       if (!combinedResultBook.summary) {
-        console.log("fetching work summary...");
         const workUrl = `https://openlibrary.org${combinedResultBook.work}.json`;
         let workResponse = await fetch(workUrl, options);
         workResponse = await processResponse(workResponse, "work");
@@ -122,7 +115,6 @@ export const fetchBookFromOpenLibrary = async (isbn) => {
       );
     }
 
-    console.log("Combined result book : ", combinedResultBook);
     //return the book if it'snot empty
     if (Object.keys(combinedResultBook).length > 0) {
       return combinedResultBook;

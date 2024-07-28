@@ -129,10 +129,6 @@ export default function BookScreen({ route }) {
 
   //------------------------ UseEffects ---------------------------------
 
-  // useEffect(() => {
-  //   console.log("BOOK :", book);
-  // }, [book]);
-
   useEffect(() => {
     /**
      * Fetches book information based on the provided book ID.

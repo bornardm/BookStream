@@ -148,7 +148,6 @@ export default function BookEditScreen({ route }) {
         }
       });
     });
-    console.log("All categories = ", allCategories);
     return allCategories;
   }
 
@@ -563,7 +562,6 @@ export default function BookEditScreen({ route }) {
         />
         <TouchableOpacity
           onPress={() => {
-            console.log("Add category");
             if (index === 0) {
               //Add a new category
               setCategoriesList([...categoriesList, ""]);

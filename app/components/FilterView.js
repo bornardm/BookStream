@@ -281,7 +281,6 @@ export default function FilterView({
   const onApllyPress = () => {
     setShowFilter(false);
     const { request, params } = computeDbRequest();
-    //console.log("request = ", request, "params = ", params);
     setDbRequest(request);
     setDbParams(params);
     updateSettingDB({
@@ -340,7 +339,6 @@ export default function FilterView({
           numberNoteSelected > 1) ||
         numberNoteSelected > 0
       ) {
-        console.log("here");
         request += where ? (orStatement ? "OR" : " AND ") : " WHERE ";
         where = true;
         request += ` rating IN (${filterNoteItems
@@ -397,7 +395,6 @@ export default function FilterView({
     } `;
 
     request += ";";
-    console.log("request = ", request, "params = ", params);
     return { request, params };
   };
 

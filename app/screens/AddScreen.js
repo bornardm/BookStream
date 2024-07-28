@@ -66,7 +66,6 @@ export default function AddScreen({ route, navigation }) {
 
   const onGoBackFromBookEditScreen = ({ id, title, author, imageName }) => {
     navigation.goBack();
-    console.log("Go back from BookEditScreen");
     const preview = {
       id: id,
       title: title,
@@ -75,7 +74,6 @@ export default function AddScreen({ route, navigation }) {
       status: getDefaultBookStatus(),
       imageName: imageName,
     };
-    console.log("PREVIEW : ", preview);
     addBookPreviewFunc(preview);
     navigation.navigate("BookScreen", {
       bookID: id,

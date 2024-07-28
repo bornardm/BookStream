@@ -154,7 +154,6 @@ export default function KeyWordBookSearch({
 
   const onGoBackFromBookEditScreen = ({ id, title, author, imageName }) => {
     navigation.goBack();
-    console.log("Go back from BookEditScreen");
     const preview = {
       id: id,
       title: title,
@@ -163,7 +162,6 @@ export default function KeyWordBookSearch({
       status: getDefaultBookStatus(),
       imageName: imageName,
     };
-    console.log("PREVIEW : ", preview);
     addBookPreviewFunc(preview);
     navigation.navigate("BookScreen", {
       bookID: id,

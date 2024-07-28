@@ -14,7 +14,6 @@ export function fetchSettings() {
       settings = dbConnexion.getFirstSync(
         "SELECT * FROM SETTINGS where id = 0"
       );
-      console.log("Row:", settings);
       if (settings) {
         if (settings.defaulfBookStatus !== null) {
           setDefaultBookStatus(settings.defaulfBookStatus);

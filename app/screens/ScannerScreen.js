@@ -50,8 +50,6 @@ export default function ScannerScreen({ route, navigation }) {
   }, [camContainerSize]);
 
   const onScan = (scanningResult) => {
-    //console.log(scanningResult.boundingBox);
-    console.log("isbn :", scanningResult.data);
     // const boundingBox = {
     //   height: scanningResult.boundingBox.size.width,
     //   width: scanningResult.boundingBox.size.height,
