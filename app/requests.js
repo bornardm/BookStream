@@ -386,7 +386,11 @@ function getNumbersDB({ countString, year = null }) {
  * @returns {Promise<number>} - A promise that resolves to the number of pages read.
  */
 export function getNumberPagesReadDB({ year = null }) {
-  return getNumbersDB({ countString: "SUM(pageNumber)", year: year });
+  const result = getNumbersDB({ countString: "SUM(pageNumber)", year: year });
+  if (result === null) {
+    return 0;
+  }
+  return result;
 }
 
 /**

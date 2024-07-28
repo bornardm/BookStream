@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Button,
-  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -98,17 +96,21 @@ export default function AddScreen({ route, navigation }) {
       ) : null}
       <Text style={styles.title}>{t("screens.add.title")}</Text>
       <View style={styles.search}>
-        <MaterialCommunityIcons.Button
-          name="barcode-scan"
+        <TouchableOpacity
           style={styles.scanButton}
-          color={colors.black}
-          backgroundColor={colors.white}
           onPress={() => {
             navigation.navigate("ScannerScreen", {
               onGoBack: onGoBackFromScannerScreen,
             });
           }}
-        />
+        >
+          <MaterialCommunityIcons
+            name="barcode-scan"
+            color={colors.black}
+            backgroundColor={colors.white}
+            size={24}
+          />
+        </TouchableOpacity>
         <View style={styles.inputView}>
           <TextInput
             placeholder={t("screens.add.inputPlaceholder")}
@@ -186,11 +188,12 @@ const styles = StyleSheet.create({
   scanButton: {
     justifyContent: "center",
     alignItems: "center",
-    paddingRight: 0,
-    paddingLeft: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
     borderColor: colors.textInputBorder,
     borderWidth: 1,
     borderRadius: 20,
+    height: 40,
   },
   search: {
     flexDirection: "row",

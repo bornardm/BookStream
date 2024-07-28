@@ -136,6 +136,7 @@ export default function StatisiticsScreen() {
   const [refreshIndex, setRefreshIndex] = useState(0); //Increment at each refresh
 
   const onRefresh = useCallback(() => {
+    setPeriod(null);
     setRefreshIndex(refreshIndex + 1);
     setRefreshing(true);
     setTimeout(() => {
@@ -196,12 +197,13 @@ export default function StatisiticsScreen() {
       setDistinctYear(distinctYearData);
 
       const dropdownData = [
-        { label: "all years", value: t("screens.statistics.allYears") },
+        { label: t("screens.statistics.allYears"), value: "all years" },
         ...distinctYearData.map((year) => {
           return { label: year, value: year };
         }),
       ];
       setDropdownData(dropdownData);
+      console.log(dropdownData[0].label);
       setDropdownValue(dropdownData[0].label);
 
       const statusStatsData = computeStatusStats(getStatsStatusDB());
@@ -248,7 +250,10 @@ export default function StatisiticsScreen() {
             </Text>
             <Dropdown
               style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
+              placeholderStyle={[
+                styles.statsTitle,
+                { marginBottom: 0, marginLeft: 5 },
+              ]}
               selectedTextStyle={[
                 styles.statsTitle,
                 { marginBottom: 0, marginLeft: 5 },
@@ -258,13 +263,14 @@ export default function StatisiticsScreen() {
               labelField="label"
               valueField="value"
               value={dropdownValue}
+              placeholder={t("screens.statistics.allYears")}
               onChange={(item) => {
-                if (item.label === "all years") {
+                setDropdownValue(item.label);
+                if (item.value === "all years") {
                   setPeriod(null);
                 } else {
                   setPeriod(item.value);
                 }
-                setDropdownValue(item.label);
               }}
             />
           </View>
