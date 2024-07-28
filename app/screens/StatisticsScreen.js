@@ -25,7 +25,8 @@ import {
 import { getBookStatusProps } from "../constants/BookStatus";
 import LoadingView from "../components/LoadingView";
 import BookPreview from "../components/BookPreview";
-import { use } from "i18next";
+import i18next from "../localization/i18n";
+import { useTranslation } from "react-i18next";
 
 const chartConfig = {
   backgroundGradientFrom: "#03DAC6",
@@ -124,26 +125,29 @@ const RowAuthor = ({ rank, author, count }) => {
 };
 
 export default function StatisiticsScreen() {
+  const { t } = useTranslation();
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ]; //TODo use transaltion
+    t("screens.statistics.months.january"),
+    t("screens.statistics.months.february"),
+    t("screens.statistics.months.march"),
+    t("screens.statistics.months.april"),
+    t("screens.statistics.months.may"),
+    t("screens.statistics.months.june"),
+    t("screens.statistics.months.july"),
+    t("screens.statistics.months.august"),
+    t("screens.statistics.months.september"),
+    t("screens.statistics.months.october"),
+    t("screens.statistics.months.november"),
+    t("screens.statistics.months.december"),
+  ];
 
   const [barChartData, setBarChartData] = useState(null);
   const [period, setPeriod] = useState(null);
   const [statsLoaded, setStatsLoaded] = useState(false);
 
-  const [distinctYear, setDistinctYear] = useState([]);
+  const [distinctYear, setDistinctYear] = useState(
+    getDistinctYearDB({ end: true })
+  );
   const [dropdownData, setDropdownData] = useState([]);
   const [dropdownValue, setDropdownValue] = useState("");
   const [statusStats, setStatusStats] = useState([]);
@@ -200,16 +204,14 @@ export default function StatisiticsScreen() {
     console.log("BarChartData = ", data, data.datasets[0].data);
     return data;
   }
-  useEffect(() => {
-    console.log("RefreshIndex = ", refreshIndex);
-  }, [refreshIndex]);
+  useEffect(() => {}, [refreshIndex]);
   useEffect(() => {
     const fetchData = async () => {
       const distinctYearData = getDistinctYearDB({ end: true });
       setDistinctYear(distinctYearData);
 
       const dropdownData = [
-        { label: "all years", value: "all years" },
+        { label: "all years", value: t("screens.statistics.allYears") },
         ...distinctYearData.map((year) => {
           return { label: year, value: year };
         }),
@@ -256,7 +258,9 @@ export default function StatisiticsScreen() {
           ]}
         >
           <View style={styles.dropdownContainer}>
-            <Text style={styles.statsTitle}>Statistics of </Text>
+            <Text style={[styles.statsTitle, { marginRight: 5 }]}>
+              {t("screens.statistics.statisticsOf")}
+            </Text>
             <Dropdown
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
@@ -270,7 +274,7 @@ export default function StatisiticsScreen() {
               valueField="value"
               value={dropdownValue}
               onChange={(item) => {
-                if (item.value === "all years") {
+                if (item.label === "all years") {
                   setPeriod(null);
                 } else {
                   setPeriod(item.value);
@@ -282,11 +286,15 @@ export default function StatisiticsScreen() {
           <View style={{ flexDirection: "row" }}>
             <View style={[styles.smallStatsContainer, { marginLeft: 0 }]}>
               <Text style={styles.statsImportantInfos}>{numberBooksRead}</Text>
-              <Text style={styles.statsImportantInfos}>books read</Text>
+              <Text style={styles.statsImportantInfos}>
+                {t("screens.statistics.booksRead")}
+              </Text>
             </View>
             <View style={[styles.smallStatsContainer, { marginRight: 0 }]}>
               <Text style={styles.statsImportantInfos}>{numberPagesRead}</Text>
-              <Text style={styles.statsImportantInfos}>pages read</Text>
+              <Text style={styles.statsImportantInfos}>
+                {t("screens.statistics.pagesRead")}
+              </Text>
             </View>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -295,7 +303,7 @@ export default function StatisiticsScreen() {
                 {averageNumberOfDaystoRead}
               </Text>
               <Text style={styles.statsImportantInfos}>
-                days to read a book
+                {t("screens.statistics.averageDaysToRead")}
               </Text>
             </View>
           </View>
@@ -310,7 +318,9 @@ export default function StatisiticsScreen() {
             />
           </ScrollView>
           <View style={styles.statsContainer}>
-            <Text style={styles.statsTitle}>Top rated books</Text>
+            <Text style={styles.statsTitle}>
+              {t("screens.statistics.topRatedBooks")}
+            </Text>
             <ScrollView style={styles.previewScrollView} horizontal={true}>
               {topRatedBooks.map((book, index) => (
                 <View key={index} style={styles.bookPreview}>
@@ -331,7 +341,7 @@ export default function StatisiticsScreen() {
         </View>
         <View style={styles.statsContainer}>
           <Text style={[styles.statsTitle, { marginBottom: 0 }]}>
-            Books status
+            {t("screens.statistics.booksStatus")}
           </Text>
           <View style={styles.pieChart}>
             <PieChart
@@ -356,7 +366,9 @@ export default function StatisiticsScreen() {
           </View>
         </View>
         <View style={styles.statsContainer}>
-          <Text style={styles.statsTitle}>Top 10 authors</Text>
+          <Text style={styles.statsTitle}>
+            {t("screens.statistics.top10Authors")}
+          </Text>
           {authorsStats.map((author, index) => (
             <RowAuthor
               key={index}

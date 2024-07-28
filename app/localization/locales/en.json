@@ -103,8 +103,30 @@
             "importLibrary":{
                 "buttonTitle":"Import library"
             }
-            
-
+        },
+        "statistics":{
+            "months":{
+                "january":"January",
+                "february":"February",
+                "march":"March",
+                "april":"April",
+                "may":"May",
+                "june":"June",
+                "july":"July",
+                "august":"August",
+                "september":"September",
+                "october":"October",
+                "november":"November",
+                "december":"December"
+            },
+            "allYears":"all years",
+            "statisticsOf":"Statistics of",
+            "booksRead":"books read",
+            "pagesRead":"pages read",
+            "averageDaysToRead":"days to read a book",
+            "topRatedBooks":"Top rated books",
+            "booksStatus":"Books status",
+            "top10Authors":"Top 10 authors"
         }
     },
     "components":{
