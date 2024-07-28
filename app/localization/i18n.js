@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
+import de from "./locales/de.json";
 
 //the key of each language must be the language name in that language.
 export const languageResources = {
@@ -12,11 +13,15 @@ export const languageResources = {
   français: {
     translation: fr,
   },
+  deutsch: {
+    translation: de,
+  },
 };
 //without region code
 const languageCodes = {
   en: "english",
   fr: "français",
+  de: "deutsch",
 };
 
 /**

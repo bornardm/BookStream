@@ -129,7 +129,7 @@ export default function TextInputWithSuggestions({
       style={[
         { backgroundColor: "transparent" },
         restTextInputStyle,
-        { marginBottom: 0, padding: 5 },
+        { marginBottom: 0, padding: 5, paddingStart: 10 },
       ]}
       inputContainerStyle={{
         borderWidth: 0,
