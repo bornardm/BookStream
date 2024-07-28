@@ -36,8 +36,4 @@ yarn-error.*
 
 
 # comment all the lines below to build the project
-#database
-*.db
-
-assetForTest/
 app/confidential.js 

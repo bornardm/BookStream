@@ -2,13 +2,13 @@ import * as FileSystem from "expo-file-system";
 import { Asset } from "expo-asset";
 import * as SQLite from "expo-sqlite";
 
-export const dbName = "myBooksDB.db";
+export const dbName = "bookStreamDB.db";
 export let dbConnexion = null;
 export const coversDir = `${FileSystem.documentDirectory}Covers/`;
 const updateDB = false;
 
 export const loadDatabase = async () => {
-  const dbAsset = require("../database/myBooksDB.db");
+  const dbAsset = require("../database/bookStreamDB.db");
   const dbUri = Asset.fromModule(dbAsset).uri;
   const dbFilePath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
 
