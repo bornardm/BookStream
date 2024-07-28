@@ -397,3 +397,24 @@ export function getAverageNumberOfDaystoReadDB({ year = null }) {
   }
   return null;
 }
+
+export function getTopRatedBooksDB({ year = null, limit = 5 }) {
+  console.log("DB : start fetching top rated books");
+  let yearCondition = "";
+  let params = [];
+
+  if (year !== null) {
+    yearCondition = ` AND strftime('%Y', readingEndDate) = ?`;
+    params.push(year.toString());
+  }
+
+  const requestMaxRating = `Select MAX(rating) as maxRating from BOOKS  WHERE 1=1 ${yearCondition}`;
+  const maxRating = getExecSyncDB({ request: requestMaxRating, params });
+  if (maxRating) {
+    const request = `SELECT id as bookId, title, author, rating, status, imagename FROM BOOKS WHERE 1=1 ${yearCondition} AND rating = ?  LIMIT ?`;
+    params.push(maxRating[0].maxRating);
+    params.push(limit);
+    return getExecSyncDB({ request, params: params });
+  }
+  return null;
+}

@@ -32,7 +32,8 @@ function BadgeStatus({ status }) {
  * @param {integer} props.rating - The rating of the book in [0,10].
  * @param {integer} props.status - The status of the book (cf BookSatatus.js).
  * @param {string} props.imageName - The name of the book's image.
- * @param {Object} props.functions - The functions to be passed as props.
+ * @param {boolean} props.touchable - Whether the component is touchable.
+ * @param {Object} props.functions - The functions to be passed as props (not used if touchable is false).
  * @returns {JSX.Element} The rendered component.
  */
 export default function BookPreview({
@@ -42,19 +43,22 @@ export default function BookPreview({
   rating,
   status,
   imageName,
+  touchable = true,
   functions, // receive the function as a prop
 }) {
   // console.log("BookPreview", bookID, title, author, rating, status, imageName);
   const navigation = useNavigation();
   const [imageNameState, setImageNameState] = useState(imageName);
+  const WraperComponent = touchable ? TouchableOpacity : View;
 
   useEffect(() => {
     setImageNameState(imageName);
   }, [imageName]);
 
   return (
-    <TouchableOpacity
+    <WraperComponent
       onPress={() =>
+        touchable &&
         navigation.navigate("BookScreen", {
           bookID: bookID,
           functions: functions, // pass the functions as a parameter
@@ -82,7 +86,7 @@ export default function BookPreview({
         </View>
         <BadgeStatus status={status} />
       </View>
-    </TouchableOpacity>
+    </WraperComponent>
   );
 }
 

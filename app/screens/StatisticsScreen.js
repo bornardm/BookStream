@@ -13,9 +13,11 @@ import {
   getNumberBooksReadByYearDB,
   getAverageNumberOfDaystoReadDB,
   getDistinctYearDB,
+  getTopRatedBooksDB,
 } from "../requests";
 import { getBookStatusProps } from "../constants/BookStatus";
 import LoadingView from "../components/LoadingView";
+import BookPreview from "../components/BookPreview";
 
 const chartConfig = {
   backgroundGradientFrom: "#03DAC6",
@@ -149,6 +151,7 @@ export default function StatisiticsScreen() {
   const [numberBooksRead, setNumberBooksRead] = useState(0);
   const [numberPagesRead, setNumberPagesRead] = useState(0);
   const [averageNumberOfDaystoRead, setAverageNumberOfDaystoRead] = useState(0);
+  const [topRatedBooks, setTopRatedBooks] = useState([]);
 
   function computeBarChartData() {
     let data = {};
@@ -193,6 +196,7 @@ export default function StatisiticsScreen() {
     setAverageNumberOfDaystoRead(
       getAverageNumberOfDaystoReadDB({ year: period })
     );
+    setTopRatedBooks(getTopRatedBooksDB({ year: period, limit: 5 }));
     setStatsLoaded(true);
   }, [period]);
 
@@ -263,8 +267,25 @@ export default function StatisiticsScreen() {
               style={styles.barChart}
             />
           </ScrollView>
-
-          <Text>Your best book</Text>
+          <View style={styles.statsContainer}>
+            <Text style={styles.statsTitle}>Top rated books</Text>
+            <ScrollView style={styles.previewScrollView} horizontal={true}>
+              {topRatedBooks.map((book, index) => (
+                <View key={index} style={styles.bookPreview}>
+                  <BookPreview
+                    key={index}
+                    bookID={book.bookID}
+                    title={book.title}
+                    author={book.author}
+                    rating={book.rating}
+                    status={book.status}
+                    imageName={book.imageName}
+                    touchable={false}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
         </View>
         <View style={styles.statsContainer}>
           <Text style={[styles.statsTitle, { marginBottom: 0 }]}>
@@ -403,5 +424,15 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 12,
+  },
+  previewScrollView: {
+    width: "100%",
+    backgroundColor: "transparent",
+  },
+  bookPreview: {
+    margin: 5,
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    minWidth: 300,
   },
 });
