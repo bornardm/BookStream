@@ -1,124 +1,179 @@
 {
-    "dateFormat": "fr-FR",
-    "yes": "Oui",
-    "no": "Non",
-    "YES": "OUI",
-    "NO": "NON",
-    "app": {
-        "navigationTitle": {
-            "homeScreen": "Mes Livres",
-            "bookScreen": "Détails du livre",
-            "bookEditScreen": "Modifier le livre",
-            "addScreen": "Ajouter un livre",
-            "scannerScreen": "Scanner un livre",
-            "menuScreen": "Menu",
+    "dateFormat":"fr-FR",
+    "yes":"Oui",
+    "no":"Non",
+    "YES":"OUI",
+    "NO":"NON",
+    "loading":"Chargement",
+    "app":{
+        "navigationTitle":{
+            "homeScreen":"Mes Livres",
+            "bookScreen":"Détails du livre",
+            "bookEditScreen":"Modifier le livre",
+            "addScreen":"Ajouter un livre",
+            "scannerScreen":"Scanner un livre",
+            "statisticsScreen":"Statistiques",
             "settingsScreen":"Paramètres"
         }
     },
-    "constants": {
-        "bookStatus": {
-            "read": "Lu",
-            "wantToRead": "A lire",
-            "reading": "En cours",
-            "abandoned": "Abandonné",
-            "borrowed": "Emprunté",
-            "toExchange": "À échanger"
+    "constants":{
+        "bookStatus":{
+            "read":"Lu",
+            "wantToRead":"A lire",
+            "reading":"En cours",
+            "abandoned":"Abandonné",
+            "borrowed":"Emprunté",
+            "toExchange":"A échanger"
         },
-        "languages": {
-            "english": "Anglais",
-            "french": "Français",
-            "spanish": "Espagnol",
-            "german": "Allemand",
-            "italian": "Italien"
+        "languages":{
+            "english":"Anglais",
+            "french":"Français",
+            "spanish":"Espagnol",
+            "german":"Allemand",
+            "italian":"Italien"
         }
     },
-    "screens": {
-        "add": {
-            "title": "Ajouter un livre",
-            "alerts": {
-                "notFound": "Livre non trouvé",
-                "invalidISBN": "ISBN non valide (10 ou 13 chiffres)"
+    "screens":{
+        "add":{
+            "title":"Ajouter un livre",
+            "alerts":{
+                "notFound":"Livre non trouvé",
+                "invalidISBN":"ISBN non valide (10 ou 13 chiffres)"
             },
-            "inputPlaceholder": "isbn",
-            "buttons": {
-                "addManually": "Ajouter manuellement"
+            "inputPlaceholder":"Isbn",
+            "buttons":{
+                "addManually":"Ajouter \nmanuellement",
+                "searchByKeyword":"Rechercher \npar mot-clé"
             }
         },
-        "bookEdit": {
-            "title": "Modifier le livre",
-            "modal": {
-                "title": "Changer l'image",
-                "takePicture": "Prendre une\nphoto",
-                "choosePicture": "Choisir une\nphoto"
+        "bookEdit":{
+            "title":"Modifier le livre",
+            "modal":{
+                "title":"Changer l'image",
+                "takePicture":"Prendre une\nphoto",
+                "choosePicture":"Choisir une\nphoto"
             },
-            "inputTitle": {
-                "publicationDate": "Date de publication",
-                "title": "Titre",
-                "author": "Auteur",
-                "summary": "Résumé",
-                "numberOfPages": "Nombre de pages",
-                "series": "Série",
-                "volume": "Volume",
-                "publisher": "Éditeur",
-                "isbn": "ISBN",
-                "language": "Langue",
-                "categories": "Catégories"
+            "inputTitle":{
+                "publicationDate":"Date de publication",
+                "title":"Titre",
+                "author":"Auteur",
+                "summary":"Résumé",
+                "numberOfPages":"Nombre de pages",
+                "series":"Série",
+                "volume":"Volume",
+                "publisher":"Éditeur",
+                "isbn":"ISBN",
+                "language":"Langue",
+                "categories":"Catégories"
             },
-            "inputPlaceholder": {
-                "author": "Prénom Nom",
-                "series": "Nom de la série",
-                "category": "Catégorie"
+            "inputPlaceholder":{
+                "author":"Prénom Nom",
+                "series":"Nom de la série",
+                "category":"Catégorie"
             }
         },
-        "book": {
-            "alerts": {
-                "deleteTitle": "Supprimer ce livre",
-                "deleteMessage": "Souhaitez-vous supprimer ce livre de votre bibliothèque ?"
+        "book":{
+            "alerts":{
+                "deleteTitle":"Supprimer ce livre",
+                "deleteMessage":"Voulez-vous retirer ce livre de votre bibliothèque ?"
             },
-            "removeButton": "Supprimer ce livre de ma bibliothèque",
-            "readingDates": "Dates de lecture"
+            "removeButton":"Retirer ce livre de ma bibliothèque",
+            "readingDates":"Dates de lecture",
+            "categories":"Catégories",
+            "comment":"Commentaire",
+            "addComment":"Ajouter un commentaire",
+            "pages":"pages"
         },
-
         "settings":{
             "searchPlaceholder":"Rechercher...",
             "changeLanguage":"Langue",
-            "changeDefaultStatus":"Status par défaut \ndes livres ajoutés"
-
+            "changeDefaultStatus":"Statut par défaut\npour les livres ajoutés",
+            "openLibrary":"Cette application utilise l'API Open Library pour obtenir des informations sur les livres. Il s'agit d'un projet open source, et vous pouvez trouver plus d'informations sur le site officiel",
+            "deleteLibrary":{
+                "buttonTitle":"Supprimer la bibliothèque",
+                "alertTitle":"ATTENTION",
+                "alertMessage":"Cette action effacera toute votre bibliothèque sans possibilité de récupération. Êtes-vous sûr de vouloir faire cela?"
+            },
+            "exportLibrary":{
+                "buttonTitle":"Exporter la bibliothèque"
+            },
+            "importLibrary":{
+                "buttonTitle":"Importer la bibliothèque"
+            }
+        },
+        "statistics":{
+            "months":{
+                "january":"Janvier",
+                "february":"Février",
+                "march":"Mars",
+                "april":"Avril",
+                "may":"Mai",
+                "june":"Juin",
+                "july":"Juillet",
+                "august":"Août",
+                "september":"Septembre",
+                "october":"Octobre",
+                "november":"Novembre",
+                "december":"Décembre"
+            },
+            "allYears":"globales",
+            "statisticsOf":"Statistiques :",
+            "booksRead":"livres lus",
+            "pagesRead":"pages lues",
+            "averageDaysToRead":"jours pour lire un livre",
+            "topRatedBooks":"Livres les mieux notés",
+            "booksStatus":"Statut des livres",
+            "top10Authors":"Top 10 des auteurs"
         }
     },
-    "components": {
-        "datePicker": {
-            "startReading": "Début de lecture",
-            "endReading": "Fin de lecture"
+    "components":{
+        "datePicker":{
+            "startReading":"Début de lecture",
+            "endReading":"Fin de lecture"
         },
-        "filterView": {
-            "title": "Tri et filtres",
-            "subtitles": {
-                "sort": "Trier par",
-                "statusFilter": "Filtrer par statut",
-                "ratingFilter": "Filtrer par note",
-                "otherFilters": "Autres filtres"
+        "filterView":{
+            "title":"Tri et filtres",
+            "subtitles":{
+                "sort":"Trier par",
+                "statusFilter":"Filtrer par statut",
+                "ratingFilter":"Filtrer par note",
+                "otherFilters":"Autres filtres"
             },
-            "sortOptions": {
-                "title": "Titre (alphabétique)",
-                "author": "Auteur (alphabétique)",
-                "readingDate": "Date de lecture (décroissant)",
-                "additionDate": "Date d'ajout à mes livres (décroissant)",
-                "rating": "Note (décroissant)"
+            "sortOptions":{
+                "title":"Titre (alphabétique)",
+                "author":"Auteur (alphabétique)",
+                "readingDate":"Date de lecture (décroissant)",
+                "additionDate":"Date d'ajout à mes livres (décroissant)",
+                "rating":"Note (décroissant)"
             },
-            "multiselectPlaceholder": {
-                "authors": "Auteurs : ",
-                "publishers": "Éditeurs : ",
-                "series": "Séries : ",
-                "years": "Années de lecture : ",
-                "allAuthors": "Tous les auteurs",
-                "allPublishers": "Tous les éditeurs",
-                "allSeries": "Toutes les séries",
-                "allYears": "Toutes les années de lecture"
+            "multiselectPlaceholder":{
+                "authors":"Auteurs : ",
+                "publishers":"Éditeurs : ",
+                "series":"Séries : ",
+                "years":"Années de lecture : ",
+                "languages":"Langues : ",
+                "allAuthors":"Tous les auteurs",
+                "allPublishers":"Tous les éditeurs",
+                "allSeries":"Toutes les séries",
+                "allYears":"Toutes les années de lecture",
+                "allLanguages":"Toutes les langues"
             },
-            "all": "Tous",
-            "noRating": "Pas de notes",
-            "applyButton": "Appliquer"
+            "all":"Tout",
+            "noRating":"Pas de note",
+            "applyButton":"Appliquer",
+            "searchPlaceholder":"Rechercher..."
+        },
+        "keyWordSearch":{
+            "inputPlaceholder":"Titre, auteur...",
+            "pages":"pages",
+            "noResults":"Aucun livre trouvé",
+            "advancedSearch":{
+                "header":"Recherche avancée",
+                "title":"Titre",
+                "author":"Auteur",
+                "publisher":"Éditeur",
+                "searchButton":"Rechercher"
+            }
         }
     }
 }
