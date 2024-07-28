@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, ScrollView } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { BarChart, PieChart } from "react-native-chart-kit";
 import { Dropdown } from "react-native-element-dropdown";
 
@@ -18,6 +25,7 @@ import {
 import { getBookStatusProps } from "../constants/BookStatus";
 import LoadingView from "../components/LoadingView";
 import BookPreview from "../components/BookPreview";
+import { use } from "i18next";
 
 const chartConfig = {
   backgroundGradientFrom: "#03DAC6",
@@ -133,25 +141,28 @@ export default function StatisiticsScreen() {
 
   const [barChartData, setBarChartData] = useState(null);
   const [period, setPeriod] = useState(null);
-
-  const distinctYear = getDistinctYearDB({ end: true });
-  const dropdownData = [
-    { label: "all years", value: "all years" },
-    ...distinctYear.map((year) => {
-      return { label: year, value: year };
-    }),
-  ];
-  const [dropdownValue, setDropdownValue] = useState(dropdownData[0].label);
-
   const [statsLoaded, setStatsLoaded] = useState(false);
 
-  const statusStats = computeStatusStats(getStatsStatusDB());
-  const authorsStats = getStatsAuthorsDB().slice(0, 10);
+  const [distinctYear, setDistinctYear] = useState([]);
+  const [dropdownData, setDropdownData] = useState([]);
+  const [dropdownValue, setDropdownValue] = useState("");
+  const [statusStats, setStatusStats] = useState([]);
+  const [authorsStats, setAuthorsStats] = useState([]);
 
   const [numberBooksRead, setNumberBooksRead] = useState(0);
   const [numberPagesRead, setNumberPagesRead] = useState(0);
   const [averageNumberOfDaystoRead, setAverageNumberOfDaystoRead] = useState(0);
   const [topRatedBooks, setTopRatedBooks] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshIndex, setRefreshIndex] = useState(0);
+
+  const onRefresh = useCallback(() => {
+    setRefreshIndex(refreshIndex + 1);
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, [refreshIndex]);
 
   function computeBarChartData() {
     let data = {};
@@ -190,6 +201,33 @@ export default function StatisiticsScreen() {
     return data;
   }
   useEffect(() => {
+    console.log("RefreshIndex = ", refreshIndex);
+  }, [refreshIndex]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const distinctYearData = getDistinctYearDB({ end: true });
+      setDistinctYear(distinctYearData);
+
+      const dropdownData = [
+        { label: "all years", value: "all years" },
+        ...distinctYearData.map((year) => {
+          return { label: year, value: year };
+        }),
+      ];
+      setDropdownData(dropdownData);
+      setDropdownValue(dropdownData[0].label);
+
+      const statusStatsData = computeStatusStats(getStatsStatusDB());
+      setStatusStats(statusStatsData);
+
+      const authorsStatsData = getStatsAuthorsDB().slice(0, 10);
+      setAuthorsStats(authorsStatsData);
+    };
+
+    fetchData();
+  }, [refreshIndex]);
+
+  useEffect(() => {
     setBarChartData(computeBarChartData());
     setNumberBooksRead(getNumberBooksReadDB({ year: period }));
     setNumberPagesRead(getNumberPagesReadDB({ year: period }));
@@ -198,14 +236,18 @@ export default function StatisiticsScreen() {
     );
     setTopRatedBooks(getTopRatedBooksDB({ year: period, limit: 5 }));
     setStatsLoaded(true);
-  }, [period]);
+  }, [period, refreshIndex]);
 
   if (!statsLoaded) {
     return <LoadingView white={true} />;
   }
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.container}>
         <View
           style={[
