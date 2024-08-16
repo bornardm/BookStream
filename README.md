@@ -168,6 +168,7 @@ The Settings screen allows users to customize their app experience. Key features
 - Expo
 - i18n (for internationalization)
 - JavaScript
+- SQL
 
 
 # Inspiration 
