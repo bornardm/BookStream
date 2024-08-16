@@ -2,6 +2,12 @@
 
 BookStream is a comprehensive book management application for organizing and managing your book collection efficiently.
 
+<table>
+  <tr>
+    <td><img src="assets/icon.png" height=200></td>
+  </tr>
+ </table>
+
 
 ## Table of Contents
 
@@ -17,6 +23,7 @@ BookStream is a comprehensive book management application for organizing and man
     - [Statistics](#statistics)
     - [Settings](#settings)
   - [Technologies used](#technologies-used)
+- [Inspiration](#inspiration)
 
 
 
@@ -161,3 +168,9 @@ The Settings screen allows users to customize their app experience. Key features
 - Expo
 - i18n (for internationalization)
 - JavaScript
+
+
+# Inspiration 
+  - Babelio
+  - My Library
+  - Bookmory
