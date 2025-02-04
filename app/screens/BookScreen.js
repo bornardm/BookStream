@@ -23,7 +23,7 @@ import Octicons from "react-native-vector-icons/Octicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import { SQLiteProvider } from "expo-sqlite/next";
+import { SQLiteProvider } from "expo-sqlite";
 import * as FileSystem from "expo-file-system";
 import i18next from "../localization/i18n";
 import { useTranslation } from "react-i18next";

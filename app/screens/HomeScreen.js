@@ -15,7 +15,7 @@ import {
 // Third-party libraries/components
 import Icon from "react-native-vector-icons/Entypo";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { SQLiteProvider } from "expo-sqlite/next";
+import { SQLiteProvider } from "expo-sqlite";
 
 // Utility functions, constants, and other local imports
 import BookPreview from "../components/BookPreview";

@@ -31,10 +31,19 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow the app to access your camera"
+          "cameraPermission": "Allow BookStream to access your camera"
         }
       ],
-      "expo-localization"
+      [
+      "expo-media-library",
+        {
+          "photosPermission": "Allow BookStream to access your photos.",
+          "savePhotosPermission": "Allow BookStream to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      "expo-localization",
+      "expo-sqlite"
     ],
     "web": {
       "favicon": "./assets/adaptive-icon.png"
@@ -43,6 +52,7 @@
       "eas": {
         "projectId": "83593744-954a-4648-9efa-83767693d4b7"
       }
-    }
+    },
+    "newArchEnabled": true
   }
 }
