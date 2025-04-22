@@ -1,6 +1,7 @@
 // React and React Native components and hooks
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   Modal,
   Image,
@@ -9,14 +10,17 @@ import {
   TouchableWithoutFeedback,
   View,
   TouchableHighlight,
+  ToastAndroid,
 } from "react-native";
 
 // Third-party libraries/components
-import { useNavigation } from "@react-navigation/native";
+import * as FileSystem from "expo-file-system";
 
 // Utility functions, constants, and other local imports
 import { colors } from "../constants/Colors";
 import ButtonGroup from "./ButtonGroup";
+
+const { StorageAccessFramework } = FileSystem;
 
 const checkButtonProps = {
   selectedColor: "blue",
@@ -35,14 +39,14 @@ const exportOptions = [
   },
   {
     id: 2,
-    label: "Save library for sharing and for future imports (export as JSON)",
+    label: "Save library for sharing and for future imports (export as JSON) TODO",
     value: "json",
     ...checkButtonProps,
   },
   {
     id: 3,
     label:
-      "Save library for personal use (export as CSV, compatible with Excel)",
+      "Save library for personal use (export as CSV, compatible with Excel) TODO",
     value: "csv",
     ...checkButtonProps,
   },
@@ -51,14 +55,64 @@ const exportOptions = [
 export default function ExportLibrary({ visible, setIsVisible }) {
   const [exportOptionsData, setExportOptionsData] = useState(exportOptions);
 
-  const handelPressExport = () => {
+  const exportDB = async () => {
+    console.log("Exporting db");
+    fileName = "bookStreamDB.db";
+    fileString = "";
+    try {
+      //get the .db file content
+      fileString = await FileSystem.readAsStringAsync(
+        `${FileSystem.documentDirectory}SQLite/bookStreamDB.db`,
+        {
+          encoding: "base64",
+        }
+      );
+    } catch (e) {
+      console.log("Error during getting Database file : " + e);
+      alert("Internal error: Couldn't access the database.");
+    }
+    try {
+      //verify permissions for the directory
+      const permissions =
+        await StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (!permissions.granted) {
+        console.log("Permission error");
+        alert(
+          "Permission error: Unable to export the file because the necessary permissions were not granted."
+        );
+        return;
+      }
+
+      //export the file
+      await StorageAccessFramework.createFileAsync(
+        permissions.directoryUri,
+        fileName,
+        "application/x-sqlite3"
+      ).then(async (uri) => {
+        console.log("before");
+        await FileSystem.writeAsStringAsync(uri, fileString, {
+          encoding: "base64",
+        });
+        console.log("Database exported successfully");
+        ToastAndroid.show("Database Exported Successfully", ToastAndroid.SHORT);
+      });
+    } catch (e) {
+      console.log("Error during saving the file : " + e);
+      alert("Internal error: Couldn't export the database.");
+    }
+  };
+
+  const handlePressExport = () => {
     if (exportOptionsData[0].selected) {
       // export db
+      exportDB();
     }
     if (exportOptionsData[1].selected) {
+      console.log("TODO : export json");
     }
     if (exportOptionsData[2].selected) {
       // export csv
+      console.log("TODO export CSV");
     }
     setIsVisible(false);
   };
@@ -112,7 +166,7 @@ export default function ExportLibrary({ visible, setIsVisible }) {
                 <TouchableHighlight
                   style={styles.button}
                   underlayColor={colors.underlayColor}
-                  onPress={handelPressExport}
+                  onPress={handlePressExport}
                 >
                   <Text style={styles.buttonText}>Export</Text>
                 </TouchableHighlight>

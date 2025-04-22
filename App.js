@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { createContext, useEffect, useState, useCallback } from "react";
 import { Button, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -67,26 +67,29 @@ const HomeStackScreen = () => {
   );
 };
 
+export const AppContext = createContext(null);
+
 export default function App() {
   const { t } = useTranslation();
 
-  //for reloading the app
-  const [key, setKey] = useState(0);
-  const reloadApp = useCallback(() => {
-    console.log("Reloading App");
-    setKey((prevKey) => prevKey + 1);
-  }, []);
-
   const [dbLoaded, setDbLoaded] = useState(false);
 
-  useEffect(() => {
+  //for reloading the app
+  const [key, setKey] = useState(0);
+  
+  const reloadApp =(() =>{
+    console.log("(Re)loading the App");
     loadDatabase()
       .then(() => {
         fetchSettings();
         setDbLoaded(true); //load user settings from the database
-      })
+      }).then(()=> {setKey((prevKey) => prevKey + 1);})
       .catch((e) => console.error(e));
-  }, []);
+  });
+
+  useEffect(reloadApp, []);
+
+
   if (!dbLoaded) {
     return <LoadindingView />;
   }
