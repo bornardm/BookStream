@@ -24,9 +24,7 @@ BookStream is a comprehensive book management application for organizing and man
     - [Settings](#settings)
   - [Technologies used](#technologies-used)
 - [Inspiration](#inspiration)
-
-
-
+- [Build Project for development](#build-project-for-development)
 
 ## Description and globales features
 BookStream is a comprehensive book management application designed to help you organize and manage your book collection efficiently. It integrates with the Open Library API to fetch detailed information about books and provides a user-friendly interface for a seamless experience.
@@ -175,3 +173,12 @@ The Settings screen allows users to customize their app experience. Key features
   - Babelio
   - My Library
   - Bookmory
+
+# Build Project for development 
+Using expo : 
+```console
+npm install
+npx expo start
+
+```
+Then, scan the displayed QR code with the smartphone
